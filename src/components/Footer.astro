@@ -1,0 +1,168 @@
+---
+import { Monitor, Moon, Sun } from 'lucide-astro'
+import blogConfig from '../../blog.config'
+import { footerNav } from '../consts'
+---
+
+<footer class="site-footer">
+	<div class="page-shell">
+		<div class="footer-grid">
+			{
+				footerNav.map(group => (
+					<section>
+						<h2>{group.title}</h2>
+						<ul>
+							{group.items.map(item => (
+								<li>
+									<a
+										href={item.url}
+										target={item.external ? '_blank' : undefined}
+										rel={item.external ? 'noopener noreferrer' : undefined}
+									>
+										{item.text}
+									</a>
+								</li>
+							))}
+						</ul>
+					</section>
+				))
+			}
+		</div>
+		<div class="footer-bottom">
+			<p>
+				© {new Date().getFullYear()}{' '}
+				{
+					blogConfig.copyright.url ? (
+						<a href={blogConfig.copyright.url}>{blogConfig.copyright.name}</a>
+					) : (
+						blogConfig.copyright.name
+					)
+				}
+			</p>
+			<div class="theme-switcher" role="group" aria-label="主题">
+				<button type="button" data-theme="light">
+					<Sun size={12} aria-hidden="true" />
+					<span>亮色</span>
+				</button>
+				<button type="button" data-theme="dark">
+					<Moon size={12} aria-hidden="true" />
+					<span>暗色</span>
+				</button>
+				<button type="button" data-theme="auto">
+					<Monitor size={12} aria-hidden="true" />
+					<span>自动</span>
+				</button>
+			</div>
+		</div>
+	</div>
+</footer>
+
+<script>
+	function applyTheme(theme: string) {
+		const isDark =
+			theme === 'dark' ||
+			(theme === 'auto' && matchMedia('(prefers-color-scheme: dark)').matches)
+		document.documentElement.classList.toggle('dark', isDark)
+		document.documentElement.dataset.theme = theme
+		localStorage.setItem('blog-theme', theme)
+		document
+			.querySelectorAll<HTMLButtonElement>('[data-theme]')
+			.forEach(button =>
+				button.setAttribute(
+					'aria-pressed',
+					String(button.dataset.theme === theme),
+				),
+			)
+	}
+	document.addEventListener('click', event => {
+		const button = (event.target as Element).closest<HTMLButtonElement>(
+			'[data-theme]',
+		)
+		if (button) applyTheme(button.dataset.theme ?? 'auto')
+	})
+	document.addEventListener('astro:page-load', () =>
+		applyTheme(localStorage.getItem('blog-theme') ?? 'auto'),
+	)
+	matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+		if ((localStorage.getItem('blog-theme') ?? 'auto') === 'auto')
+			applyTheme('auto')
+	})
+</script>
+
+<style>
+	.site-footer {
+		margin-top: 7rem;
+		border-top: 1px solid var(--color-border);
+		padding-block: 3.5rem 2rem;
+	}
+	.footer-grid {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 2rem;
+		margin-bottom: 16px;
+	}
+	.footer-grid h2 {
+		margin: 0 0 0.8rem;
+		font-size: 17px;
+		font-weight: 700;
+	}
+	.footer-grid ul {
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+	.footer-grid li + li {
+		margin-top: 0.35rem;
+	}
+	.footer-grid a {
+		color: var(--color-muted);
+		font-size: 16px;
+	}
+	.footer-grid a:hover {
+		color: var(--color-foreground);
+		text-decoration: underline;
+		text-underline-offset: 0.2em;
+	}
+	.footer-bottom {
+		margin-top: 0;
+		color: var(--color-muted);
+		font-size: 16px;
+	}
+	.footer-bottom p {
+		margin: 0;
+	}
+	.theme-switcher {
+		display: inline-flex;
+		gap: 1px;
+		margin-top: 16px;
+		border: 1px solid var(--color-accent);
+		border-radius: 999px;
+		padding: 1px;
+	}
+	.theme-switcher button {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 4px;
+		border: 0;
+		border-radius: 999px;
+		background: transparent;
+		padding: 4px 8px;
+		color: var(--color-accent);
+		font-size: 12px;
+		line-height: 1;
+		cursor: pointer;
+	}
+	.theme-switcher button:hover {
+		background: color-mix(in srgb, var(--color-accent) 9%, transparent);
+	}
+	.theme-switcher button[aria-pressed='true'] {
+		background: var(--color-accent);
+		color: #ffffff;
+	}
+	@media (max-width: 600px) {
+		.footer-grid {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+	}
+</style>

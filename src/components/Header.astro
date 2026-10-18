@@ -1,0 +1,343 @@
+---
+import { ExternalLink, Search } from 'lucide-astro'
+import blogConfig from '../../blog.config'
+import { moreNav, primaryNav } from '../consts'
+import SearchLauncher from './SearchLauncher.astro'
+
+const blurLayers = [1, 2, 3, 4, 5, 6]
+const siteLogo =
+	'logo' in blogConfig && typeof blogConfig.logo === 'string'
+		? blogConfig.logo
+		: undefined
+---
+
+<div class="nav-mask" aria-hidden="true">
+	{blurLayers.map(sharp => <div style={`--sharp:${sharp}`} />)}
+</div>
+<header class="site-header" data-site-header>
+	<div class="page-shell header-inner">
+		<a class="brand" href="/" aria-label={`${blogConfig.title} 首页`}>
+			{siteLogo && <img src={siteLogo} alt="" width="28" height="28" />}
+			<span>{blogConfig.title}</span>
+		</a>
+
+		<nav class="desktop-nav" aria-label="主导航">
+			{primaryNav.map(item => <a href={item.url}>{item.text}</a>)}
+			<div class="more-menu">
+				<button type="button" aria-haspopup="true"> 更多 </button>
+				<div class="more-panel">
+					{
+						moreNav.map(item => (
+							<a
+								href={item.url}
+								target={item.external ? '_blank' : undefined}
+								rel={item.external ? 'noopener noreferrer' : undefined}
+							>
+								{item.text}
+								{item.external && <ExternalLink size={13} aria-hidden="true" />}
+							</a>
+						))
+					}
+				</div>
+			</div>
+			<SearchLauncher />
+		</nav>
+
+		<button
+			class="mobile-toggle"
+			type="button"
+			aria-expanded="false"
+			aria-controls="mobile-menu"
+			aria-label="展开导航"
+			data-mobile-toggle
+		>
+			<span class="mobile-chevron" aria-hidden="true">
+				<span class="chevron-left"></span>
+				<span class="chevron-right"></span>
+			</span>
+		</button>
+	</div>
+
+	<div class="mobile-menu" id="mobile-menu" aria-hidden="true" data-mobile-menu>
+		<nav class="page-shell mobile-menu-inner" aria-label="移动端导航">
+			{primaryNav.map(item => <a href={item.url}>{item.text}</a>)}
+			<p class="mobile-group-label">更多</p>
+			{
+				moreNav.map(item => (
+					<a
+						href={item.url}
+						target={item.external ? '_blank' : undefined}
+						rel={item.external ? 'noopener noreferrer' : undefined}
+					>
+						{item.text}
+						{item.external && <ExternalLink size={14} aria-hidden="true" />}
+					</a>
+				))
+			}
+			<div class="mobile-search">
+				<button class="mobile-search-button" type="button" data-search-trigger>
+					<Search size={20} />
+					<span>搜索</span>
+				</button>
+			</div>
+		</nav>
+	</div>
+</header>
+
+<script>
+	function setOpen(open: boolean) {
+		const toggle = document.querySelector<HTMLButtonElement>(
+			'[data-mobile-toggle]',
+		)
+		const menu = document.querySelector<HTMLElement>('[data-mobile-menu]')
+		toggle?.setAttribute('aria-expanded', String(open))
+		toggle?.setAttribute('aria-label', open ? '收起导航' : '展开导航')
+		menu?.setAttribute('aria-hidden', String(!open))
+		document.documentElement.classList.toggle('menu-open', open)
+	}
+	document.addEventListener('click', event => {
+		const target = event.target as Element
+		const toggle = target.closest<HTMLButtonElement>('[data-mobile-toggle]')
+		if (toggle) setOpen(toggle.getAttribute('aria-expanded') !== 'true')
+		if (
+			target.closest(
+				'[data-mobile-menu] a, [data-mobile-menu] [data-search-trigger]',
+			)
+		) {
+			setOpen(false)
+		}
+	})
+	document.addEventListener(
+		'keydown',
+		event => event.key === 'Escape' && setOpen(false),
+	)
+	document.addEventListener('astro:before-preparation', () => setOpen(false))
+</script>
+
+<style>
+	.site-header {
+		position: sticky;
+		top: 0;
+		z-index: 40;
+		height: var(--header-height);
+		background: transparent;
+	}
+	.nav-mask > div {
+		--mask-base-height: 100px;
+		position: fixed;
+		top: 0;
+		right: 0;
+		left: 0;
+		z-index: 39;
+		height: calc(var(--mask-base-height) / pow(1.2, calc(var(--sharp) - 1)));
+		background-color: color-mix(
+			in srgb,
+			var(--color-background) 20%,
+			transparent
+		);
+		backdrop-filter: blur(1px);
+		-webkit-mask-image: linear-gradient(to bottom, #000, transparent);
+		mask-image: linear-gradient(to bottom, #000, transparent);
+		pointer-events: none;
+		transition:
+			height 600ms cubic-bezier(0.86, 0, 0.07, 1),
+			backdrop-filter 600ms cubic-bezier(0.86, 0, 0.07, 1);
+	}
+	.header-inner {
+		position: relative;
+		z-index: 1;
+		display: flex;
+		height: 100%;
+		align-items: center;
+		justify-content: space-between;
+	}
+	.brand {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.65rem;
+		font-size: 20px;
+		font-weight: 500;
+	}
+	.brand img {
+		border-radius: 0.35rem;
+	}
+	.desktop-nav {
+		display: flex;
+		align-items: center;
+		gap: 0.35rem;
+	}
+	.desktop-nav > a,
+	.more-menu > button {
+		border: 0;
+		border-radius: 0.45rem;
+		background: transparent;
+		padding: 0.55rem 0.65rem;
+		color: var(--color-muted);
+		font-size: 16px;
+		cursor: pointer;
+	}
+	.desktop-nav > a:hover,
+	.more-menu > button:hover,
+	.more-menu:focus-within > button {
+		color: var(--color-foreground);
+	}
+	.more-menu {
+		position: relative;
+		padding-block: 0.65rem;
+	}
+	.more-panel {
+		position: absolute;
+		top: calc(100% - 0.25rem);
+		right: 0;
+		display: grid;
+		min-width: 11rem;
+		visibility: hidden;
+		border: 1px solid var(--color-border);
+		border-radius: var(--radius-card);
+		background: color-mix(in oklab, var(--color-background) 92%, transparent);
+		box-shadow: var(--shadow-subtle);
+		opacity: 0;
+		padding: 0.45rem;
+		transform: translateY(-0.2rem);
+		transition:
+			opacity 140ms ease,
+			transform 140ms ease,
+			visibility 140ms;
+		backdrop-filter: blur(18px);
+	}
+	.more-menu:hover .more-panel,
+	.more-menu:focus-within .more-panel {
+		visibility: visible;
+		opacity: 1;
+		transform: translateY(0);
+	}
+	.more-panel a {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		border-radius: 0.4rem;
+		padding: 0.55rem 0.65rem;
+		font-size: 16px;
+	}
+	.more-panel a:hover {
+		background: var(--color-surface);
+	}
+	.mobile-toggle,
+	.mobile-menu {
+		display: none;
+	}
+
+	@media (max-width: 700px) {
+		.desktop-nav {
+			display: none;
+		}
+		.mobile-toggle {
+			position: absolute;
+			left: 50%;
+			display: grid;
+			width: 3rem;
+			height: 3rem;
+			place-items: center;
+			border: 0;
+			background: transparent;
+			color: var(--color-muted);
+			cursor: pointer;
+			transform: translateX(-50%);
+		}
+		.mobile-chevron {
+			position: relative;
+			display: block;
+			width: 1.75rem;
+			height: 0.9rem;
+		}
+		.mobile-chevron > span {
+			position: absolute;
+			top: 50%;
+			width: 0.98rem;
+			height: 1.5px;
+			border-radius: 999px;
+			background: currentColor;
+			transition: transform 240ms var(--ease-standard);
+		}
+		.chevron-left {
+			left: 0;
+			transform: rotate(38deg);
+			transform-origin: right center;
+		}
+		.chevron-right {
+			right: 0;
+			transform: rotate(-38deg);
+			transform-origin: left center;
+		}
+		.mobile-toggle[aria-expanded='true'] .chevron-left {
+			transform: rotate(-38deg);
+		}
+		.mobile-toggle[aria-expanded='true'] .chevron-right {
+			transform: rotate(38deg);
+		}
+		.mobile-menu {
+			position: fixed;
+			top: var(--header-height);
+			left: 50%;
+			display: block;
+			width: 100vw;
+			height: calc(100dvh - var(--header-height));
+			overflow-y: auto;
+			visibility: hidden;
+			background: transparent;
+			opacity: 0;
+			transform: translateX(-50%);
+			transition:
+				opacity 180ms ease,
+				visibility 180ms;
+		}
+		.mobile-menu[aria-hidden='false'] {
+			visibility: visible;
+			opacity: 1;
+		}
+		.mobile-menu-inner {
+			display: flex;
+			flex-direction: column;
+			gap: 0.15rem;
+			padding-top: 1.35rem;
+		}
+		.mobile-menu a {
+			display: flex;
+			align-items: center;
+			gap: 0.45rem;
+			min-height: 3.25rem;
+			padding: 0.7rem 0.2rem;
+			color: var(--color-foreground);
+			font-size: 16px;
+		}
+		.mobile-menu a:hover {
+			color: var(--color-foreground);
+		}
+		.mobile-group-label {
+			margin: 1.25rem 0 0.35rem;
+			color: var(--color-muted);
+			font-size: 14px;
+		}
+		.mobile-search {
+			margin-top: 1rem;
+		}
+		.mobile-search-button {
+			display: flex;
+			align-items: center;
+			gap: 0.65rem;
+			min-height: 3rem;
+			border: 0;
+			background: transparent;
+			padding: 0.6rem 0.2rem;
+			color: var(--color-foreground);
+			cursor: pointer;
+		}
+		:global(.menu-open) {
+			overflow: hidden;
+		}
+		:global(.menu-open) .nav-mask > div {
+			--mask-base-height: 200dvh;
+			backdrop-filter: blur(36px);
+		}
+	}
+</style>
