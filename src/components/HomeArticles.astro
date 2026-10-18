@@ -1,0 +1,85 @@
+---
+import type { ArticleEntry } from '../types/article'
+import blogConfig from '../../blog.config'
+import ArticleCard from './ArticleCard.astro'
+import Pagination from './Pagination.astro'
+
+interface Props {
+	articles: ArticleEntry[]
+	currentPage: number
+	totalPages: number
+}
+
+const { articles, currentPage, totalPages } = Astro.props
+---
+
+{
+	currentPage === 1 && (
+		<section class="page-shell home-hero" aria-labelledby="site-introduction">
+			<p>{blogConfig.title}</p>
+			<h1 id="site-introduction">{blogConfig.subtitle}</h1>
+		</section>
+	)
+}
+<section class="page-shell home-articles" aria-labelledby="latest-heading">
+	<h2 id="latest-heading">最近文章</h2>
+	<div class="article-grid">
+		{articles.map(article => <ArticleCard article={article} variant="grid" />)}
+	</div>
+	<Pagination current={currentPage} total={totalPages} />
+</section>
+
+<style>
+	.home-hero {
+		display: grid;
+		align-content: center;
+		min-height: 368px;
+		padding-block: 128px;
+	}
+	.home-hero p,
+	.home-hero h1 {
+		max-width: 680px;
+		margin: 0;
+	}
+	.home-hero p {
+		color: var(--color-muted);
+		font-size: 22px;
+		font-weight: 200;
+		line-height: normal;
+	}
+	.home-hero h1 {
+		margin-top: 6px;
+		font-size: 20px;
+		font-weight: 400;
+		line-height: normal;
+	}
+	.home-articles {
+		padding-bottom: 32px;
+	}
+	.home-articles > h2 {
+		margin: 0 0 24px;
+		font-size: var(--text-section-title);
+		font-weight: 700;
+		line-height: 1.125;
+	}
+	.article-grid {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 20px 16px;
+	}
+	@media (max-width: 600px) {
+		.home-hero {
+			min-height: 300px;
+			padding-block: 96px;
+		}
+		.home-articles {
+			padding-bottom: 24px;
+		}
+		.article-grid {
+			grid-template-columns: 1fr;
+			gap: 16px;
+			max-width: 366px;
+			margin-inline: auto;
+		}
+	}
+</style>

@@ -1,0 +1,69 @@
+---
+import { formatFullDate, formatListDate } from '../utils/date'
+
+interface Props {
+	date: string
+	updatedDate?: string | undefined
+	mode?: 'list' | 'full'
+}
+
+const { date, updatedDate, mode = 'list' } = Astro.props
+const text = mode === 'full' ? formatFullDate(date) : formatListDate(date)
+const updateText = updatedDate
+	? `更新于 ${formatFullDate(updatedDate)}`
+	: undefined
+---
+
+<time
+	datetime={date}
+	data-date={date}
+	data-mode={mode}
+	data-updated={updateText}
+	tabindex={updateText ? 0 : undefined}
+	aria-label={updateText ? `${text}，${updateText}` : text}
+>
+	<span class="date-primary">{text}</span>
+	{
+		updateText && (
+			<span class="date-updated" role="tooltip">
+				{updateText}
+			</span>
+		)
+	}
+</time>
+
+<style>
+	time {
+		position: relative;
+		display: inline-block;
+	}
+	.date-updated {
+		position: absolute;
+		bottom: calc(100% + 0.45rem);
+		left: 50%;
+		z-index: 4;
+		width: max-content;
+		max-width: 15rem;
+		transform: translate(-50%, 0.2rem);
+		visibility: hidden;
+		border: 1px solid var(--color-border);
+		border-radius: 0.4rem;
+		background: var(--color-background);
+		box-shadow: var(--shadow-subtle);
+		opacity: 0;
+		padding: 0.35rem 0.5rem;
+		color: var(--color-foreground);
+		font-size: 12px;
+		font-weight: 400;
+		transition:
+			opacity 120ms ease,
+			transform 120ms ease,
+			visibility 120ms;
+	}
+	time:hover .date-updated,
+	time:focus .date-updated {
+		visibility: visible;
+		opacity: 1;
+		transform: translate(-50%, 0);
+	}
+</style>

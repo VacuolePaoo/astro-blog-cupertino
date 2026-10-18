@@ -1,0 +1,27 @@
+---
+import type { GetStaticPaths } from 'astro'
+import HomeArticles from '../../components/HomeArticles.astro'
+import { HOME_PAGE_SIZE } from '../../consts'
+import Layout from '../../layouts/Layout.astro'
+import { getArticles } from '../../utils/article'
+
+export const getStaticPaths = (async ({ paginate }) => {
+	const articles = await getArticles()
+	return paginate(articles, { pageSize: HOME_PAGE_SIZE }).filter(
+		item => Number(item.params.page) > 1,
+	)
+}) satisfies GetStaticPaths
+
+const { page } = Astro.props
+---
+
+<Layout
+	title={`第 ${page.currentPage} 页`}
+	description={`最新文章列表，第 ${page.currentPage} 页。`}
+>
+	<HomeArticles
+		articles={page.data}
+		currentPage={page.currentPage}
+		totalPages={page.lastPage}
+	/>
+</Layout>
