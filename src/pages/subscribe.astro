@@ -1,0 +1,139 @@
+---
+import { Atom, Check, Copy, Rss } from 'lucide-astro'
+import blogConfig from '../../blog.config'
+import Layout from '../layouts/Layout.astro'
+
+const feeds = [
+	{
+		title: 'Atom',
+		description: '结构清晰、支持稳定标识的 Atom 1.0 摘要订阅。',
+		url: new URL('/atom.xml', blogConfig.site).href,
+		Icon: Atom,
+	},
+	{
+		title: 'RSS',
+		description: '兼容广泛阅读器的 RSS 2.0 摘要订阅。',
+		url: new URL('/rss.xml', blogConfig.site).href,
+		Icon: Rss,
+	},
+]
+---
+
+<Layout title="订阅" description="通过 Atom 或 RSS 获取最近更新。">
+	<section class="page-shell subscribe-page">
+		<header>
+			<h1>订阅</h1>
+			<p>选择你习惯的格式，将地址添加到 RSS 阅读器即可。</p>
+		</header>
+		<div class="feed-grid">
+			{
+				feeds.map(({ title, description, url, Icon }) => (
+					<article class="feed-card surface-card">
+						<Icon size={24} strokeWidth={1.7} />
+						<h2>{title}</h2>
+						<p>{description}</p>
+						<a href={url}>{url}</a>
+						<button type="button" data-copy-feed={url}>
+							<Copy size={16} />
+							<span>复制地址</span>
+							<Check class="copied" size={16} />
+						</button>
+					</article>
+				))
+			}
+		</div>
+	</section>
+</Layout>
+
+<script>
+	document.addEventListener('click', async event => {
+		const button = (event.target as Element).closest<HTMLButtonElement>(
+			'[data-copy-feed]',
+		)
+		if (!button) return
+		await navigator.clipboard.writeText(button.dataset.copyFeed ?? '')
+		button.dataset.copied = 'true'
+		button.querySelector('span')!.textContent = '已复制'
+		setTimeout(() => {
+			button.dataset.copied = 'false'
+			button.querySelector('span')!.textContent = '复制地址'
+		}, 1400)
+	})
+</script>
+
+<style>
+	.subscribe-page {
+		padding-top: clamp(3.5rem, 9vw, 7rem);
+	}
+	header h1 {
+		margin: 0;
+		font-size: 48px;
+		font-weight: 700;
+		line-height: normal;
+	}
+	header p {
+		color: var(--color-muted);
+		font-size: 16px;
+		font-weight: 400;
+	}
+	.feed-grid {
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
+		gap: 1rem;
+		margin-top: 2.5rem;
+	}
+	.feed-card {
+		padding: 1.25rem;
+	}
+	.feed-card h2 {
+		margin: 0.8rem 0 0;
+		font-size: 24px;
+		font-weight: 700;
+		line-height: normal;
+	}
+	.feed-card p {
+		color: var(--color-muted);
+		font-size: 17px;
+		font-weight: 400;
+	}
+	.feed-card > a {
+		display: block;
+		overflow: hidden;
+		color: var(--color-accent);
+		font-size: 14px;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+	.feed-card button {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.45rem;
+		margin-top: 1.2rem;
+		border: 1px solid var(--color-border);
+		border-radius: 0.45rem;
+		background: transparent;
+		padding: 0.5rem 0.7rem;
+		color: var(--color-muted);
+		font-size: 16px;
+		font-weight: 400;
+		cursor: pointer;
+	}
+	.feed-card button:hover {
+		color: var(--color-foreground);
+	}
+	.feed-card .copied {
+		display: none;
+	}
+	.feed-card button[data-copied='true'] > :first-child {
+		display: none;
+	}
+	.feed-card button[data-copied='true'] .copied {
+		display: block;
+		color: #1d9d48;
+	}
+	@media (max-width: 650px) {
+		.feed-grid {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>
