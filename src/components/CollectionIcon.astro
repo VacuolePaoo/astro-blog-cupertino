@@ -1,0 +1,14 @@
+---
+import * as icons from 'lucide-astro'
+
+interface Props {
+	name?: string
+	size?: number
+}
+
+const { name = 'Folder', size = 18 } = Astro.props
+const iconSet = icons as unknown as Record<string, typeof icons.Folder>
+const Icon = iconSet[name] ?? icons.Folder
+---
+
+<Icon size={size} strokeWidth={1.7} aria-hidden="true" />

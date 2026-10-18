@@ -1,0 +1,146 @@
+---
+import type { ArticleEntry } from '../types/article'
+import blogConfig from '../../blog.config'
+import { getArticleUrl } from '../utils/article'
+import DateDisplay from './DateDisplay.astro'
+
+interface Props {
+	article: ArticleEntry
+	newer?: ArticleEntry | undefined
+	older?: ArticleEntry | undefined
+	preview?: boolean
+}
+
+const { article, newer, older, preview = false } = Astro.props
+const copyright = article.data.copyright ?? blogConfig.copyright
+---
+
+<footer class="article-footer">
+	<section class="copyright-card">
+		<h2>关于本文</h2>
+		<strong>{article.data.title}</strong>
+		<p>
+			本文由 {blogConfig.author.name} 发布于{' '}
+			<DateDisplay date={article.data.pubDate} mode="full" />，版权归
+			{
+				copyright.url ? (
+					<a href={copyright.url}>{copyright.name}</a>
+				) : (
+					copyright.name
+				)
+			}{' '}
+			所有。
+		</p>
+		{
+			article.data.tags?.length && (
+				<div class="article-tags" aria-label="文章标签">
+					{article.data.tags.map(tag => (
+						<span>#{tag}</span>
+					))}
+				</div>
+			)
+		}
+	</section>
+
+	<nav class="article-surround" aria-label="相邻文章">
+		{
+			newer ? (
+				<a href={getArticleUrl(newer, preview)}>
+					<span>上一篇</span>
+					<strong>{newer.data.title}</strong>
+				</a>
+			) : (
+				<span />
+			)
+		}
+		{
+			older && (
+				<a class="next" href={getArticleUrl(older, preview)}>
+					<span>下一篇</span>
+					<strong>{older.data.title}</strong>
+				</a>
+			)
+		}
+	</nav>
+</footer>
+
+<style>
+	.article-footer {
+		margin-top: 64px;
+	}
+	.copyright-card {
+		max-width: 768px;
+		margin-inline: auto;
+		border-radius: var(--radius-medium);
+		background: var(--color-surface);
+		padding: 16px;
+	}
+	.copyright-card h2 {
+		margin: 0 0 12px;
+		font-size: 24px;
+		font-weight: 700;
+		line-height: normal;
+	}
+	.copyright-card strong {
+		display: block;
+		font-size: 16px;
+		font-weight: 700;
+		line-height: normal;
+	}
+	.copyright-card p {
+		margin: 8px 0 0;
+		color: var(--color-muted);
+		font-size: 16px;
+		font-weight: 400;
+		line-height: normal;
+	}
+	.copyright-card a {
+		color: var(--color-accent);
+		text-decoration: underline;
+		text-underline-offset: 0.15em;
+	}
+	.article-tags {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+		margin-top: 12px;
+		color: var(--color-accent);
+		font-size: 14px;
+	}
+	.article-surround {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 32px;
+		margin-top: 56px;
+	}
+	.article-surround a {
+		display: grid;
+		gap: 0.25rem;
+	}
+	.article-surround a.next {
+		text-align: right;
+	}
+	.article-surround span {
+		color: var(--color-muted);
+		font-size: 16px;
+		font-weight: 400;
+	}
+	.article-surround strong {
+		font-size: 18.72px;
+		font-weight: 700;
+		line-height: normal;
+	}
+	.article-surround a:hover strong {
+		color: var(--color-accent);
+	}
+	@media (max-width: 600px) {
+		.copyright-card {
+			width: calc(100% + 2 * var(--page-gutter));
+			margin-left: calc(-1 * var(--page-gutter));
+			border-radius: 0;
+		}
+		.article-surround {
+			gap: 16px;
+		}
+	}
+</style>

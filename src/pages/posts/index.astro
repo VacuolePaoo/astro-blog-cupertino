@@ -1,0 +1,154 @@
+---
+import ArticleCard from '../../components/ArticleCard.astro'
+import CollectionIcon from '../../components/CollectionIcon.astro'
+import Layout from '../../layouts/Layout.astro'
+import { getArticles, getCollectionSummaries } from '../../utils/article'
+
+const articles = await getArticles()
+const collections = getCollectionSummaries(articles)
+---
+
+<Layout title="文章" description="全部文章归档，可根据分类筛选。">
+	<section class="page-shell archive-page">
+		<header class="page-header">
+			<h1>文章</h1>
+		</header>
+
+		<nav class="collection-rail" aria-label="分类筛选" data-collection-rail>
+			<a href="/posts/" data-collection="" aria-current="page">
+				<CollectionIcon name="LayoutGrid" />
+				<span>全部</span>
+				<strong>{articles.length}</strong>
+			</a>
+			{
+				collections.map(collection => (
+					<a
+						href={`/posts/?collection=${encodeURIComponent(collection.name)}`}
+						data-collection={collection.name}
+					>
+						<CollectionIcon name={collection.icon} />
+						<span>{collection.name}</span>
+						<strong>{collection.count}</strong>
+					</a>
+				))
+			}
+		</nav>
+
+		<div data-archive-list>
+			{
+				articles.map(article => (
+					<div data-collection={article.data.collection}>
+						<ArticleCard article={article} variant="archive" />
+					</div>
+				))
+			}
+		</div>
+		<p class="archive-empty" hidden data-archive-empty>这个分类还没有文章。</p>
+	</section>
+</Layout>
+
+<script>
+	function applyCollection() {
+		if (!document.querySelector('[data-archive-list]')) return
+		const params = new URLSearchParams(location.search)
+		const selected = params.get('collection') ?? ''
+		const cards = [
+			...document.querySelectorAll<HTMLElement>(
+				'[data-archive-list] [data-collection]',
+			),
+		]
+		for (const card of cards)
+			card.hidden = Boolean(selected && card.dataset.collection !== selected)
+		document
+			.querySelectorAll<HTMLAnchorElement>(
+				'[data-collection-rail] [data-collection]',
+			)
+			.forEach(link => {
+				if (link.dataset.collection === selected)
+					link.setAttribute('aria-current', 'page')
+				else link.removeAttribute('aria-current')
+			})
+		const visible = cards.some(card => !card.hidden)
+		document.querySelector<HTMLElement>('[data-archive-empty]')!.hidden =
+			visible
+	}
+	function initializeCollectionRail() {
+		const rail = document.querySelector<HTMLElement>('[data-collection-rail]')
+		if (!rail || rail.dataset.ready) return
+		rail.dataset.ready = 'true'
+		rail.addEventListener('click', event => {
+			const link = (event.target as Element).closest<HTMLAnchorElement>(
+				'a[data-collection]',
+			)
+			if (!link) return
+			event.preventDefault()
+			history.pushState({}, '', link.href)
+			applyCollection()
+		})
+	}
+	window.addEventListener('popstate', applyCollection)
+	document.addEventListener('astro:page-load', () => {
+		initializeCollectionRail()
+		applyCollection()
+	})
+	initializeCollectionRail()
+	applyCollection()
+</script>
+
+<style>
+	.archive-page {
+		padding-top: 128px;
+	}
+	.page-header h1 {
+		margin: 0;
+		font-size: 48px;
+		font-weight: 700;
+		line-height: normal;
+	}
+	.collection-rail {
+		display: flex;
+		gap: 0.65rem;
+		overflow-x: auto;
+		margin: 48px calc(-1 * var(--page-gutter)) 24px;
+		padding: 0 var(--page-gutter) 0.75rem;
+		scrollbar-width: thin;
+	}
+	.collection-rail a {
+		display: grid;
+		flex: 0 0 auto;
+		grid-template-columns: auto auto auto;
+		align-items: center;
+		gap: 0.5rem;
+		min-height: 44px;
+		border: 1px solid var(--color-border);
+		border-radius: var(--radius-card);
+		background: var(--color-card);
+		padding: 0.65rem 0.8rem;
+		color: var(--color-muted);
+	}
+	.collection-rail strong {
+		font-size: 0.7rem;
+		font-weight: 500;
+	}
+	.collection-rail a:hover {
+		color: var(--color-foreground);
+	}
+	.collection-rail a[aria-current] {
+		border-color: var(--color-accent);
+		background: var(--color-accent);
+		color: var(--color-accent-contrast);
+	}
+	.archive-empty {
+		margin-top: 4rem;
+		color: var(--color-muted);
+		text-align: center;
+	}
+	@media (max-width: 620px) {
+		.archive-page {
+			padding-top: 72px;
+		}
+		.collection-rail {
+			margin-top: 36px;
+		}
+	}
+</style>

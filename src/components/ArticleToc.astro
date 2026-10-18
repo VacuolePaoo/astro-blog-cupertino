@@ -1,0 +1,141 @@
+---
+import type { MarkdownHeading } from 'astro'
+
+interface Props {
+	headings: MarkdownHeading[]
+	mode: 'mobile' | 'desktop'
+}
+
+const { headings, mode } = Astro.props
+const visible = headings.filter(
+	heading => heading.depth === 2 || heading.depth === 3,
+)
+---
+
+{
+	visible.length > 0 && (
+		<>
+			{mode === 'mobile' && (
+				<details class="toc-mobile">
+					<summary>文章目录</summary>
+					<nav aria-label="文章目录">
+						{visible.map(heading => (
+							<a
+								class:list={{ nested: heading.depth === 3 }}
+								href={`#${heading.slug}`}
+							>
+								{heading.text.replace(/^#/, '')}
+							</a>
+						))}
+					</nav>
+				</details>
+			)}
+			{mode === 'desktop' && (
+				<aside class="toc-desktop">
+					<p>目录</p>
+					<nav aria-label="文章目录">
+						{visible.map(heading => (
+							<a
+								class:list={{ nested: heading.depth === 3 }}
+								href={`#${heading.slug}`}
+								data-toc-link={heading.slug}
+							>
+								{heading.text.replace(/^#/, '')}
+							</a>
+						))}
+					</nav>
+				</aside>
+			)}
+		</>
+	)
+}
+
+<script>
+	let tocObserver: IntersectionObserver | undefined
+	function initializeToc() {
+		tocObserver?.disconnect()
+		const links = [
+			...document.querySelectorAll<HTMLAnchorElement>('[data-toc-link]'),
+		]
+		const headings = links
+			.map(link => document.getElementById(link.dataset.tocLink ?? ''))
+			.filter(Boolean) as HTMLElement[]
+		if (!headings.length) return
+		tocObserver = new IntersectionObserver(
+			entries => {
+				const visible = entries
+					.filter(entry => entry.isIntersecting)
+					.sort(
+						(a, b) => a.boundingClientRect.top - b.boundingClientRect.top,
+					)[0]
+				if (!visible) return
+				links.forEach(link =>
+					link.toggleAttribute(
+						'aria-current',
+						link.dataset.tocLink === visible.target.id,
+					),
+				)
+			},
+			{ rootMargin: '-15% 0px -70% 0px' },
+		)
+		headings.forEach(heading => tocObserver?.observe(heading))
+	}
+	initializeToc()
+	document.addEventListener('astro:page-load', initializeToc)
+</script>
+
+<style>
+	.toc-desktop {
+		position: sticky;
+		top: calc(var(--header-height) + 2rem);
+		max-height: calc(100vh - var(--header-height) - 4rem);
+		overflow: auto;
+		align-self: start;
+	}
+	.toc-desktop p {
+		margin: 0 0 0.65rem;
+		color: var(--color-muted);
+		font-size: 16px;
+		font-weight: 400;
+	}
+	.toc-desktop nav,
+	.toc-mobile nav {
+		display: grid;
+		gap: 0.42rem;
+	}
+	.toc-desktop a {
+		color: var(--color-muted);
+		font-size: 16px;
+		font-weight: 400;
+		line-height: normal;
+	}
+	.toc-desktop a.nested {
+		padding-left: 0.7rem;
+	}
+	.toc-desktop a:hover,
+	.toc-desktop a[aria-current] {
+		color: var(--color-accent);
+	}
+	.toc-mobile {
+		margin: 0 0 2rem;
+		border: 1px solid var(--color-border);
+		border-radius: var(--radius-card);
+		padding: 0.75rem 0.9rem;
+	}
+	.toc-mobile summary {
+		cursor: pointer;
+		font-size: 16px;
+		font-weight: 400;
+	}
+	.toc-mobile nav {
+		margin-top: 0.8rem;
+	}
+	.toc-mobile a {
+		color: var(--color-muted);
+		font-size: 16px;
+		font-weight: 400;
+	}
+	.toc-mobile a.nested {
+		padding-left: 1rem;
+	}
+</style>
