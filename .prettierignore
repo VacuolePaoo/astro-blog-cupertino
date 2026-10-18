@@ -1,0 +1,8 @@
+.agents/
+.astro/
+.vscode/
+dist/
+node_modules/
+content/**/*.md
+public/feed.xsl
+pnpm-lock.yaml
