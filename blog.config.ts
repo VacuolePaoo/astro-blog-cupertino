@@ -13,7 +13,7 @@ export default {
 	accentColor: '#0071E3',
 	// logo: '/favicon.svg',
 	favicon: '/favicon.png',
-	author: { name: 'VacuolePao', avatar: '/favicon.svg' },
+	author: { name: 'VacuolePao', avatar: '/favicon.png' },
 	copyright: {
 		name: copyrightName,
 		url: 'https://creativecommons.org/licenses/by-nc/4.0/',
