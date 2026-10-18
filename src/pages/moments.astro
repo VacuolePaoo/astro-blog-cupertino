@@ -1,0 +1,32 @@
+---
+import Layout from '../layouts/Layout.astro'
+---
+
+<Layout title="动态" description="动态功能即将上线。" noindex>
+	<section class="page-shell coming-soon">
+		<p>动态</p>
+		<h1>即将上线</h1>
+		<span>这里会成为更轻量的短内容记录。</span>
+	</section>
+</Layout>
+
+<style>
+	.coming-soon {
+		min-height: 58vh;
+		padding-top: clamp(5rem, 14vw, 10rem);
+	}
+	p {
+		color: var(--color-muted);
+	}
+	h1 {
+		margin: 0;
+		font-size: 48px;
+		font-weight: 700;
+		line-height: normal;
+	}
+	span {
+		display: block;
+		margin-top: 1rem;
+		color: var(--color-muted);
+	}
+</style>

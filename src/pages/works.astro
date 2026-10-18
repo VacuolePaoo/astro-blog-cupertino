@@ -1,0 +1,32 @@
+---
+import Layout from '../layouts/Layout.astro'
+---
+
+<Layout title="作品" description="作品功能即将上线。" noindex>
+	<section class="page-shell coming-soon">
+		<p>作品</p>
+		<h1>即将上线</h1>
+		<span>项目与创作会在这里逐步整理。</span>
+	</section>
+</Layout>
+
+<style>
+	.coming-soon {
+		min-height: 58vh;
+		padding-top: clamp(5rem, 14vw, 10rem);
+	}
+	p {
+		color: var(--color-muted);
+	}
+	h1 {
+		margin: 0;
+		font-size: 48px;
+		font-weight: 700;
+		line-height: normal;
+	}
+	span {
+		display: block;
+		margin-top: 1rem;
+		color: var(--color-muted);
+	}
+</style>
