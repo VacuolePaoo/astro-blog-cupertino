@@ -5,7 +5,7 @@ import Footer from '../components/Footer.astro'
 import Header from '../components/Header.astro'
 import SeoHead from '../components/seo/SeoHead.astro'
 import { assertAllowedImageSource } from '../utils/image'
-import '../styles/global.css'
+import '../styles/global.scss'
 
 interface Props {
 	title?: string | undefined
@@ -87,7 +87,7 @@ window.__vite_plugin_react_preamble_installed__ = true
 			)
 		}
 	</head>
-	<body>
+	<body data-page-type={props.type ?? 'website'}>
 		<a class="skip-link" href="#main-content"> 跳到正文 </a>
 		<Header />
 		<main id="main-content">
@@ -95,6 +95,8 @@ window.__vite_plugin_react_preamble_installed__ = true
 		</main>
 		<Footer />
 		<script>
+			import { initializeScrollReveal } from '../utils/scroll-reveal'
+
 			function formatListDate(value: string) {
 				const timeZone = document.documentElement.dataset.timeZone || 'UTC'
 				const parts = new Intl.DateTimeFormat('en-CA', {
@@ -121,6 +123,7 @@ window.__vite_plugin_react_preamble_installed__ = true
 			}
 
 			function enhancePage() {
+				initializeScrollReveal()
 				document
 					.querySelectorAll<HTMLElement>('.prose pre.astro-code')
 					.forEach(pre => {
@@ -155,21 +158,29 @@ window.__vite_plugin_react_preamble_installed__ = true
 </html>
 
 <style>
-	main {
-		min-height: 58vh;
-	}
 	.skip-link {
 		position: fixed;
 		top: 0.5rem;
 		left: 0.5rem;
-		z-index: 100;
+		z-index: 1100;
+		border: 1px solid var(--color-border-primary);
 		transform: translateY(-150%);
-		border-radius: 0.4rem;
-		background: var(--color-accent);
-		padding: 0.55rem 0.8rem;
-		color: white;
+		border-radius: var(--radius-full);
+		background: var(--color-background-secondary-translucent);
+		backdrop-filter: var(--filter-blur);
+		padding: 10px 20px;
+		color: var(--color-text-primary);
+		opacity: 0;
+		transition:
+			transform 200ms ease-out,
+			box-shadow 200ms ease-out,
+			opacity 200ms ease-out;
 	}
 	.skip-link:focus {
-		transform: translateY(0);
+		transform: translate(-50%, calc(-50% + 48px));
+		left: 50%;
+		top: 0;
+		box-shadow: 0 8px 24px rgb(0 0 0 / 0.13);
+		opacity: 1;
 	}
 </style>

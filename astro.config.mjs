@@ -2,7 +2,6 @@ import { unified } from '@astrojs/markdown-remark'
 import react from '@astrojs/react'
 import sitemap from '@astrojs/sitemap'
 import { transformerMetaHighlight } from '@shikijs/transformers'
-import tailwindcss from '@tailwindcss/vite'
 import { defineConfig } from 'astro/config'
 import rehypeAutolinkHeadings from 'rehype-autolink-headings'
 import rehypeSlug from 'rehype-slug'
@@ -52,5 +51,4 @@ export default defineConfig({
 			transformers: [transformerMetaHighlight(), transformerCodeMeta()],
 		},
 	},
-	vite: { plugins: [tailwindcss()] },
 })

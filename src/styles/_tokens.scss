@@ -1,0 +1,142 @@
+@mixin radii($squircle: false) {
+	@if $squircle {
+		--radius-tiny: 10px;
+		--radius-small: 20px;
+		--radius-medium: 30px;
+		--radius-large: 40px;
+		--radius-full: 999px;
+	} @else {
+		--radius-tiny: 4px;
+		--radius-small: 8px;
+		--radius-medium: 12px;
+		--radius-large: 16px;
+		--radius-full: 999px;
+	}
+}
+
+@mixin global {
+	color-scheme: light;
+	--filter-blur: blur(32px);
+	@include radii;
+	--font-sans-serif: 'Inter Variable', Inter, sans-serif, system-ui;
+	--font-sans-serif-feature-settings: 'liga' 1, 'calt' 1;
+	--page-max: 980px;
+	--article-max: 800px;
+	--page-gutter: 16px;
+	--header-height: 48px;
+	--font-size-base: 16px;
+	--line-height-body: normal;
+	--text-h6: 14px;
+	--text-h5: 16px;
+	--text-h4: 20px;
+	--text-h3: 26px;
+	--text-h2: 30px;
+	--text-h1: 36px;
+	--text-article-title: 48px;
+	--text-section-title: 32px;
+	--text-card-title: 24px;
+	--text-section-line-height: 1.125;
+	--ease-standard: cubic-bezier(0.86, 0, 0.07, 1);
+	--font-sans: var(--font-sans-serif);
+	--color-background: var(--color-background-primary);
+	--color-foreground: var(--color-text-primary);
+	--color-surface: var(--color-background-secondary);
+	--color-surface-strong: var(--color-background-secondary-hover);
+	--color-muted: var(--color-text-secondary);
+	--color-border: var(--color-border-primary);
+	--color-card: var(--color-background-secondary);
+	--color-accent: var(--color-text-accent);
+	--color-accent-background: var(--color-background-accent);
+	--color-accent-contrast: var(--color-background-accent-contrast);
+	--color-warning: var(--color-text-warning);
+	--color-success: var(--color-text-success);
+	--radius-card: var(--radius-large);
+	--radius-media: var(--radius-medium);
+	--radius-dialog: var(--radius-medium);
+}
+
+@mixin light-colors {
+	--color-background-underlying: #ffffff;
+	--color-background-primary: #fbfbfd;
+	--color-background-primary-hover: #ffffff;
+	--color-background-primary-active: #fdfdfd;
+	--color-background-primary-translucent: #fbfbfd33;
+	--color-background-secondary: #ffffff;
+	--color-background-secondary-hover: #f7f7f7;
+	--color-background-secondary-translucent: #ffffffcc;
+	--color-background-accent: var(--site-accent, #0071e3);
+	--color-background-accent-hover: color-mix(
+		in srgb,
+		var(--site-accent, #0071e3) 95%,
+		white
+	);
+	--color-background-accent-active: color-mix(
+		in srgb,
+		var(--site-accent, #0071e3) 96%,
+		black
+	);
+	--color-background-accent-contrast: #ffffff;
+	--color-background-accent-lite: color-mix(
+		in srgb,
+		var(--site-accent, #0071e3) 10%,
+		white
+	);
+	--color-background-warning: #fcf0d5;
+	--color-background-success: #d7ecdb;
+	--color-text-primary: #333333;
+	--color-text-primary-hover: #000000;
+	--color-text-primary-active: #666666;
+	--color-text-secondary: #666666;
+	--color-text-secondary-hover: #333333;
+	--color-text-tertiary: #808080;
+	--color-text-accent: var(--site-accent, #0066cc);
+	--color-text-warning: #f9ba00;
+	--color-text-success: #33b04e;
+	--color-border-primary: #88888822;
+	--color-border-secondary: #e6e6e6;
+}
+
+@mixin dark-colors {
+	color-scheme: dark;
+	--color-background-underlying: #000000;
+	--color-background-primary: #101010;
+	--color-background-primary-hover: #181818;
+	--color-background-primary-active: #141414;
+	--color-background-primary-translucent: #10101033;
+	--color-background-secondary: #181818;
+	--color-background-secondary-hover: #202020;
+	--color-background-secondary-translucent: #00000080;
+	--color-background-accent-hover: color-mix(
+		in srgb,
+		var(--site-accent, #0071e3) 95%,
+		white
+	);
+	--color-background-accent-active: color-mix(
+		in srgb,
+		var(--site-accent, #0071e3) 96%,
+		black
+	);
+	--color-background-accent-contrast: #ffffff;
+	--color-background-accent-lite: color-mix(
+		in srgb,
+		var(--site-accent, #0071e3) 18%,
+		#101010
+	);
+	--color-background-warning: #403415;
+	--color-background-success: #1a311d;
+	--color-text-primary: #dddddd;
+	--color-text-primary-hover: #ffffff;
+	--color-text-primary-active: #999999;
+	--color-text-secondary: #999999;
+	--color-text-secondary-hover: #cccccc;
+	--color-text-tertiary: #808080;
+	--color-text-accent: color-mix(
+		in srgb,
+		var(--site-accent, #0071e3) 62%,
+		white
+	);
+	--color-text-warning: #fec00b;
+	--color-text-success: #33b04e;
+	--color-border-primary: #88888844;
+	--color-border-secondary: #1a1a1a;
+}
