@@ -1,52 +1,29 @@
 ---
 import type { MarkdownHeading } from 'astro'
+import blogConfig from '../../blog.config'
 
 interface Props {
 	headings: MarkdownHeading[]
-	mode: 'mobile' | 'desktop'
 }
 
-const { headings, mode } = Astro.props
-const visible = headings.filter(
-	heading => heading.depth === 2 || heading.depth === 3,
-)
+const visible = blogConfig.theme.toc.enabled
+	? Astro.props.headings.filter(
+			heading => heading.depth <= blogConfig.theme.toc.maxDepth,
+		)
+	: []
 ---
 
 {
 	visible.length > 0 && (
-		<>
-			{mode === 'mobile' && (
-				<details class="toc-mobile">
-					<summary>文章目录</summary>
-					<nav aria-label="文章目录">
-						{visible.map(heading => (
-							<a
-								class:list={{ nested: heading.depth === 3 }}
-								href={`#${heading.slug}`}
-							>
-								{heading.text.replace(/^#/, '')}
-							</a>
-						))}
-					</nav>
-				</details>
-			)}
-			{mode === 'desktop' && (
-				<aside class="toc-desktop">
-					<p>目录</p>
-					<nav aria-label="文章目录">
-						{visible.map(heading => (
-							<a
-								class:list={{ nested: heading.depth === 3 }}
-								href={`#${heading.slug}`}
-								data-toc-link={heading.slug}
-							>
-								{heading.text.replace(/^#/, '')}
-							</a>
-						))}
-					</nav>
-				</aside>
-			)}
-		</>
+		<aside class="article-toc" aria-label="文章目录">
+			{visible.map(heading => (
+				<p class:list={{ nested: heading.depth === 3 }}>
+					<a href={`#${heading.slug}`} data-toc-link={heading.slug}>
+						{heading.text.replace(/^#/, '')}
+					</a>
+				</p>
+			))}
+		</aside>
 	)
 }
 
@@ -63,16 +40,16 @@ const visible = headings.filter(
 		if (!headings.length) return
 		tocObserver = new IntersectionObserver(
 			entries => {
-				const visible = entries
+				const active = entries
 					.filter(entry => entry.isIntersecting)
 					.sort(
 						(a, b) => a.boundingClientRect.top - b.boundingClientRect.top,
 					)[0]
-				if (!visible) return
+				if (!active) return
 				links.forEach(link =>
 					link.toggleAttribute(
 						'aria-current',
-						link.dataset.tocLink === visible.target.id,
+						link.dataset.tocLink === active.target.id,
 					),
 				)
 			},
@@ -85,57 +62,32 @@ const visible = headings.filter(
 </script>
 
 <style>
-	.toc-desktop {
-		position: sticky;
-		top: calc(var(--header-height) + 2rem);
-		max-height: calc(100vh - var(--header-height) - 4rem);
-		overflow: auto;
-		align-self: start;
+	.article-toc {
+		max-width: 832px;
+		margin: 0 auto;
+		padding-inline: 16px;
 	}
-	.toc-desktop p {
-		margin: 0 0 0.65rem;
-		color: var(--color-muted);
-		font-size: 16px;
-		font-weight: 400;
+	.article-toc p {
+		margin: 0;
 	}
-	.toc-desktop nav,
-	.toc-mobile nav {
-		display: grid;
-		gap: 0.42rem;
+	.article-toc p.nested {
+		margin-left: 16px;
 	}
-	.toc-desktop a {
-		color: var(--color-muted);
-		font-size: 16px;
-		font-weight: 400;
-		line-height: normal;
+	.article-toc a {
+		display: inline-block;
+		border-left: 1px solid var(--color-border-primary);
+		padding: 8px 0 8px 12px;
+		color: var(--color-text-secondary);
+		text-decoration: none;
+		transition:
+			color 200ms,
+			border-color 200ms;
 	}
-	.toc-desktop a.nested {
-		padding-left: 0.7rem;
-	}
-	.toc-desktop a:hover,
-	.toc-desktop a[aria-current] {
-		color: var(--color-accent);
-	}
-	.toc-mobile {
-		margin: 0 0 2rem;
-		border: 1px solid var(--color-border);
-		border-radius: var(--radius-card);
-		padding: 0.75rem 0.9rem;
-	}
-	.toc-mobile summary {
-		cursor: pointer;
-		font-size: 16px;
-		font-weight: 400;
-	}
-	.toc-mobile nav {
-		margin-top: 0.8rem;
-	}
-	.toc-mobile a {
-		color: var(--color-muted);
-		font-size: 16px;
-		font-weight: 400;
-	}
-	.toc-mobile a.nested {
-		padding-left: 1rem;
+	.article-toc a:hover,
+	.article-toc a:focus-visible,
+	.article-toc a[aria-current] {
+		border-color: var(--color-text-secondary-hover);
+		color: var(--color-text-secondary-hover);
+		text-decoration: none;
 	}
 </style>

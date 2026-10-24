@@ -1,0 +1,40 @@
+---
+import type { ArticleEntry } from '../types/article'
+import type { TaxonomyKind, TaxonomySummary } from '../types/taxonomy'
+import Layout from '../layouts/Layout.astro'
+import { getTaxonomyUrl } from '../utils/taxonomy'
+import ArchiveList from './ArchiveList.astro'
+import PageHeading from './PageHeading.astro'
+import Pagination from './Pagination.astro'
+
+interface Props {
+	kind: TaxonomyKind
+	summary: TaxonomySummary
+	page: { items: ArticleEntry[]; currentPage: number; totalPages: number }
+}
+
+const { kind, summary, page } = Astro.props
+const label = kind === 'categories' ? '分类' : '标签'
+const title = kind === 'tags' ? `#${summary.name}` : summary.name
+const description =
+	kind === 'categories'
+		? `“${summary.name}”分类下的全部文章。`
+		: `带有“${summary.name}”标签的全部文章。`
+---
+
+<Layout
+	title={page.currentPage === 1
+		? title
+		: `${title} · 第 ${page.currentPage} 页`}
+	description={description}
+>
+	<div class="page-shell">
+		<PageHeading title={title} label={label} />
+		<ArchiveList articles={page.items} />
+		<Pagination
+			current={page.currentPage}
+			total={page.totalPages}
+			basePath={getTaxonomyUrl(kind, summary.name)}
+		/>
+	</div>
+</Layout>

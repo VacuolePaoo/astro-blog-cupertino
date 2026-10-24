@@ -2,6 +2,7 @@ import type { FooterNav } from './types/footer'
 import type { NavItem } from './types/nav'
 
 export const HOME_PAGE_SIZE = 8
+export const ARCHIVE_PAGE_SIZE = 10
 
 export const primaryNav = [
 	{ text: '文章', url: '/posts/' },
@@ -35,6 +36,10 @@ export const footerNav = [
 		title: '站点',
 		items: [
 			{ text: '文章', url: '/posts/' },
+			{ text: '归档', url: '/archives/' },
+			{ text: '分类', url: '/categories/' },
+			{ text: '标签', url: '/tags/' },
+			{ text: '搜索', url: '/search/' },
 			{ text: '友链', url: '/friends/' },
 			{ text: '关于', url: '/about/' },
 		],

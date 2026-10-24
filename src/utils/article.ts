@@ -1,6 +1,5 @@
-import type { ArticleCollectionSummary, ArticleEntry } from '../types/article'
+import type { ArticleEntry } from '../types/article'
 import { getCollection } from 'astro:content'
-import blogConfig from '../../blog.config'
 
 export async function getArticles(options: { drafts?: boolean } = {}) {
 	const { drafts = false } = options
@@ -25,31 +24,6 @@ export function getCoverSource(article: ArticleEntry) {
 	const { cover } = article.data
 	if (!cover) return undefined
 	return typeof cover === 'string' ? cover : cover.src
-}
-
-export function getCollectionSummaries(
-	articles: ArticleEntry[],
-): ArticleCollectionSummary[] {
-	const summaries = new Map<string, { count: number; latest: string }>()
-	for (const article of articles) {
-		const current = summaries.get(article.data.collection)
-		summaries.set(article.data.collection, {
-			count: (current?.count ?? 0) + 1,
-			latest:
-				current?.latest && current.latest > article.data.pubDate
-					? current.latest
-					: article.data.pubDate,
-		})
-	}
-
-	const configuredIcons: Record<string, string> = blogConfig.collections.icons
-	return [...summaries.entries()]
-		.map(([name, value]) => ({
-			name,
-			...value,
-			icon: configuredIcons[name] ?? blogConfig.collections.defaultIcon,
-		}))
-		.toSorted((a, b) => b.latest.localeCompare(a.latest))
 }
 
 export function getArticleSurround(

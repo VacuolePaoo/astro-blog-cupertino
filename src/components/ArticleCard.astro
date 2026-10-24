@@ -12,7 +12,6 @@ interface Props {
 
 const { article, variant = 'grid', preview = false } = Astro.props
 const href = getArticleUrl(article, preview)
-const collectionUrl = `/posts/?collection=${encodeURIComponent(article.data.collection)}`
 ---
 
 <article
@@ -22,35 +21,46 @@ const collectionUrl = `/posts/?collection=${encodeURIComponent(article.data.coll
 		{ 'article-card--no-cover': !article.data.cover },
 	]}
 >
-	{
-		article.data.cover && (
-			<a
-				class="article-card-media"
-				href={href}
-				aria-label={`阅读《${article.data.title}》`}
-			>
-				<ArticleCover
-					src={article.data.cover}
-					alt={getCoverAlt(article)}
-					eager={variant === 'featured'}
-				/>
-			</a>
-		)
-	}
-	<div class="article-card-copy">
-		<a class="article-collection" href={collectionUrl}
-			>{article.data.collection}</a
-		>
-		<h2><a class="article-card-title" href={href}>{article.data.title}</a></h2>
-		<div class="article-card-date">
-			<DateDisplay date={article.data.pubDate} />
+	<a
+		class="article-card-link"
+		href={href}
+		aria-label={`阅读《${article.data.title}》`}
+	>
+		{
+			article.data.cover && (
+				<div class="article-card-media">
+					<ArticleCover
+						src={article.data.cover}
+						alt={getCoverAlt(article)}
+						eager={variant === 'featured'}
+					/>
+				</div>
+			)
+		}
+		<div class="article-card-copy">
+			<span class="article-collection">{article.data.collection}</span>
+			<h2 class="article-card-title">{article.data.title}</h2>
+			<div class="article-card-date">
+				<DateDisplay date={article.data.pubDate} />
+			</div>
 		</div>
-	</div>
+	</a>
 </article>
 
 <style>
 	.article-card {
 		min-width: 0;
+		user-select: none;
+	}
+	.article-card-link {
+		display: block;
+		height: 100%;
+		color: var(--color-text-primary);
+		text-decoration: none;
+	}
+	.article-card-link:hover,
+	.article-card-link:focus-visible {
+		text-decoration: none;
 	}
 	.article-card-media {
 		display: block;
@@ -67,12 +77,17 @@ const collectionUrl = `/posts/?collection=${encodeURIComponent(article.data.coll
 	.article-card-media :global(img) {
 		object-fit: cover;
 		transition:
-			filter 180ms ease,
-			transform 180ms ease;
+			scale 400ms cubic-bezier(0.4, 0, 0.25, 1),
+			filter 400ms cubic-bezier(0.4, 0, 0.25, 1);
 	}
-	.article-card-media:hover :global(img) {
+	.article-card-link:hover .article-card-media :global(img),
+	.article-card-link:focus-visible .article-card-media :global(img) {
+		scale: 1.03;
 		filter: brightness(0.85);
-		transform: scale(1.03);
+	}
+	.article-card-link:active .article-card-media :global(img) {
+		scale: 1;
+		filter: brightness(0.65);
 	}
 	.article-card-copy {
 		padding: 32px;
@@ -80,105 +95,78 @@ const collectionUrl = `/posts/?collection=${encodeURIComponent(article.data.coll
 	.article-collection {
 		display: inline-block;
 		margin-bottom: 6px;
-		color: var(--color-accent);
+		color: var(--color-text-accent);
 		font-size: 11px;
 		font-weight: 600;
 		line-height: normal;
 		text-transform: uppercase;
 	}
-	.article-collection:hover {
-		text-decoration: underline;
-		text-underline-offset: 0.15em;
-	}
-	h2 {
+	.article-card-title {
 		margin: 0;
 		font-size: var(--text-card-title);
 		font-weight: 700;
 		line-height: 1.16667;
-	}
-	.article-card-title:hover {
-		text-decoration: underline;
-		text-decoration-thickness: 1px;
-		text-underline-offset: 0.15em;
-	}
-	.article-card-date {
-		margin-top: 12px;
-		color: var(--color-muted);
-		font-size: 14px;
-		font-weight: 600;
-		line-height: 1.28577;
+		color: var(--color-text-primary);
+		max-height: 7em;
+		overflow: hidden;
+		overflow-wrap: anywhere;
 	}
 	.article-card--grid,
 	.article-card--featured {
 		overflow: hidden;
-		min-height: 408px;
-		border-radius: var(--radius-card);
-		background: var(--color-card);
+		border-radius: var(--radius-large);
+		background: var(--color-background-secondary);
+	}
+	.article-card-date {
+		margin-top: 12px;
+		color: var(--color-text-secondary);
+		font-size: 14px;
+		font-weight: 600;
+		line-height: 1.28577;
 	}
 	.article-card--grid .article-card-media,
 	.article-card--featured .article-card-media {
 		height: 266px;
 		border-radius: 0;
 	}
-	.article-card--grid.article-card--no-cover,
-	.article-card--featured.article-card--no-cover {
-		display: flex;
-		align-items: flex-start;
-	}
-	.article-card--grid.article-card--no-cover .article-card-copy,
-	.article-card--featured.article-card--no-cover .article-card-copy {
-		width: 100%;
-	}
 	.article-card--archive {
-		display: flex;
-		align-items: center;
-		gap: 32px;
 		border-bottom: 1px solid var(--color-border);
 		padding-block: 21px;
 	}
+	.article-card--archive .article-card-link {
+		display: flex;
+		align-items: center;
+	}
 	.article-card--archive .article-card-media {
 		flex: 0 0 auto;
-		width: clamp(180px, 20vw, 288px);
+		width: 20vw;
+		min-width: 180px;
 		border-radius: var(--radius-media);
 	}
 	.article-card--archive .article-card-media :global(img) {
 		height: auto;
 	}
+	.article-card--archive .article-card-media :global(picture) {
+		height: auto;
+	}
 	.article-card--archive .article-card-copy {
-		padding: 0;
+		padding: 32px;
+		flex: 1 1 0;
+		min-width: 0;
 	}
 	.article-card--archive.article-card--no-cover {
 		min-height: 112px;
+		border-radius: 0;
 	}
 	@media (max-width: 600px) {
-		.article-card--grid,
-		.article-card--featured {
-			min-height: 0;
-		}
-		.article-card--grid .article-card-media,
-		.article-card--featured .article-card-media {
-			height: auto;
-			aspect-ratio: 2 / 1;
-		}
-		.article-card-copy {
-			padding: 24px;
-		}
-		.article-card--archive {
-			gap: 20px;
-			padding-block: 21px;
+		.article-card--grid .article-card-copy {
+			font-size: 12px;
 		}
 		.article-card--archive .article-card-media {
-			width: 110px;
-		}
-		.article-card--archive h2 {
-			font-size: 24px;
-			line-height: 1.16667;
+			min-width: 180px;
 		}
 		.article-card--archive .article-card-copy {
 			min-width: 0;
-		}
-		.article-card--archive.article-card--no-cover {
-			min-height: 128px;
 		}
 	}
 </style>

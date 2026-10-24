@@ -1,0 +1,23 @@
+---
+import ArchiveList from '../../components/ArchiveList.astro'
+import PageHeading from '../../components/PageHeading.astro'
+import Pagination from '../../components/Pagination.astro'
+import { ARCHIVE_PAGE_SIZE } from '../../consts'
+import Layout from '../../layouts/Layout.astro'
+import { getArticles } from '../../utils/article'
+import { paginate } from '../../utils/pagination'
+
+const page = paginate(await getArticles(), 1, ARCHIVE_PAGE_SIZE)
+---
+
+<Layout title="归档" description="按发布时间浏览全部文章。">
+	<div class="page-shell">
+		<PageHeading title="归档" />
+		<ArchiveList articles={page.items} />
+		<Pagination
+			current={page.currentPage}
+			total={page.totalPages}
+			basePath="/archives/"
+		/>
+	</div>
+</Layout>

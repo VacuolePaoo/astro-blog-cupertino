@@ -1,0 +1,19 @@
+---
+import type { GetStaticPaths } from 'astro'
+import type { TaxonomySummary } from '../../types/taxonomy'
+import TaxonomyArchive from '../../components/TaxonomyArchive.astro'
+import { ARCHIVE_PAGE_SIZE } from '../../consts'
+import { getArticles } from '../../utils/article'
+import { paginate } from '../../utils/pagination'
+import { getTaxonomySummaries } from '../../utils/taxonomy'
+
+export const getStaticPaths = (async () => {
+	const tags = getTaxonomySummaries(await getArticles(), 'tags')
+	return tags.map(tag => ({ params: { name: tag.name }, props: { tag } }))
+}) satisfies GetStaticPaths
+
+const { tag } = Astro.props as { tag: TaxonomySummary }
+const page = paginate(tag.articles, 1, ARCHIVE_PAGE_SIZE)
+---
+
+<TaxonomyArchive kind="tags" summary={tag} page={page} />

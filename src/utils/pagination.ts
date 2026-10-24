@@ -42,3 +42,10 @@ export function getPaginationItems(
 export function getHomePageUrl(page: number) {
 	return page <= 1 ? '/' : `/page/${page}/`
 }
+
+/** Returns the first page at basePath and later pages beneath its /page/ segment. */
+export function getPaginatedUrl(basePath: string, page: number) {
+	if (basePath === '/') return getHomePageUrl(page)
+	const root = basePath.endsWith('/') ? basePath : `${basePath}/`
+	return page <= 1 ? root : `${root}page/${page}/`
+}

@@ -1,0 +1,16 @@
+---
+import PageHeading from '../../components/PageHeading.astro'
+import TaxonomyIndex from '../../components/TaxonomyIndex.astro'
+import Layout from '../../layouts/Layout.astro'
+import { getArticles } from '../../utils/article'
+import { getTaxonomySummaries } from '../../utils/taxonomy'
+
+const categories = getTaxonomySummaries(await getArticles(), 'categories')
+---
+
+<Layout title="分类" description="浏览全部文章分类。">
+	<div class="page-shell">
+		<PageHeading title="分类" />
+		<TaxonomyIndex kind="categories" items={categories} />
+	</div>
+</Layout>

@@ -1,5 +1,6 @@
 ---
-import ArticleCard from '../../components/ArticleCard.astro'
+import ArchiveList from '../../components/ArchiveList.astro'
+import PageHeading from '../../components/PageHeading.astro'
 import Layout from '../../layouts/Layout.astro'
 import { getArticles } from '../../utils/article'
 
@@ -7,35 +8,8 @@ const drafts = await getArticles({ drafts: true })
 ---
 
 <Layout title="文章预览" description="尚未正式发布的文章预览。" noindex>
-	<section class="page-shell preview-page">
-		<header>
-			<h1>文章预览</h1>
-			<p>这些内容尚未正式发布，可能随时调整。</p>
-		</header>
-		<div>
-			{
-				drafts.map(article => (
-					<ArticleCard article={article} variant="archive" preview />
-				))
-			}
-		</div>
-	</section>
+	<div class="page-shell">
+		<PageHeading title="文章预览" />
+		<ArchiveList articles={drafts} preview />
+	</div>
 </Layout>
-
-<style>
-	.preview-page {
-		padding-top: clamp(3.5rem, 9vw, 7rem);
-	}
-	h1 {
-		margin: 0;
-		font-size: 48px;
-		font-weight: 700;
-		line-height: normal;
-	}
-	header p {
-		color: var(--color-muted);
-	}
-	.preview-page > div {
-		margin-top: 2.5rem;
-	}
-</style>

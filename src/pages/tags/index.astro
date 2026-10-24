@@ -1,0 +1,16 @@
+---
+import PageHeading from '../../components/PageHeading.astro'
+import TaxonomyIndex from '../../components/TaxonomyIndex.astro'
+import Layout from '../../layouts/Layout.astro'
+import { getArticles } from '../../utils/article'
+import { getTaxonomySummaries } from '../../utils/taxonomy'
+
+const tags = getTaxonomySummaries(await getArticles(), 'tags')
+---
+
+<Layout title="标签" description="浏览全部文章标签。">
+	<div class="page-shell">
+		<PageHeading title="标签" />
+		<TaxonomyIndex kind="tags" items={tags} />
+	</div>
+</Layout>

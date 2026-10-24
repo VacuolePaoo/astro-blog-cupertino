@@ -1,0 +1,30 @@
+---
+import type { ArticleEntry } from '../types/article'
+import ArticleCard from './ArticleCard.astro'
+
+interface Props {
+	articles: ArticleEntry[]
+	preview?: boolean
+}
+
+const { articles, preview = false } = Astro.props
+---
+
+<div class="archive-list">
+	{
+		articles.map(article => (
+			<ArticleCard article={article} variant="archive" preview={preview} />
+		))
+	}
+</div>
+
+<style>
+	.archive-list {
+		display: block;
+		max-width: 980px;
+		margin: 64px auto 32px;
+	}
+	.archive-list :global(.article-card:last-child) {
+		border-bottom: 0;
+	}
+</style>
