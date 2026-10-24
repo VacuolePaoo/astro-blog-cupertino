@@ -15,7 +15,11 @@ const { articles, currentPage, totalPages } = Astro.props
 
 {
 	currentPage === 1 && (
-		<section class="page-shell home-hero" aria-labelledby="site-introduction">
+		<section
+			class="page-shell home-hero exit-while-scroll"
+			aria-labelledby="site-introduction"
+			data-scroll-hero
+		>
 			<p>{blogConfig.title}</p>
 			<h1 id="site-introduction">{blogConfig.subtitle}</h1>
 		</section>
@@ -31,10 +35,12 @@ const { articles, currentPage, totalPages } = Astro.props
 
 <style>
 	.home-hero {
-		display: grid;
-		align-content: center;
-		min-height: 368px;
-		padding-block: 128px;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		gap: 6px;
+		padding-block: 160px;
+		white-space: pre-wrap;
 	}
 	.home-hero p,
 	.home-hero h1 {
@@ -42,25 +48,26 @@ const { articles, currentPage, totalPages } = Astro.props
 		margin: 0;
 	}
 	.home-hero p {
-		color: var(--color-muted);
+		color: var(--color-text-secondary);
 		font-size: 22px;
 		font-weight: 200;
 		line-height: normal;
 	}
 	.home-hero h1 {
-		margin-top: 6px;
+		margin-top: 0;
 		font-size: 20px;
 		font-weight: 400;
 		line-height: normal;
 	}
 	.home-articles {
-		padding-bottom: 32px;
+		margin-bottom: 32px;
 	}
 	.home-articles > h2 {
 		margin: 0 0 24px;
 		font-size: var(--text-section-title);
 		font-weight: 700;
 		line-height: 1.125;
+		color: var(--color-text-primary);
 	}
 	.article-grid {
 		display: grid;
@@ -69,17 +76,63 @@ const { articles, currentPage, totalPages } = Astro.props
 	}
 	@media (max-width: 600px) {
 		.home-hero {
-			min-height: 300px;
-			padding-block: 96px;
+			padding-block: 160px;
 		}
 		.home-articles {
-			padding-bottom: 24px;
+			margin-bottom: 24px;
 		}
 		.article-grid {
 			grid-template-columns: 1fr;
-			gap: 16px;
+			gap: 20px 16px;
 			max-width: 366px;
 			margin-inline: auto;
 		}
 	}
+	@supports (animation-timeline: scroll()) {
+		.home-hero.exit-while-scroll {
+			--hero-scroll-range: calc(var(--current-hero-height) * 0.5px);
+			will-change: margin-top, margin-bottom, opacity, scale;
+			animation: hero-exit linear both;
+			animation-timeline: scroll();
+			animation-range: 0 var(--hero-scroll-range);
+			transform-origin: left -100%;
+		}
+		.home-hero.exit-while-scroll.with-blur {
+			animation-name: hero-exit-with-blur;
+		}
+		@keyframes hero-exit {
+			from {
+				margin-top: 56px;
+			}
+			to {
+				margin-top: calc(var(--hero-scroll-range) + 56px);
+				margin-bottom: calc(-1 * var(--hero-scroll-range));
+				opacity: 0;
+				scale: 0.9;
+			}
+		}
+		@keyframes hero-exit-with-blur {
+			from {
+				margin-top: 56px;
+			}
+			to {
+				margin-top: calc(var(--hero-scroll-range) + 56px);
+				margin-bottom: calc(-1 * var(--hero-scroll-range));
+				filter: var(--filter-blur);
+				opacity: 0;
+				scale: 0.9;
+			}
+		}
+	}
 </style>
+
+<script>
+	function updateHeroHeight() {
+		const hero = document.querySelector<HTMLElement>('[data-scroll-hero]')
+		if (!hero) return
+		hero.style.setProperty('--current-hero-height', String(hero.clientHeight))
+	}
+	updateHeroHeight()
+	window.addEventListener('resize', updateHeroHeight)
+	document.addEventListener('astro:page-load', updateHeroHeight)
+</script>

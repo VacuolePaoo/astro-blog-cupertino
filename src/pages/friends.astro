@@ -90,7 +90,7 @@ for (const group of friendGroups)
 
 <style>
 	.friends-page {
-		padding-top: clamp(3.5rem, 9vw, 7rem);
+		padding-top: 128px;
 	}
 	header h1 {
 		margin: 0;
@@ -99,33 +99,43 @@ for (const group of friendGroups)
 		line-height: normal;
 	}
 	header p {
-		color: var(--color-muted);
+		color: var(--color-text-secondary);
 		font-size: 16px;
 		font-weight: 400;
 	}
 	.friend-group {
-		margin-top: 3.5rem;
+		margin-top: 64px;
 	}
 	.friend-group h2 {
-		font-size: 32px;
+		font-size: 30px;
 		font-weight: 700;
-		line-height: 1.125;
+		line-height: 1.4211;
 	}
 	.friend-grid {
 		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
-		gap: 0.85rem;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 20px 16px;
+		max-width: 1000px;
+		margin-inline: auto;
 	}
 	.friend-card {
 		position: relative;
 		min-width: 0;
+		overflow: hidden;
+		border-radius: var(--radius-large);
+		background: var(--color-background-secondary);
+	}
+	.friend-card:hover {
+		background: var(--color-background-secondary-hover);
 	}
 	.friend-main {
 		display: grid;
 		grid-template-columns: auto 1fr;
-		gap: 0.85rem;
-		min-height: 7.5rem;
-		padding: 1rem 3rem 1rem 1rem;
+		gap: 12px;
+		min-height: 112px;
+		padding: 18px 48px 18px 18px;
+		color: var(--color-text-primary);
+		text-decoration: none;
 	}
 	.friend-avatar {
 		display: grid;
@@ -134,8 +144,8 @@ for (const group of friendGroups)
 		place-items: center;
 		overflow: hidden;
 		border-radius: 50%;
-		background: var(--color-surface-strong);
-		color: var(--color-muted);
+		background: var(--color-background-secondary-hover);
+		color: var(--color-text-secondary);
 		font-weight: 700;
 	}
 	.friend-avatar img {
@@ -152,18 +162,18 @@ for (const group of friendGroups)
 		overflow: hidden;
 		font-size: 24px;
 		font-weight: 700;
-		line-height: 1.4211;
+		line-height: normal;
 		text-overflow: ellipsis;
 		white-space: nowrap;
 	}
 	.friend-copy small {
-		color: var(--color-muted);
+		color: var(--color-text-secondary);
 	}
 	.friend-copy > span {
 		display: -webkit-box;
 		overflow: hidden;
-		margin-top: 0.35rem;
-		color: var(--color-muted);
+		margin-top: 8px;
+		color: var(--color-text-secondary);
 		font-size: 17px;
 		font-weight: 400;
 		line-height: 1.4211;
@@ -179,10 +189,25 @@ for (const group of friendGroups)
 		height: 2rem;
 		place-items: center;
 		border-radius: 0.4rem;
-		color: var(--color-muted);
+		color: var(--color-text-secondary);
 	}
 	.friend-feed:hover {
-		background: var(--color-surface);
-		color: var(--color-accent);
+		background: var(--color-background-secondary-hover);
+		color: var(--color-text-accent);
+	}
+	@media (max-width: 1000px) {
+		.friend-grid {
+			max-width: 800px;
+		}
+	}
+	@media (max-width: 800px) {
+		.friend-grid {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+	}
+	@media (max-width: 600px) {
+		.friend-grid {
+			grid-template-columns: 1fr;
+		}
 	}
 </style>

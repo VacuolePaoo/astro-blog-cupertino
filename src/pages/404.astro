@@ -24,10 +24,10 @@ const articles = (await getArticles()).slice(0, 3)
 
 <style>
 	.not-found {
-		padding-top: clamp(4rem, 11vw, 8rem);
+		padding-top: 128px;
 	}
 	.error-code {
-		color: var(--color-accent);
+		color: var(--color-text-accent);
 		font-size: 16px;
 		font-weight: 600;
 	}
@@ -40,16 +40,21 @@ const articles = (await getArticles()).slice(0, 3)
 	}
 	.home-button {
 		display: inline-block;
-		margin-top: 1.5rem;
-		border-radius: 0.5rem;
-		background: var(--color-accent);
-		padding: 0.65rem 0.9rem;
-		color: var(--color-accent-contrast);
+		margin-top: 16px;
+		border-radius: var(--radius-full);
+		background: var(--color-background-accent);
+		padding: 6px 12px;
+		color: var(--color-background-accent-contrast);
 		font-size: 16px;
+		line-height: 1;
 		font-weight: 400;
 	}
+	.home-button:hover {
+		background: var(--color-background-accent-hover);
+		text-decoration: none;
+	}
 	.recommendations {
-		margin-top: 5rem;
+		margin-top: 64px;
 	}
 	.recommendations h2 {
 		font-size: 32px;

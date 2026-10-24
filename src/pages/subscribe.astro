@@ -63,7 +63,7 @@ const feeds = [
 
 <style>
 	.subscribe-page {
-		padding-top: clamp(3.5rem, 9vw, 7rem);
+		padding-top: 128px;
 	}
 	header h1 {
 		margin: 0;
@@ -72,34 +72,43 @@ const feeds = [
 		line-height: normal;
 	}
 	header p {
-		color: var(--color-muted);
+		color: var(--color-text-secondary);
 		font-size: 16px;
 		font-weight: 400;
 	}
 	.feed-grid {
 		display: grid;
-		grid-template-columns: repeat(2, 1fr);
-		gap: 1rem;
-		margin-top: 2.5rem;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 20px 16px;
+		margin-top: 64px;
 	}
 	.feed-card {
-		padding: 1.25rem;
+		display: flex;
+		min-width: 0;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 8px;
+		overflow: hidden;
+		border-radius: var(--radius-large);
+		background: var(--color-background-secondary);
+		padding: 18px;
 	}
 	.feed-card h2 {
-		margin: 0.8rem 0 0;
+		margin: 0;
 		font-size: 24px;
 		font-weight: 700;
 		line-height: normal;
 	}
 	.feed-card p {
-		color: var(--color-muted);
+		margin: 0;
+		color: var(--color-text-secondary);
 		font-size: 17px;
 		font-weight: 400;
 	}
 	.feed-card > a {
 		display: block;
 		overflow: hidden;
-		color: var(--color-accent);
+		color: var(--color-text-accent);
 		font-size: 14px;
 		text-overflow: ellipsis;
 		white-space: nowrap;
@@ -108,18 +117,20 @@ const feeds = [
 		display: inline-flex;
 		align-items: center;
 		gap: 0.45rem;
-		margin-top: 1.2rem;
-		border: 1px solid var(--color-border);
-		border-radius: 0.45rem;
-		background: transparent;
-		padding: 0.5rem 0.7rem;
-		color: var(--color-muted);
+		margin-top: auto;
+		border: 0;
+		border-radius: var(--radius-full);
+		background: var(--color-background-accent);
+		padding: 6px 12px;
+		color: var(--color-background-accent-contrast);
 		font-size: 16px;
 		font-weight: 400;
+		line-height: 1;
 		cursor: pointer;
 	}
 	.feed-card button:hover {
-		color: var(--color-foreground);
+		background: var(--color-background-accent-hover);
+		text-decoration: none;
 	}
 	.feed-card .copied {
 		display: none;
@@ -131,7 +142,18 @@ const feeds = [
 		display: block;
 		color: #1d9d48;
 	}
-	@media (max-width: 650px) {
+	@media (max-width: 1000px) {
+		.feed-grid {
+			max-width: 800px;
+			margin-inline: auto;
+		}
+	}
+	@media (max-width: 800px) {
+		.feed-grid {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+	}
+	@media (max-width: 600px) {
 		.feed-grid {
 			grid-template-columns: 1fr;
 		}

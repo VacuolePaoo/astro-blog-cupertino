@@ -1,6 +1,5 @@
 @use './tokens';
-
-@import '@fontsource-variable/inter';
+@use './mixins';
 
 :root {
 	@include tokens.global;
@@ -234,6 +233,22 @@ body[data-page-type='article'] {
 	color: var(--color-text-accent);
 }
 
+.prose code {
+	border-radius: var(--radius-tiny);
+	background: var(--color-background-secondary);
+	padding: 2px 4px;
+	font-family:
+		ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono',
+		'Courier New', monospace;
+	font-size: 0.9em;
+}
+
+.prose pre code {
+	border-radius: 0;
+	background: transparent;
+	padding: 0;
+}
+
 .prose blockquote {
 	border-left: 4px solid var(--color-border-primary);
 	max-width: calc(var(--article-max) - 12px);
@@ -395,6 +410,22 @@ body[data-page-type='article'] {
 .prose > pre {
 	max-width: var(--article-max);
 	padding: 20px 24px;
+}
+
+:where(
+	.article-card--grid,
+	.article-card--featured,
+	.article-card--archive .article-card-media,
+	.copyright-card,
+	.feed-card,
+	.friend-card,
+	.taxonomy-index--categories a,
+	.prose img,
+	.prose table,
+	.prose .astro-code,
+	.search-field
+) {
+	@include mixins.corner-squircle;
 }
 
 @media (max-width: 600px) {
