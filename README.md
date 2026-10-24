@@ -1,6 +1,6 @@
 # Dino Blog
 
-基于 Astro 7、Content Collections 与组件群岛构建的静态中文博客。普通页面默认零客户端框架运行时；React 仅在首次打开搜索时按需加载。
+基于 Astro 7、Content Collections 与组件群岛构建的静态中文博客。普通页面默认零客户端框架运行时；React 仅用于独立搜索页。
 
 ## 开发
 
@@ -29,9 +29,10 @@ pnpm run build
 
 ## 配置与内容
 
-- `blog.config.ts`：站点元信息、作者、版权、强调色、订阅源和远程图片域名。
+- `blog.config.ts`：站点元信息、作者、版权、强调色、订阅源、远程图片域名与 Cupertino 主题选项。
 - `src/consts.ts`：顶部导航、页脚分组和首页文章数量。
 - `src/friends-links.ts`：友链分组与友链数据。
+- `src/styles/`：外部 SCSS 设计 token、复用样式与搜索页样式；Astro 组件在局部 `<style>` 中维护自身样式。
 - `content/posts/*.md`：文章。
 - `content/assets/`：由 Astro 优化的本地文章资源。
 
@@ -55,6 +56,8 @@ collection: 前端
 ```
 
 百分比相对 800px 正文宽度；`wide` 表示全视口宽度。
+
+公开文章会在构建期自动生成 `/archives/`、`/categories/` 和 `/tags/` 及其详情页；`/search/` 使用 Orama 中文分词搜索静态索引。`/posts/` 是公开文章归档入口。
 
 ## 部署
 
