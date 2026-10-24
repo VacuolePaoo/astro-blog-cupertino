@@ -206,7 +206,7 @@ body[data-page-type='article'] {
 
 .prose > ul,
 .prose > ol {
-	max-width: calc(var(--article-max) + 2 * var(--page-gutter));
+	max-width: calc(var(--article-max) + var(--page-gutter));
 	padding: 0 16px 0 32px;
 }
 
@@ -227,6 +227,10 @@ body[data-page-type='article'] {
 }
 .prose h6 {
 	font-size: var(--text-h6);
+}
+
+.prose :is(h1, h2, h3, h4, h5, h6) {
+	position: relative;
 }
 
 .prose a:not(.heading-anchor) {
@@ -263,7 +267,7 @@ body[data-page-type='article'] {
 	);
 	max-width: none;
 	height: auto;
-	margin: 2rem auto;
+	margin: 0 auto;
 	border-radius: var(--radius-media);
 }
 
@@ -276,7 +280,7 @@ body[data-page-type='article'] {
 
 .heading-anchor {
 	position: absolute;
-	right: calc(100% + 6px);
+	left: var(--page-gutter);
 	opacity: 0;
 	color: var(--color-text-tertiary);
 	font-weight: 400;
@@ -298,7 +302,7 @@ body[data-page-type='article'] {
 .prose .astro-code {
 	position: relative;
 	overflow: auto;
-	max-width: calc(var(--article-max) + 2 * var(--page-gutter));
+	max-width: var(--article-max);
 	border: 0;
 	border-radius: var(--radius-medium);
 	background: var(--color-background-secondary);
@@ -378,11 +382,15 @@ body[data-page-type='article'] {
 }
 
 .prose table {
-	max-width: calc(var(--article-max) + 2 * var(--page-gutter));
+	max-width: var(--article-max);
 	width: 100%;
 	border-collapse: collapse;
 	border-radius: var(--radius-medium);
 	overflow-x: auto;
+	background: transparent;
+}
+
+.prose table tr {
 	background: var(--color-background-secondary);
 }
 
