@@ -45,8 +45,8 @@ export function SearchPage() {
 
 	return (
 		<div className="search-page-ui">
-			<label className="search-field">
-				<Search size={20} aria-hidden="true" />
+			<div className="search-field">
+				<Search size={18} aria-hidden="true" />
 				<input
 					ref={inputRef}
 					type="search"
@@ -55,7 +55,18 @@ export function SearchPage() {
 					placeholder="搜索文章"
 					aria-label="搜索文章"
 				/>
-			</label>
+				{term && (
+					<button
+						type="button"
+						onClick={() => {
+							setTerm('')
+							inputRef.current?.focus()
+						}}
+					>
+						清除
+					</button>
+				)}
+			</div>
 			<div className="search-results" aria-live="polite">
 				{loading && <p className="search-empty">正在搜索…</p>}
 				{error && <p className="search-empty">搜索暂时不可用，请稍后重试。</p>}
