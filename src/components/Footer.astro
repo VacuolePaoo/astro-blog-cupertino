@@ -58,51 +58,31 @@ import { footerNav } from '../consts'
 </footer>
 
 <script>
-	function applyTheme(theme: string) {
-		const isDark =
-			theme === 'dark' ||
-			(theme === 'auto' && matchMedia('(prefers-color-scheme: dark)').matches)
-		document.documentElement.classList.toggle('dark', isDark)
-		document.documentElement.dataset.theme = theme
-		localStorage.setItem('blog-theme', theme)
-		document
-			.querySelectorAll<HTMLButtonElement>('[data-theme]')
-			.forEach(button =>
-				button.setAttribute(
-					'aria-pressed',
-					String(button.dataset.theme === theme),
-				),
-			)
-	}
-	document.addEventListener('click', event => {
-		const button = (event.target as Element).closest<HTMLButtonElement>(
-			'[data-theme]',
-		)
-		if (button) applyTheme(button.dataset.theme ?? 'auto')
-	})
-	document.addEventListener('astro:page-load', () =>
-		applyTheme(localStorage.getItem('blog-theme') ?? 'auto'),
-	)
-	matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
-		if ((localStorage.getItem('blog-theme') ?? 'auto') === 'auto')
-			applyTheme('auto')
-	})
+	import blogConfig from '../../blog.config'
+	import { initializeThemeControls } from '../utils/theme'
+
+	const initialize = () => initializeThemeControls(blogConfig.theme.colorScheme)
+	initialize()
+	document.addEventListener('astro:page-load', initialize)
 </script>
 
 <style>
 	.site-footer {
-		margin-top: 7rem;
-		border-top: 1px solid var(--color-border);
-		padding-block: 3.5rem 2rem;
+		margin-top: 0;
+		border-top: 1px solid var(--color-border-primary);
+		background: var(--color-background-underlying);
 	}
 	.footer-grid {
 		display: grid;
 		grid-template-columns: repeat(3, minmax(0, 1fr));
-		gap: 2rem;
+		padding: 32px 0 0;
+	}
+	.footer-grid section {
 		margin-bottom: 16px;
+		user-select: none;
 	}
 	.footer-grid h2 {
-		margin: 0 0 0.8rem;
+		margin: 0 0 8px;
 		font-size: 17px;
 		font-weight: 700;
 	}
@@ -111,21 +91,17 @@ import { footerNav } from '../consts'
 		padding: 0;
 		list-style: none;
 	}
-	.footer-grid li + li {
-		margin-top: 0.35rem;
-	}
 	.footer-grid a {
-		color: var(--color-muted);
+		color: var(--color-text-secondary);
 		font-size: 16px;
+		display: block;
 	}
 	.footer-grid a:hover {
-		color: var(--color-foreground);
-		text-decoration: underline;
-		text-underline-offset: 0.2em;
+		color: var(--color-text-secondary-hover);
 	}
 	.footer-bottom {
-		margin-top: 0;
-		color: var(--color-muted);
+		padding: 0 0 32px;
+		color: var(--color-text-secondary);
 		font-size: 16px;
 	}
 	.footer-bottom p {
@@ -135,7 +111,7 @@ import { footerNav } from '../consts'
 		display: inline-flex;
 		gap: 1px;
 		margin-top: 16px;
-		border: 1px solid var(--color-accent);
+		border: 1px solid var(--color-background-accent);
 		border-radius: 999px;
 		padding: 1px;
 	}
@@ -148,21 +124,26 @@ import { footerNav } from '../consts'
 		border-radius: 999px;
 		background: transparent;
 		padding: 4px 8px;
-		color: var(--color-accent);
+		color: var(--color-background-accent);
 		font-size: 12px;
 		line-height: 1;
 		cursor: pointer;
 	}
 	.theme-switcher button:hover {
-		background: color-mix(in srgb, var(--color-accent) 9%, transparent);
+		background: var(--color-background-secondary-hover);
 	}
 	.theme-switcher button[aria-pressed='true'] {
-		background: var(--color-accent);
-		color: #ffffff;
+		background: var(--color-background-accent);
+		color: var(--color-background-accent-contrast);
 	}
 	@media (max-width: 600px) {
 		.footer-grid {
 			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+	}
+	@media (max-width: 400px) {
+		.footer-grid {
+			grid-template-columns: 1fr;
 		}
 	}
 </style>

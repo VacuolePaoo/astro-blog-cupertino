@@ -21,5 +21,13 @@ await Promise.all([
 		.resize(180, 180)
 		.png()
 		.toFile(join(process.cwd(), 'public', 'apple-touch-icon.png')),
+	sharp(source)
+		.resize(192, 192)
+		.png()
+		.toFile(join(process.cwd(), 'public', 'icon-192.png')),
+	sharp(source)
+		.resize(512, 512)
+		.png()
+		.toFile(join(process.cwd(), 'public', 'icon-512.png')),
 ])
-console.log('Generated favicon-32.png and apple-touch-icon.png')
+console.log('Generated favicon, touch, and manifest icons')

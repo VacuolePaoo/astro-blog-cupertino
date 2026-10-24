@@ -3,8 +3,10 @@ import { ClientRouter } from 'astro:transitions'
 import blogConfig from '../../blog.config'
 import Footer from '../components/Footer.astro'
 import Header from '../components/Header.astro'
+import RainbowBanner from '../components/RainbowBanner.astro'
 import SeoHead from '../components/seo/SeoHead.astro'
 import { assertAllowedImageSource } from '../utils/image'
+import '@fontsource-variable/inter'
 import '../styles/global.scss'
 
 interface Props {
@@ -19,6 +21,7 @@ interface Props {
 }
 
 const props = Astro.props
+const defaultTheme = blogConfig.theme.colorScheme
 const siteLogo =
 	'logo' in blogConfig && typeof blogConfig.logo === 'string'
 		? blogConfig.logo
@@ -42,6 +45,7 @@ window.__vite_plugin_react_preamble_installed__ = true
 <html
 	lang={blogConfig.language}
 	data-time-zone={blogConfig.timeZone}
+	data-default-theme={defaultTheme}
 	style={`--site-accent:${blogConfig.accentColor}`}
 >
 	<head>
@@ -51,15 +55,19 @@ window.__vite_plugin_react_preamble_installed__ = true
 		<link rel="icon" href={blogConfig.favicon} />
 		<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
 		<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+		<link rel="manifest" href="/manifest.webmanifest" />
 		<meta name="theme-color" content={blogConfig.accentColor} />
 		{
 			import.meta.env.DEV && (
 				<script type="module" is:inline set:html={reactRefreshPreamble} />
 			)
 		}
-		<script is:inline>
+		<script is:inline define:vars={{ defaultTheme }}>
 			;(() => {
-				const theme = localStorage.getItem('blog-theme') || 'auto'
+				const stored = localStorage.getItem('blog-theme')
+				const theme = ['light', 'dark', 'auto'].includes(stored)
+					? stored
+					: defaultTheme
 				const systemDark =
 					theme === 'auto' && matchMedia('(prefers-color-scheme: dark)').matches
 				const dark = theme === 'dark' || systemDark
@@ -87,15 +95,21 @@ window.__vite_plugin_react_preamble_installed__ = true
 			)
 		}
 	</head>
-	<body data-page-type={props.type ?? 'website'}>
+	<body
+		data-page-type={props.type ?? 'website'}
+		style="--config-corner-squircle:true"
+	>
 		<a class="skip-link" href="#main-content"> 跳到正文 </a>
 		<Header />
+		<RainbowBanner />
 		<main id="main-content">
 			<slot />
 		</main>
 		<Footer />
 		<script>
+			import blogConfig from '../../blog.config'
 			import { initializeScrollReveal } from '../utils/scroll-reveal'
+			import { initializeSmoothScroll } from '../utils/smooth-scroll'
 
 			function formatListDate(value: string) {
 				const timeZone = document.documentElement.dataset.timeZone || 'UTC'
@@ -124,6 +138,7 @@ window.__vite_plugin_react_preamble_installed__ = true
 
 			function enhancePage() {
 				initializeScrollReveal()
+				void initializeSmoothScroll(blogConfig.theme.smoothScroll.enabled)
 				document
 					.querySelectorAll<HTMLElement>('.prose pre.astro-code')
 					.forEach(pre => {

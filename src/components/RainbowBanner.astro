@@ -1,0 +1,47 @@
+---
+import blogConfig from '../../blog.config'
+
+const { rainbowBanner } = blogConfig.theme
+const gradient = `linear-gradient(90deg, ${rainbowBanner.colors.join(', ')})`
+---
+
+{
+	rainbowBanner.enabled && (
+		<div
+			class="rainbow-banner"
+			hidden
+			aria-hidden="true"
+			data-rainbow-banner
+			data-shown={rainbowBanner.shown}
+			data-month={rainbowBanner.month}
+			style={`--rainbow-gradient:${gradient}`}
+		/>
+	)
+}
+
+<script>
+	function initializeRainbowBanner() {
+		const banner = document.querySelector<HTMLElement>('[data-rainbow-banner]')
+		if (!banner) return
+		const month = Number(banner.dataset.month)
+		banner.hidden = !(
+			banner.dataset.shown === 'always' ||
+			(banner.dataset.shown === 'auto' && new Date().getMonth() + 1 === month)
+		)
+	}
+
+	initializeRainbowBanner()
+	document.addEventListener('astro:page-load', initializeRainbowBanner)
+</script>
+
+<style>
+	.rainbow-banner {
+		position: fixed;
+		top: 0;
+		right: 0;
+		left: 0;
+		z-index: 900;
+		height: 6px;
+		background-image: var(--rainbow-gradient);
+	}
+</style>

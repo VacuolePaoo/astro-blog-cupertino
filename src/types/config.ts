@@ -14,6 +14,21 @@ export interface InlineHeadScript {
 
 export type HeadScript = ExternalHeadScript | InlineHeadScript
 
+export type ColorScheme = 'light' | 'dark' | 'auto'
+export type RainbowBannerDisplay = 'auto' | 'always'
+
+export interface ThemeConfig {
+	colorScheme: ColorScheme
+	rainbowBanner: {
+		enabled: boolean
+		colors: string[]
+		shown: RainbowBannerDisplay
+		month: number
+	}
+	toc: { enabled: boolean; maxDepth: number }
+	smoothScroll: { enabled: boolean }
+}
+
 export interface BlogConfig {
 	title: string
 	subtitle: string
@@ -27,7 +42,7 @@ export interface BlogConfig {
 	author: { name: string; avatar: string }
 	copyright: { name: string; url?: string }
 	imageDomains: string[]
-	collections: { defaultIcon: string; icons: Record<string, string> }
 	feed: { limit: number; xslt: boolean }
+	theme: ThemeConfig
 	headScripts: HeadScript[]
 }

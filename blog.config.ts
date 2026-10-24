@@ -19,10 +19,24 @@ export default {
 		url: 'https://creativecommons.org/licenses/by-nc/4.0/',
 	},
 	imageDomains: ['astro.build'],
-	collections: {
-		defaultIcon: 'Folder',
-		icons: { 前端: 'Code2', 工程: 'Blocks', 随笔: 'NotebookPen' },
-	},
 	feed: { limit: 20, xslt: true },
+	theme: {
+		colorScheme: 'auto',
+		rainbowBanner: {
+			enabled: false,
+			colors: [
+				'#e50000',
+				'#ff8d00',
+				'#ffee00',
+				'#008121',
+				'#004cff',
+				'#760188',
+			],
+			shown: 'auto',
+			month: 10,
+		},
+		toc: { enabled: true, maxDepth: 2 },
+		smoothScroll: { enabled: false },
+	},
 	headScripts: [] as BlogConfig['headScripts'],
 } satisfies BlogConfig
