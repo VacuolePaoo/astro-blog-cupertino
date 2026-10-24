@@ -12,3 +12,5 @@ export interface SearchDocument {
 export interface SearchIndexPayload {
 	documents: SearchDocument[]
 }
+
+export type SearchHit = SearchDocument & { score: number }

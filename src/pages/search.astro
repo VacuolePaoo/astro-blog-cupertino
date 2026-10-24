@@ -1,0 +1,11 @@
+---
+import { SearchPage } from '../components/search/SearchPage'
+import Layout from '../layouts/Layout.astro'
+import '../styles/search.scss'
+---
+
+<Layout title="搜索" description="搜索博客文章。">
+	<section class="page-shell search-page" aria-label="搜索文章">
+		<SearchPage client:load />
+	</section>
+</Layout>
