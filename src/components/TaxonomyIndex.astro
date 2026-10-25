@@ -1,5 +1,6 @@
 ---
 import type { TaxonomyKind, TaxonomySummary } from '../types/taxonomy'
+import blogConfig from '../../blog.config'
 import { getTaxonomyUrl } from '../utils/taxonomy'
 
 interface Props {
@@ -8,14 +9,22 @@ interface Props {
 }
 
 const { kind, items } = Astro.props
+const { categories, tags } = blogConfig.theme.content
 ---
 
 <div class:list={['taxonomy-index', `taxonomy-index--${kind}`]}>
 	{
 		items.map(item => (
-			<a href={getTaxonomyUrl(kind, item.name)}>
-				<span>{kind === 'tags' ? `#${item.name}` : item.name}</span>
-				<span class="count">{item.count}</span>
+			<a
+				href={getTaxonomyUrl(kind, item.name)}
+				class:list={{ 'capitalize-tags': kind === 'tags' && tags.capitalize }}
+			>
+				<span>
+					{kind === 'tags' && tags.hashtagPrefix ? `#${item.name}` : item.name}
+				</span>
+				{(kind === 'tags' ? tags.showPostCount : categories.showPostCount) && (
+					<span class="count">{item.count}</span>
+				)}
 			</a>
 		))
 	}
@@ -77,6 +86,9 @@ const { kind, items } = Astro.props
 		color: var(--color-text-secondary);
 		font-size: 10px;
 		vertical-align: middle;
+	}
+	.taxonomy-index--tags .capitalize-tags {
+		text-transform: capitalize;
 	}
 	@media (max-width: 800px) {
 		.taxonomy-index--categories {

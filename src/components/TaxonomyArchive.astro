@@ -1,7 +1,9 @@
 ---
 import type { ArticleEntry } from '../types/article'
 import type { TaxonomyKind, TaxonomySummary } from '../types/taxonomy'
+import blogConfig from '../../blog.config'
 import Layout from '../layouts/Layout.astro'
+import { translate, translateWithValues } from '../utils/i18n'
 import { getTaxonomyUrl } from '../utils/taxonomy'
 import ArchiveList from './ArchiveList.astro'
 import PageHeading from './PageHeading.astro'
@@ -14,22 +16,34 @@ interface Props {
 }
 
 const { kind, summary, page } = Astro.props
-const label = kind === 'categories' ? '分类' : '标签'
-const title = kind === 'tags' ? `#${summary.name}` : summary.name
-const description =
-	kind === 'categories'
-		? `“${summary.name}”分类下的全部文章。`
-		: `带有“${summary.name}”标签的全部文章。`
+const labelKey = kind === 'categories' ? 'article.category' : 'article.tag'
+const label = translate(labelKey)
+const title =
+	kind === 'tags' && blogConfig.theme.content.tags.hashtagPrefix
+		? `#${summary.name}`
+		: summary.name
+const descriptionKey =
+	kind === 'categories' ? 'page.categoryDescription' : 'page.tagDescription'
+const description = translateWithValues(descriptionKey, { name: summary.name })
 ---
 
 <Layout
 	title={page.currentPage === 1
 		? title
-		: `${title} · 第 ${page.currentPage} 页`}
+		: translateWithValues('page.pageNumber', { title, page: page.currentPage })}
+	titleKey={page.currentPage === 1 ? undefined : 'page.pageNumber'}
+	titleValues={{ title, page: page.currentPage }}
 	description={description}
+	descriptionKey={descriptionKey}
+	descriptionValues={{ name: summary.name }}
 >
 	<div class="page-shell">
-		<PageHeading title={title} label={label} />
+		<PageHeading
+			title={title}
+			label={label}
+			labelKey={labelKey}
+			capitalize={kind === 'tags' && blogConfig.theme.content.tags.capitalize}
+		/>
 		<ArchiveList articles={page.items} />
 		<Pagination
 			current={page.currentPage}

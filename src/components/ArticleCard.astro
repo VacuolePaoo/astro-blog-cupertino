@@ -1,6 +1,8 @@
 ---
 import type { ArticleEntry } from '../types/article'
-import { getArticleUrl, getCoverAlt } from '../utils/article'
+import blogConfig from '../../blog.config'
+import { getArticleExcerpt, getArticleUrl, getCoverAlt } from '../utils/article'
+import { translateWithValues } from '../utils/i18n'
 import ArticleCover from './ArticleCover.astro'
 import DateDisplay from './DateDisplay.astro'
 
@@ -12,6 +14,9 @@ interface Props {
 
 const { article, variant = 'grid', preview = false } = Astro.props
 const href = getArticleUrl(article, preview)
+const excerpt = blogConfig.theme.content.cards.showExcerpt
+	? getArticleExcerpt(article)
+	: undefined
 ---
 
 <article
@@ -24,11 +29,21 @@ const href = getArticleUrl(article, preview)
 	<a
 		class="article-card-link"
 		href={href}
-		aria-label={`阅读《${article.data.title}》`}
+		aria-label={translateWithValues('article.read', {
+			title: article.data.title,
+		})}
+		data-i18n-aria-template="article.read"
+		data-i18n-value-title={article.data.title}
 	>
 		{
 			article.data.cover && (
-				<div class="article-card-media">
+				<div
+					class="article-card-media"
+					data-i18n-alt-template={
+						article.data.coverAlt ? undefined : 'article.coverAlt'
+					}
+					data-i18n-value-title={article.data.title}
+				>
 					<ArticleCover
 						src={article.data.cover}
 						alt={getCoverAlt(article)}
@@ -38,8 +53,20 @@ const href = getArticleUrl(article, preview)
 			)
 		}
 		<div class="article-card-copy">
-			<span class="article-collection">{article.data.collection}</span>
+			<span
+				class:list={[
+					'article-collection',
+					{ uppercase: blogConfig.theme.content.categories.uppercase },
+				]}>{article.data.collection}</span
+			>
 			<h2 class="article-card-title">{article.data.title}</h2>
+			{
+				excerpt && (
+					<div class="article-card-excerpt">
+						<p>{excerpt}</p>
+					</div>
+				)
+			}
 			<div class="article-card-date">
 				<DateDisplay date={article.data.pubDate} />
 			</div>
@@ -66,7 +93,6 @@ const href = getArticleUrl(article, preview)
 		display: block;
 		overflow: hidden;
 		border-radius: inherit;
-		background: var(--color-surface);
 	}
 	.article-card-media :global(picture),
 	.article-card-media :global(img) {
@@ -99,6 +125,8 @@ const href = getArticleUrl(article, preview)
 		font-size: 11px;
 		font-weight: 600;
 		line-height: normal;
+	}
+	.article-collection.uppercase {
 		text-transform: uppercase;
 	}
 	.article-card-title {
@@ -109,7 +137,6 @@ const href = getArticleUrl(article, preview)
 		color: var(--color-text-primary);
 		max-height: 7em;
 		overflow: hidden;
-		overflow-wrap: anywhere;
 	}
 	.article-card--grid,
 	.article-card--featured {
@@ -124,6 +151,16 @@ const href = getArticleUrl(article, preview)
 		font-weight: 600;
 		line-height: 1.28577;
 	}
+	.article-card-excerpt {
+		margin-top: 12px;
+		color: var(--color-text-tertiary);
+		font-size: 15px;
+		font-weight: 400;
+	}
+	.article-card-excerpt p {
+		margin-block: 8px;
+		padding-inline: 0;
+	}
 	.article-card--grid .article-card-media,
 	.article-card--featured .article-card-media {
 		height: 266px;
@@ -135,19 +172,12 @@ const href = getArticleUrl(article, preview)
 	}
 	.article-card--archive .article-card-link {
 		display: flex;
-		align-items: center;
 	}
 	.article-card--archive .article-card-media {
 		flex: 0 0 auto;
 		width: 20vw;
 		min-width: 180px;
-		border-radius: var(--radius-media);
-	}
-	.article-card--archive .article-card-media :global(img) {
-		height: auto;
-	}
-	.article-card--archive .article-card-media :global(picture) {
-		height: auto;
+		border-radius: var(--radius-medium);
 	}
 	.article-card--archive .article-card-copy {
 		padding: 32px;

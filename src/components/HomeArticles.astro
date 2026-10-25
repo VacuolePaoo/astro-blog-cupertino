@@ -1,6 +1,7 @@
 ---
 import type { ArticleEntry } from '../types/article'
 import blogConfig from '../../blog.config'
+import { translate } from '../utils/i18n'
 import ArticleCard from './ArticleCard.astro'
 import Pagination from './Pagination.astro'
 
@@ -16,17 +17,43 @@ const { articles, currentPage, totalPages } = Astro.props
 {
 	currentPage === 1 && (
 		<section
-			class="page-shell home-hero exit-while-scroll"
+			class:list={[
+				'page-shell',
+				'home-hero',
+				{
+					'exit-while-scroll':
+						blogConfig.theme.motion.heroExitWhileScrolling.enabled,
+					'with-blur':
+						blogConfig.theme.motion.heroExitWhileScrolling.blurFilter,
+				},
+			]}
 			aria-labelledby="site-introduction"
 			data-scroll-hero
 		>
-			<p>{blogConfig.title}</p>
-			<h1 id="site-introduction">{blogConfig.subtitle}</h1>
+			<p>{blogConfig.theme.content.hero.title}</p>
+			<h1 id="site-introduction">
+				{blogConfig.theme.content.hero.description}
+			</h1>
 		</section>
 	)
 }
-<section class="page-shell home-articles" aria-labelledby="latest-heading">
-	<h2 id="latest-heading">最近文章</h2>
+<section
+	class:list={[
+		'page-shell',
+		'home-articles',
+		{ 'home-articles--not-index': currentPage > 1 },
+	]}
+	aria-labelledby={currentPage === 1 ? 'latest-heading' : undefined}
+	aria-label={currentPage > 1 ? translate('home.latest') : undefined}
+	data-i18n-aria-label={currentPage > 1 ? 'home.latest' : undefined}
+>
+	{
+		currentPage === 1 && (
+			<h2 id="latest-heading" data-i18n="home.latest">
+				{translate('home.latest')}
+			</h2>
+		)
+	}
 	<div class="article-grid">
 		{articles.map(article => <ArticleCard article={article} variant="grid" />)}
 	</div>
@@ -39,12 +66,12 @@ const { articles, currentPage, totalPages } = Astro.props
 		flex-direction: column;
 		justify-content: center;
 		gap: 6px;
+		margin-top: 56px;
 		padding-block: 160px;
 		white-space: pre-wrap;
 	}
 	.home-hero p,
 	.home-hero h1 {
-		max-width: 680px;
 		margin: 0;
 	}
 	.home-hero p {
@@ -62,8 +89,11 @@ const { articles, currentPage, totalPages } = Astro.props
 	.home-articles {
 		margin-bottom: 32px;
 	}
+	.home-articles--not-index {
+		margin-top: 100px;
+	}
 	.home-articles > h2 {
-		margin: 0 0 24px;
+		margin: 0.67em 0 24px;
 		font-size: var(--text-section-title);
 		font-weight: 700;
 		line-height: 1.125;
@@ -78,9 +108,6 @@ const { articles, currentPage, totalPages } = Astro.props
 		.home-hero {
 			padding-block: 160px;
 		}
-		.home-articles {
-			margin-bottom: 24px;
-		}
 		.article-grid {
 			grid-template-columns: 1fr;
 			gap: 20px 16px;
@@ -91,37 +118,35 @@ const { articles, currentPage, totalPages } = Astro.props
 	@supports (animation-timeline: scroll()) {
 		.home-hero.exit-while-scroll {
 			--hero-scroll-range: calc(var(--current-hero-height) * 0.5px);
-			will-change: margin-top, margin-bottom, opacity, scale;
+			will-change: filter, opacity, transform;
 			animation: hero-exit linear both;
-			animation-timeline: scroll();
+			animation-timeline: scroll() !important;
 			animation-range: 0 var(--hero-scroll-range);
-			transform-origin: left -100%;
+			transform-origin: left top;
 		}
 		.home-hero.exit-while-scroll.with-blur {
 			animation-name: hero-exit-with-blur;
 		}
 		@keyframes hero-exit {
-			from {
-				margin-top: 56px;
-			}
 			to {
-				margin-top: calc(var(--hero-scroll-range) + 56px);
-				margin-bottom: calc(-1 * var(--hero-scroll-range));
 				opacity: 0;
-				scale: 0.9;
+				transform: translateY(-24px) scale(0.96);
 			}
 		}
 		@keyframes hero-exit-with-blur {
-			from {
-				margin-top: 56px;
-			}
 			to {
-				margin-top: calc(var(--hero-scroll-range) + 56px);
-				margin-bottom: calc(-1 * var(--hero-scroll-range));
 				filter: var(--filter-blur);
 				opacity: 0;
-				scale: 0.9;
+				transform: translateY(-24px) scale(0.96);
 			}
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.home-hero.exit-while-scroll {
+			animation: none !important;
+			opacity: 1;
+			filter: none;
+			transform: none;
 		}
 	}
 </style>

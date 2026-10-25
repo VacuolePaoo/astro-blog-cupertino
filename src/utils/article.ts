@@ -1,5 +1,6 @@
 import type { ArticleEntry } from '../types/article'
 import { getCollection } from 'astro:content'
+import { fallbackCoverAlt } from './image'
 
 export async function getArticles(options: { drafts?: boolean } = {}) {
 	const { drafts = false } = options
@@ -17,13 +18,21 @@ export function getArticleUrl(article: ArticleEntry, preview = false) {
 }
 
 export function getCoverAlt(article: ArticleEntry) {
-	return article.data.coverAlt || `文章《${article.data.title}》的封面图片`
+	return article.data.coverAlt || fallbackCoverAlt(article.data.title)
 }
 
 export function getCoverSource(article: ArticleEntry) {
 	const { cover } = article.data
 	if (!cover) return undefined
 	return typeof cover === 'string' ? cover : cover.src
+}
+
+/** Match Hexo excerpts: authored override, then content before a `<!-- more -->` marker. */
+export function getArticleExcerpt(article: ArticleEntry) {
+	if (article.data.excerpt) return article.data.excerpt
+	const body = article.body ?? ''
+	const marker = body.search(/<!--\s*more\s*-->/i)
+	return marker < 0 ? undefined : stripMarkdown(body.slice(0, marker))
 }
 
 export function getArticleSurround(
