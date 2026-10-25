@@ -1,25 +1,42 @@
 ---
-import { Monitor, Moon, Sun } from 'lucide-astro'
 import blogConfig from '../../blog.config'
 import { footerNav } from '../consts'
+import { translate } from '../utils/i18n'
+import {
+	getNavGroupTitle,
+	getNavItemLabel,
+	getVisibleFooterNav,
+} from '../utils/nav'
+
+const visibleFooterNav = getVisibleFooterNav(
+	footerNav,
+	blogConfig.theme.search.enabled,
+)
 ---
 
 <footer class="site-footer">
 	<div class="page-shell">
 		<div class="footer-grid">
 			{
-				footerNav.map(group => (
+				visibleFooterNav.map(group => (
 					<section>
-						<h2>{group.title}</h2>
+						<h2 data-i18n={group.titleKey}>{getNavGroupTitle(group)}</h2>
 						<ul>
 							{group.items.map(item => (
 								<li>
 									<a
 										href={item.url}
-										target={item.external ? '_blank' : undefined}
-										rel={item.external ? 'noopener noreferrer' : undefined}
+										data-i18n={item.textKey}
+										target={
+											'external' in item && item.external ? '_blank' : undefined
+										}
+										rel={
+											'external' in item && item.external
+												? 'noopener noreferrer'
+												: undefined
+										}
 									>
-										{item.text}
+										{getNavItemLabel(item)}
 									</a>
 								</li>
 							))}
@@ -39,20 +56,33 @@ import { footerNav } from '../consts'
 					)
 				}
 			</p>
-			<div class="theme-switcher" role="group" aria-label="主题">
-				<button type="button" data-theme="light">
-					<Sun size={12} aria-hidden="true" />
-					<span>亮色</span>
-				</button>
-				<button type="button" data-theme="dark">
-					<Moon size={12} aria-hidden="true" />
-					<span>暗色</span>
-				</button>
-				<button type="button" data-theme="auto">
-					<Monitor size={12} aria-hidden="true" />
-					<span>自动</span>
-				</button>
-			</div>
+			{
+				blogConfig.theme.footer.extraDescription && (
+					<span class="footer-extra-description">
+						{blogConfig.theme.footer.extraDescription}
+					</span>
+				)
+			}
+			{
+				blogConfig.theme.footer.showColorSchemeToggle && (
+					<div
+						class="theme-switcher"
+						role="group"
+						aria-label={translate('footer.theme')}
+						data-i18n-aria-label="footer.theme"
+					>
+						<button type="button" data-theme="light">
+							<span data-i18n="footer.light">{translate('footer.light')}</span>
+						</button>
+						<button type="button" data-theme="dark">
+							<span data-i18n="footer.dark">{translate('footer.dark')}</span>
+						</button>
+						<button type="button" data-theme="auto">
+							<span data-i18n="footer.auto">{translate('footer.auto')}</span>
+						</button>
+					</div>
+				)
+			}
 		</div>
 	</div>
 </footer>
@@ -61,7 +91,8 @@ import { footerNav } from '../consts'
 	import blogConfig from '../../blog.config'
 	import { initializeThemeControls } from '../utils/theme'
 
-	const initialize = () => initializeThemeControls(blogConfig.theme.colorScheme)
+	const initialize = () =>
+		initializeThemeControls(blogConfig.theme.appearance.colorScheme)
 	initialize()
 	document.addEventListener('astro:page-load', initialize)
 </script>
@@ -71,6 +102,7 @@ import { footerNav } from '../consts'
 		margin-top: 0;
 		border-top: 1px solid var(--color-border-primary);
 		background: var(--color-background-underlying);
+		user-select: none;
 	}
 	.footer-grid {
 		display: grid;
@@ -96,9 +128,6 @@ import { footerNav } from '../consts'
 		font-size: 16px;
 		display: block;
 	}
-	.footer-grid a:hover {
-		color: var(--color-text-secondary-hover);
-	}
 	.footer-bottom {
 		padding: 0 0 32px;
 		color: var(--color-text-secondary);
@@ -107,8 +136,16 @@ import { footerNav } from '../consts'
 	.footer-bottom p {
 		margin: 0;
 	}
+	.footer-extra-description {
+		display: block;
+		margin-top: 12px;
+		margin-bottom: -12px;
+		color: var(--color-text-secondary);
+		font-size: 14px;
+	}
 	.theme-switcher {
-		display: inline-flex;
+		display: flex;
+		width: max-content;
 		gap: 1px;
 		margin-top: 16px;
 		border: 1px solid var(--color-background-accent);
@@ -116,21 +153,18 @@ import { footerNav } from '../consts'
 		padding: 1px;
 	}
 	.theme-switcher button {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		gap: 4px;
+		display: block;
+		width: 44px;
+		height: 22px;
 		border: 0;
 		border-radius: 999px;
 		background: transparent;
-		padding: 4px 8px;
+		padding: 4px 2px;
 		color: var(--color-background-accent);
 		font-size: 12px;
-		line-height: 1;
+		line-height: 14px;
+		text-align: center;
 		cursor: pointer;
-	}
-	.theme-switcher button:hover {
-		background: var(--color-background-secondary-hover);
 	}
 	.theme-switcher button[aria-pressed='true'] {
 		background: var(--color-background-accent);

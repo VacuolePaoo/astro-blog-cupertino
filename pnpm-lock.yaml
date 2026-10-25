@@ -47,6 +47,12 @@ importers:
       lucide-react:
         specifier: ^1.59.0
         version: 1.59.0(@types/react@19.3.0)(react@19.3.1)
+      mdast-util-to-string:
+        specifier: ^4.0.0
+        version: 4.0.0
+      moment:
+        specifier: ^2.31.0
+        version: 2.31.0
       react:
         specifier: ^19.3.1
         version: 19.3.1
@@ -62,6 +68,9 @@ importers:
       remark-gfm:
         specifier: ^4.0.1
         version: 4.0.1
+      remark-parse:
+        specifier: ^11.0.0
+        version: 11.0.0
       sharp:
         specifier: ^0.35.5
         version: 0.35.5(@types/node@24.19.2)
@@ -74,6 +83,9 @@ importers:
       temporal-polyfill:
         specifier: ^1.0.6
         version: 1.0.6
+      unified:
+        specifier: ^11.0.5
+        version: 11.0.5
       unist-util-visit:
         specifier: ^5.1.0
         version: 5.1.0
@@ -2680,6 +2692,9 @@ packages:
 
   module-replacements@3.4.0:
     resolution: {integrity: sha512-NKBNFM/uAUvSs+LOYfSly4EwrC9bgMoFuEnqNNjcDb910W+5IgS2KMB2ERLm5YZZm7R187jx1dMA9pOPvqbSbw==}
+
+  moment@2.31.0:
+    resolution: {integrity: sha512-0acOTfMiWOheYS4eoWb80yYMb/JLvVv9SHbs2PehaDzfUG0Bw855SKyk0IKTnPGa5+U2bmi3W68l1+sGLX/pvw==}
 
   mrmime@2.0.1:
     resolution: {integrity: sha512-Y3wQdFg2Va6etvQ5I82yUhGdsKrcYox6p7FfL1LbK2J4V01F9TGlepTIhnK24t7koZibmg82KGglhA1XK5IsLQ==}
@@ -6548,6 +6563,8 @@ snapshots:
       ufo: 1.6.4
 
   module-replacements@3.4.0: {}
+
+  moment@2.31.0: {}
 
   mrmime@2.0.1: {}
 

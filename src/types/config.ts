@@ -18,15 +18,39 @@ export type ColorScheme = 'light' | 'dark' | 'auto'
 export type RainbowBannerDisplay = 'auto' | 'always'
 
 export interface ThemeConfig {
-	colorScheme: ColorScheme
-	rainbowBanner: {
-		enabled: boolean
-		colors: string[]
-		shown: RainbowBannerDisplay
-		month: number
+	appearance: {
+		colorScheme: ColorScheme
+		squircle: boolean
+		rainbowBanner: {
+			enabled: boolean
+			colors: string[]
+			shown: RainbowBannerDisplay
+			month: number
+		}
 	}
-	toc: { enabled: boolean; maxDepth: number }
-	smoothScroll: { enabled: boolean }
+	content: {
+		hero: { title: string; description: string }
+		cards: { showExcerpt: boolean }
+		categories: { uppercase: boolean; showPostCount: boolean }
+		tags: {
+			capitalize: boolean
+			hashtagPrefix: boolean
+			showPostCount: boolean
+		}
+		dates: { displayFormat: string }
+		toc: { enabled: boolean; maxDepth: number }
+	}
+	navigation: { blurGradient: boolean }
+	footer: {
+		showColorSchemeToggle: boolean
+		extraDescription?: string
+	}
+	motion: {
+		viewTransition: boolean
+		heroExitWhileScrolling: { enabled: boolean; blurFilter: boolean }
+		smoothScroll: { enabled: boolean }
+	}
+	search: { enabled: boolean; trigger: 'debounce' | 'submit'; delayMs: number }
 }
 
 export interface BlogConfig {
@@ -41,6 +65,7 @@ export interface BlogConfig {
 	favicon: string
 	author: { name: string; avatar: string }
 	copyright: { name: string; url?: string }
+	license: { name: string; url: string }
 	imageDomains: string[]
 	feed: { limit: number; xslt: boolean }
 	theme: ThemeConfig

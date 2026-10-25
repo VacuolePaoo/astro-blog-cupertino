@@ -1,5 +1,7 @@
 ---
-import { formatFullDate, formatListDate } from '../utils/date'
+import blogConfig from '../../blog.config'
+import { formatDisplayDate } from '../utils/date-display'
+import { resolveUiLocale, translateWithValues } from '../utils/i18n'
 
 interface Props {
 	date: string
@@ -8,9 +10,24 @@ interface Props {
 }
 
 const { date, updatedDate, mode = 'list' } = Astro.props
-const text = mode === 'full' ? formatFullDate(date) : formatListDate(date)
+const locale = resolveUiLocale(blogConfig.language)
+const text = formatDisplayDate(
+	date,
+	blogConfig.theme.content.dates.displayFormat,
+	locale,
+)
 const updateText = updatedDate
-	? `更新于 ${formatFullDate(updatedDate)}`
+	? translateWithValues(
+			'article.updated',
+			{
+				date: formatDisplayDate(
+					updatedDate,
+					blogConfig.theme.content.dates.displayFormat,
+					locale,
+				),
+			},
+			locale,
+		)
 	: undefined
 ---
 
@@ -18,7 +35,7 @@ const updateText = updatedDate
 	datetime={date}
 	data-date={date}
 	data-mode={mode}
-	data-updated={updateText}
+	data-updated-date={updatedDate}
 	tabindex={updateText ? 0 : undefined}
 	aria-label={updateText ? `${text}，${updateText}` : text}
 >

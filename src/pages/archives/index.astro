@@ -5,14 +5,20 @@ import Pagination from '../../components/Pagination.astro'
 import { ARCHIVE_PAGE_SIZE } from '../../consts'
 import Layout from '../../layouts/Layout.astro'
 import { getArticles } from '../../utils/article'
+import { translate } from '../../utils/i18n'
 import { paginate } from '../../utils/pagination'
 
 const page = paginate(await getArticles(), 1, ARCHIVE_PAGE_SIZE)
 ---
 
-<Layout title="归档" description="按发布时间浏览全部文章。">
+<Layout
+	title={translate('page.archives')}
+	titleKey="page.archives"
+	description={translate('page.archivesDescription')}
+	descriptionKey="page.archivesDescription"
+>
 	<div class="page-shell">
-		<PageHeading title="归档" />
+		<PageHeading title={translate('page.archives')} titleKey="page.archives" />
 		<ArchiveList articles={page.items} />
 		<Pagination
 			current={page.currentPage}

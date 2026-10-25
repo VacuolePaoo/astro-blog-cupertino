@@ -22,7 +22,7 @@ export function applyColorScheme(theme: ColorScheme) {
 	document.documentElement.classList.toggle('dark', isDark)
 	document.documentElement.dataset.theme = theme
 	document
-		.querySelectorAll<HTMLButtonElement>('[data-theme]')
+		.querySelectorAll<HTMLButtonElement>('button[data-theme]')
 		.forEach(button =>
 			button.setAttribute(
 				'aria-pressed',
@@ -50,7 +50,7 @@ export function initializeThemeControls(fallback: ColorScheme) {
 		'click',
 		event => {
 			const button = (event.target as Element).closest<HTMLButtonElement>(
-				'[data-theme]',
+				'button[data-theme]',
 			)
 			const theme = button?.dataset.theme ?? null
 			if (isColorScheme(theme)) setColorScheme(theme)

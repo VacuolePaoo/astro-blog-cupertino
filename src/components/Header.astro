@@ -2,6 +2,8 @@
 import { ExternalLink, Search } from 'lucide-astro'
 import blogConfig from '../../blog.config'
 import { moreNav, primaryNav } from '../consts'
+import { translate, translateWithValues } from '../utils/i18n'
+import { getNavItemLabel } from '../utils/nav'
 import SearchLauncher from './SearchLauncher.astro'
 
 const blurLayers = [1, 2, 3, 4, 5, 6]
@@ -11,27 +13,59 @@ const siteLogo =
 		: undefined
 ---
 
-<div class="nav-mask" aria-hidden="true">
-	{blurLayers.map(sharp => <div style={`--sharp:${sharp}`} />)}
-</div>
-<header class="site-header" data-site-header>
+{
+	blogConfig.theme.navigation.blurGradient && (
+		<div class="nav-mask" aria-hidden="true">
+			{blurLayers.map(sharp => (
+				<div style={`--sharp:${sharp}`} />
+			))}
+		</div>
+	)
+}
+<header
+	class:list={[
+		'site-header',
+		{ 'site-header--solid-blur': !blogConfig.theme.navigation.blurGradient },
+	]}
+	data-site-header
+>
 	<div class="page-shell header-inner">
-		<a class="brand" href="/" aria-label={`${blogConfig.title} 首页`}>
+		<a
+			class="brand"
+			href="/"
+			aria-label={translateWithValues('nav.brandHome', {
+				site: blogConfig.title,
+			})}
+			data-brand-home
+		>
 			{siteLogo && <img src={siteLogo} alt="" width="28" height="28" />}
 			<span>{blogConfig.title}</span>
 		</a>
 
-		<nav class="desktop-nav" aria-label="主导航">
+		<nav
+			class="desktop-nav"
+			aria-label={translate('nav.main')}
+			data-i18n-aria-label="nav.main"
+		>
 			{
 				primaryNav.map((item, index) => (
-					<a href={item.url} style={`--index:${index + 1}`}>
-						{item.text}
+					<a
+						href={item.url}
+						style={`--index:${index + 1}`}
+						data-i18n={item.textKey}
+					>
+						{getNavItemLabel(item)}
 					</a>
 				))
 			}
-			<div class="more-menu">
-				<button type="button" aria-haspopup="true"> 更多 </button>
-				<div class="more-panel">
+			<div class="more-menu" data-desktop-more>
+				<button
+					type="button"
+					aria-controls="desktop-more-panel"
+					data-desktop-more-toggle
+					data-i18n="nav.more">{translate('nav.more')}</button
+				>
+				<div class="more-panel" id="desktop-more-panel" data-desktop-more-panel>
 					{
 						moreNav.map((item, index) => (
 							<a
@@ -40,14 +74,14 @@ const siteLogo =
 								target={item.external ? '_blank' : undefined}
 								rel={item.external ? 'noopener noreferrer' : undefined}
 							>
-								{item.text}
+								<span data-i18n={item.textKey}>{getNavItemLabel(item)}</span>
 								{item.external && <ExternalLink size={13} aria-hidden="true" />}
 							</a>
 						))
 					}
 				</div>
 			</div>
-			<SearchLauncher />
+			{blogConfig.theme.search.enabled && <SearchLauncher />}
 		</nav>
 
 		<button
@@ -55,7 +89,7 @@ const siteLogo =
 			type="button"
 			aria-expanded="false"
 			aria-controls="mobile-menu"
-			aria-label="展开导航"
+			aria-label={translate('nav.expand')}
 			data-mobile-toggle
 		>
 			<span class="mobile-chevron" aria-hidden="true">
@@ -66,65 +100,168 @@ const siteLogo =
 	</div>
 
 	<div class="mobile-menu" id="mobile-menu" aria-hidden="true" data-mobile-menu>
-		<nav class="page-shell mobile-menu-inner" aria-label="移动端导航">
-			<a href="/" style="--index:0">首页</a>
+		<nav
+			class="page-shell mobile-menu-inner"
+			aria-label={translate('nav.mobile')}
+			data-i18n-aria-label="nav.mobile"
+		>
+			<a href="/" style="--index:0" data-i18n="nav.home"
+				>{translate('nav.home')}</a
+			>
 			{
 				primaryNav.map((item, index) => (
-					<a href={item.url} style={`--index:${index + 1}`}>
-						{item.text}
-					</a>
-				))
-			}
-			<p class="mobile-group-label">更多</p>
-			{
-				moreNav.map((item, index) => (
 					<a
 						href={item.url}
-						style={`--index:${primaryNav.length + index + 1}`}
-						target={item.external ? '_blank' : undefined}
-						rel={item.external ? 'noopener noreferrer' : undefined}
+						style={`--index:${index + 1}`}
+						data-i18n={item.textKey}
 					>
-						{item.text}
-						{item.external && <ExternalLink size={14} aria-hidden="true" />}
+						{getNavItemLabel(item)}
 					</a>
 				))
 			}
-			<div class="mobile-search">
-				<a
-					class="mobile-search-button"
-					href="/search/"
-					style={`--index:${primaryNav.length + moreNav.length + 1}`}
+			<div class="mobile-more">
+				<button
+					type="button"
+					class="mobile-more-toggle"
+					aria-expanded="false"
+					aria-controls="mobile-more-panel"
+					data-mobile-more-toggle
+					style={`--index:${primaryNav.length + 1}`}
 				>
-					<Search size={20} />
-					<span>搜索</span>
-				</a>
+					<span data-i18n="nav.more">{translate('nav.more')}</span>
+					<span class="mobile-more-chevron" aria-hidden="true"></span>
+				</button>
+				<div
+					class="mobile-more-panel"
+					id="mobile-more-panel"
+					hidden
+					data-mobile-more-panel
+				>
+					{
+						moreNav.map((item, index) => (
+							<a
+								href={item.url}
+								style={`--index:${primaryNav.length + index + 2}`}
+								target={item.external ? '_blank' : undefined}
+								rel={item.external ? 'noopener noreferrer' : undefined}
+							>
+								<span data-i18n={item.textKey}>{getNavItemLabel(item)}</span>
+								{item.external && <ExternalLink size={14} aria-hidden="true" />}
+							</a>
+						))
+					}
+				</div>
 			</div>
+			{
+				blogConfig.theme.search.enabled && (
+					<a
+						class="mobile-search-button"
+						href="/search/"
+						aria-label={translate('search.label')}
+						data-i18n-aria-label="search.label"
+						style={`--index:${primaryNav.length + 2}`}
+					>
+						<Search size={24} strokeWidth={1.8} aria-hidden="true" />
+					</a>
+				)
+			}
 		</nav>
 	</div>
 </header>
 
 <script>
+	import { translate, translateWithValues } from '../utils/i18n'
+	import { getClientLocale } from '../utils/i18n-client'
+
+	const desktopMore = document.querySelector<HTMLElement>('[data-desktop-more]')
+	let desktopMorePinned = false
+
+	function setDesktopMoreOpen(open: boolean) {
+		const toggle = desktopMore?.querySelector<HTMLButtonElement>(
+			'[data-desktop-more-toggle]',
+		)
+		const panel = desktopMore?.querySelector<HTMLElement>(
+			'[data-desktop-more-panel]',
+		)
+		if (!desktopMore || !toggle || !panel) return
+		desktopMore.dataset.open = String(open)
+		toggle.setAttribute('aria-expanded', String(open))
+		panel.inert = !open
+		if (!open) desktopMorePinned = false
+	}
+
+	if (desktopMore) {
+		desktopMore.dataset.managed = ''
+		setDesktopMoreOpen(false)
+		desktopMore.addEventListener('pointerenter', event => {
+			if (event.pointerType !== 'touch') setDesktopMoreOpen(true)
+		})
+		desktopMore.addEventListener('pointerleave', () => {
+			if (!desktopMorePinned) setDesktopMoreOpen(false)
+		})
+		desktopMore.addEventListener('focusin', () => setDesktopMoreOpen(true))
+		desktopMore.addEventListener('focusout', event => {
+			if (!desktopMore.contains(event.relatedTarget as Node | null))
+				setDesktopMoreOpen(false)
+		})
+	}
+
+	function updateMenuHeight() {
+		const height =
+			document.querySelector<HTMLElement>('.mobile-menu-inner')?.scrollHeight
+		if (height)
+			document.documentElement.style.setProperty(
+				'--mobile-menu-height',
+				`${height}px`,
+			)
+	}
+
+	function setMoreOpen(open: boolean) {
+		const toggle = document.querySelector<HTMLButtonElement>(
+			'[data-mobile-more-toggle]',
+		)
+		const panel = document.querySelector<HTMLElement>(
+			'[data-mobile-more-panel]',
+		)
+		toggle?.setAttribute('aria-expanded', String(open))
+		if (panel) panel.hidden = !open
+		if (document.documentElement.classList.contains('menu-open'))
+			updateMenuHeight()
+	}
+
 	function setOpen(open: boolean) {
+		if (open) setDesktopMoreOpen(false)
 		const toggle = document.querySelector<HTMLButtonElement>(
 			'[data-mobile-toggle]',
 		)
 		const menu = document.querySelector<HTMLElement>('[data-mobile-menu]')
 		toggle?.setAttribute('aria-expanded', String(open))
-		toggle?.setAttribute('aria-label', open ? '收起导航' : '展开导航')
+		toggle?.setAttribute(
+			'aria-label',
+			translate(open ? 'nav.collapse' : 'nav.expand', getClientLocale()),
+		)
 		menu?.setAttribute('aria-hidden', String(!open))
 		document.documentElement.classList.toggle('menu-open', open)
-		if (open && menu) {
-			const menuHeight =
-				menu.querySelector<HTMLElement>('.mobile-menu-inner')?.scrollHeight
-			if (menuHeight)
-				document.documentElement.style.setProperty(
-					'--mobile-menu-height',
-					`${menuHeight}px`,
-				)
-		} else {
+		if (open && menu) updateMenuHeight()
+		else {
+			setMoreOpen(false)
 			document.documentElement.style.removeProperty('--mobile-menu-height')
 		}
 	}
+	function updateBrandLabel() {
+		const brand = document.querySelector<HTMLAnchorElement>('[data-brand-home]')
+		if (brand)
+			brand.setAttribute(
+				'aria-label',
+				translateWithValues(
+					'nav.brandHome',
+					{ site: brand.textContent?.trim() ?? '' },
+					getClientLocale(),
+				),
+			)
+	}
+	updateBrandLabel()
+	document.addEventListener('astro:page-load', updateBrandLabel)
 	window.addEventListener('resize', () => {
 		const isOpen =
 			document
@@ -132,24 +269,64 @@ const siteLogo =
 				?.getAttribute('aria-expanded') === 'true'
 		if (isOpen) setOpen(true)
 		if (window.innerWidth > 600) setOpen(false)
+		else setDesktopMoreOpen(false)
 	})
 	document.addEventListener('click', event => {
 		if (event.defaultPrevented) return
 		const target = event.target as Element
+		const desktopToggle = target.closest<HTMLButtonElement>(
+			'[data-desktop-more-toggle]',
+		)
+		if (desktopToggle) {
+			event.preventDefault()
+			if (desktopMorePinned) setDesktopMoreOpen(false)
+			else {
+				desktopMorePinned = true
+				setDesktopMoreOpen(true)
+			}
+			return
+		}
+		if (target.closest('[data-desktop-more-panel] a')) setDesktopMoreOpen(false)
+		else if (!target.closest('[data-desktop-more]')) setDesktopMoreOpen(false)
+		const moreToggle = target.closest<HTMLButtonElement>(
+			'[data-mobile-more-toggle]',
+		)
+		if (moreToggle) {
+			event.preventDefault()
+			setMoreOpen(moreToggle.getAttribute('aria-expanded') !== 'true')
+			return
+		}
 		const toggle = target.closest<HTMLButtonElement>('[data-mobile-toggle]')
 		if (toggle) {
 			event.preventDefault()
 			setOpen(toggle.getAttribute('aria-expanded') !== 'true')
+			return
 		}
 		if (target.closest('[data-mobile-menu] a')) {
 			setOpen(false)
 		}
 	})
-	document.addEventListener(
-		'keydown',
-		event => event.key === 'Escape' && setOpen(false),
-	)
-	document.addEventListener('astro:before-preparation', () => setOpen(false))
+	document.addEventListener('keydown', event => {
+		if (event.key === 'Escape' && desktopMore?.dataset.open === 'true') {
+			event.preventDefault()
+			desktopMore
+				.querySelector<HTMLButtonElement>('[data-desktop-more-toggle]')
+				?.focus()
+			setDesktopMoreOpen(false)
+			return
+		}
+		if (
+			event.key !== 'Escape' ||
+			!document.documentElement.classList.contains('menu-open')
+		)
+			return
+		setOpen(false)
+		document.querySelector<HTMLButtonElement>('[data-mobile-toggle]')?.focus()
+	})
+	document.addEventListener('astro:before-preparation', () => {
+		setDesktopMoreOpen(false)
+		setOpen(false)
+	})
 </script>
 
 <style>
@@ -164,13 +341,17 @@ const siteLogo =
 		background: transparent;
 		transition: height 400ms var(--ease-standard);
 	}
+	.site-header--solid-blur {
+		background: var(--color-background-secondary-translucent);
+		backdrop-filter: var(--filter-blur);
+	}
 	.nav-mask > div {
 		--mask-base-height: 100px;
 		position: fixed;
 		top: 0;
 		right: 0;
 		left: 0;
-		z-index: 999;
+		z-index: 1000;
 		height: calc(var(--mask-base-height) / pow(1.2, calc(var(--sharp) - 1)));
 		background-color: color-mix(
 			in srgb,
@@ -180,6 +361,7 @@ const siteLogo =
 		backdrop-filter: blur(1px);
 		-webkit-mask-image: linear-gradient(to bottom, #000, transparent);
 		mask-image: linear-gradient(to bottom, #000, transparent);
+		mask-composite: destination-in;
 		pointer-events: none;
 		transition:
 			height 600ms cubic-bezier(0.86, 0, 0.07, 1),
@@ -215,6 +397,9 @@ const siteLogo =
 	}
 	.desktop-nav > a,
 	.more-menu > button {
+		display: flex;
+		align-items: center;
+		justify-content: center;
 		border: 0;
 		border-radius: 0.45rem;
 		background: transparent;
@@ -245,23 +430,20 @@ const siteLogo =
 		display: grid;
 		min-width: 11rem;
 		visibility: hidden;
+		pointer-events: none;
 		border: 1px solid var(--color-border-primary);
 		border-radius: var(--radius-medium);
 		background: var(--color-background-secondary-translucent);
 		opacity: 0;
 		padding: 0.45rem;
-		transform: translateY(-0.2rem);
-		transition:
-			opacity 200ms ease,
-			transform 200ms ease,
-			visibility 140ms;
 		backdrop-filter: var(--filter-blur);
 	}
-	.more-menu:hover .more-panel,
-	.more-menu:focus-within .more-panel {
+	.more-menu:not([data-managed]):hover .more-panel,
+	.more-menu:not([data-managed]):focus-within .more-panel,
+	.more-menu[data-open='true'] .more-panel {
 		visibility: visible;
+		pointer-events: auto;
 		opacity: 1;
-		transform: translateY(0);
 	}
 	.more-panel a {
 		display: flex;
@@ -362,7 +544,8 @@ const siteLogo =
 		}
 		.mobile-menu[aria-hidden='false'] {
 			visibility: visible;
-			height: var(--mobile-menu-height, 100dvh);
+			height: min(var(--mobile-menu-height, 100dvh), 100dvh);
+			overflow-y: auto;
 			opacity: 1;
 		}
 		.mobile-menu-inner {
@@ -370,14 +553,14 @@ const siteLogo =
 			flex-direction: column;
 			gap: 0;
 			padding-top: 48px;
-			width: min(calc(100% - 32px), 980px);
-			margin-inline: auto;
 		}
 		.brand {
+			height: 48px;
 			pointer-events: auto;
 			transition-delay: 350ms;
 		}
-		.mobile-menu a {
+		.mobile-menu a,
+		.mobile-more-toggle {
 			display: flex;
 			align-items: center;
 			gap: 0.45rem;
@@ -395,8 +578,35 @@ const siteLogo =
 				opacity 400ms ease,
 				color 500ms ease;
 		}
+		.mobile-more-toggle {
+			width: 100%;
+			border: 0;
+			background: transparent;
+			text-align: left;
+			cursor: pointer;
+		}
+		.mobile-more-panel {
+			display: flex;
+			flex-direction: column;
+		}
+		.mobile-more-panel[hidden] {
+			display: none;
+		}
+		.mobile-more-chevron {
+			width: 8px;
+			height: 8px;
+			margin-left: auto;
+			border-right: 1px solid currentColor;
+			border-bottom: 1px solid currentColor;
+			transform: rotate(45deg);
+			transition: transform 200ms var(--ease-standard);
+		}
+		.mobile-more-toggle[aria-expanded='true'] .mobile-more-chevron {
+			transform: rotate(225deg);
+		}
 		.mobile-menu[aria-hidden='false'] .mobile-menu-inner > a,
-		.mobile-menu[aria-hidden='false'] .mobile-search-button {
+		.mobile-menu[aria-hidden='false'] .mobile-more-toggle,
+		.mobile-menu[aria-hidden='false'] .mobile-more-panel a {
 			transform: translateY(0);
 			opacity: 1;
 			pointer-events: auto;
@@ -409,33 +619,10 @@ const siteLogo =
 		.mobile-menu a:focus-visible {
 			text-decoration: none;
 		}
-		.mobile-group-label {
-			margin: 12px 0 4px;
-			color: var(--color-text-secondary);
-			font-size: 14px;
-			pointer-events: none;
-		}
-		.mobile-search {
-			margin-top: 0;
-		}
 		.mobile-search-button {
-			display: flex;
-			align-items: center;
-			gap: 0.65rem;
-			height: 48px;
-			min-height: 48px;
-			border: 0;
-			background: transparent;
+			align-self: flex-start;
+			width: 32px;
 			padding: 0 4px;
-			color: var(--color-text-secondary);
-			cursor: pointer;
-			opacity: 0;
-			transform: translateY(-10%);
-			pointer-events: none;
-			transition:
-				transform 400ms ease,
-				opacity 400ms ease,
-				color 500ms ease;
 		}
 		:global(.menu-open) {
 			overflow: hidden;
@@ -445,7 +632,7 @@ const siteLogo =
 			backdrop-filter: blur(36px);
 		}
 		:global(.menu-open) .site-header {
-			height: var(--mobile-menu-height, 100dvh);
+			height: min(var(--mobile-menu-height, 100dvh), 100dvh);
 			overflow: hidden;
 		}
 		:global(.menu-open) .brand {

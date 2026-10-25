@@ -3,29 +3,30 @@ import type { NavItem } from './types/nav'
 
 export const HOME_PAGE_SIZE = 8
 export const ARCHIVE_PAGE_SIZE = 10
+export const SEARCH_PAGE_SIZE = 30
 
 export const primaryNav = [
-	{ text: '文章', url: '/posts/' },
-	{ text: '动态', url: '/moments/' },
-	{ text: '友链', url: '/friends/' },
-	{ text: '关于', url: '/about/' },
+	{ textKey: 'nav.posts', url: '/posts/' },
+	{ textKey: 'nav.moments', url: '/moments/' },
+	{ textKey: 'nav.friends', url: '/friends/' },
+	{ textKey: 'nav.about', url: '/about/' },
 ] satisfies NavItem[]
 
 export const moreNav = [
-	{ text: '主页', url: 'https://example.com', external: true },
+	{ textKey: 'nav.externalHome', url: 'https://example.com', external: true },
 	{ text: 'Moments', url: 'https://example.com/moments/', external: true },
-	{ text: '作品', url: '/works/' },
-	{ text: '订阅', url: '/subscribe/' },
+	{ textKey: 'nav.works', url: '/works/' },
+	{ textKey: 'nav.subscribe', url: '/subscribe/' },
 ] satisfies NavItem[]
 
 export const footerNav = [
 	{
-		title: '探索',
+		titleKey: 'footer.explore',
 		items: [
-			{ text: 'Atom 订阅', url: '/atom.xml' },
-			{ text: 'RSS 订阅', url: '/rss.xml' },
+			{ textKey: 'footer.atom', url: '/atom.xml' },
+			{ textKey: 'footer.rss', url: '/rss.xml' },
 			{
-				text: '开往',
+				textKey: 'footer.traveling',
 				url: 'https://www.travellings.cn/go.html',
 				external: true,
 			},
@@ -33,23 +34,23 @@ export const footerNav = [
 		],
 	},
 	{
-		title: '站点',
+		titleKey: 'footer.site',
 		items: [
-			{ text: '文章', url: '/posts/' },
-			{ text: '归档', url: '/archives/' },
-			{ text: '分类', url: '/categories/' },
-			{ text: '标签', url: '/tags/' },
-			{ text: '搜索', url: '/search/' },
-			{ text: '友链', url: '/friends/' },
-			{ text: '关于', url: '/about/' },
+			{ textKey: 'nav.posts', url: '/posts/' },
+			{ textKey: 'page.archives', url: '/archives/' },
+			{ textKey: 'page.categories', url: '/categories/' },
+			{ textKey: 'page.tags', url: '/tags/' },
+			{ textKey: 'nav.search', url: '/search/' },
+			{ textKey: 'nav.friends', url: '/friends/' },
+			{ textKey: 'nav.about', url: '/about/' },
 		],
 	},
 	{
-		title: '更多',
+		titleKey: 'footer.more',
 		items: [
-			{ text: '动态', url: '/moments/' },
-			{ text: '作品', url: '/works/' },
-			{ text: '订阅', url: '/subscribe/' },
+			{ textKey: 'nav.moments', url: '/moments/' },
+			{ textKey: 'nav.works', url: '/works/' },
+			{ textKey: 'nav.subscribe', url: '/subscribe/' },
 		],
 	},
 ] satisfies FooterNav

@@ -2,42 +2,55 @@
 import { Atom, Check, Copy, Rss } from 'lucide-astro'
 import blogConfig from '../../blog.config'
 import Layout from '../layouts/Layout.astro'
+import { translate } from '../utils/i18n'
 
 const feeds = [
 	{
 		title: 'Atom',
-		description: '结构清晰、支持稳定标识的 Atom 1.0 摘要订阅。',
+		descriptionKey: 'subscribe.atomDescription',
 		url: new URL('/atom.xml', blogConfig.site).href,
 		Icon: Atom,
 	},
 	{
 		title: 'RSS',
-		description: '兼容广泛阅读器的 RSS 2.0 摘要订阅。',
+		descriptionKey: 'subscribe.rssDescription',
 		url: new URL('/rss.xml', blogConfig.site).href,
 		Icon: Rss,
 	},
-]
+] as const
 ---
 
-<Layout title="订阅" description="通过 Atom 或 RSS 获取最近更新。">
+<Layout
+	title={translate('page.subscribe')}
+	titleKey="page.subscribe"
+	description={translate('page.subscribeMetaDescription')}
+	descriptionKey="page.subscribeMetaDescription"
+>
 	<section class="page-shell subscribe-page">
 		<header>
-			<h1>订阅</h1>
-			<p>选择你习惯的格式，将地址添加到 RSS 阅读器即可。</p>
+			<h1 data-i18n="page.subscribe">{translate('page.subscribe')}</h1>
+			<p data-i18n="page.subscribeDescription">
+				{translate('page.subscribeDescription')}
+			</p>
 		</header>
 		<div class="feed-grid">
 			{
-				feeds.map(({ title, description, url, Icon }) => (
+				feeds.map(({ title, descriptionKey, url, Icon }) => (
 					<article class="feed-card surface-card">
 						<Icon size={24} strokeWidth={1.7} />
 						<h2>{title}</h2>
-						<p>{description}</p>
+						<p data-i18n={descriptionKey}>{translate(descriptionKey)}</p>
 						<a href={url}>{url}</a>
-						<button type="button" data-copy-feed={url}>
-							<Copy size={16} />
-							<span>复制地址</span>
-							<Check class="copied" size={16} />
+						<button type="button" data-copy-feed={url} disabled>
+							<span class="copy-icons" aria-hidden="true">
+								<Copy class="copy-icon" size={16} />
+								<Check class="copied-icon" size={16} />
+							</span>
+							<span data-copy-label data-i18n="subscribe.copy">
+								{translate('subscribe.copy')}
+							</span>
 						</button>
+						<span class="copy-feedback" role="status" data-copy-feedback />
 					</article>
 				))
 			}
@@ -46,24 +59,62 @@ const feeds = [
 </Layout>
 
 <script>
+	import { translate } from '../utils/i18n'
+	import { getClientLocale } from '../utils/i18n-client'
+
+	const copyResetTimers = new WeakMap<
+		HTMLButtonElement,
+		ReturnType<typeof setTimeout>
+	>()
+	function enableCopyButtons() {
+		document
+			.querySelectorAll<HTMLButtonElement>('[data-copy-feed]')
+			.forEach(button => (button.disabled = false))
+	}
 	document.addEventListener('click', async event => {
 		const button = (event.target as Element).closest<HTMLButtonElement>(
 			'[data-copy-feed]',
 		)
 		if (!button) return
-		await navigator.clipboard.writeText(button.dataset.copyFeed ?? '')
-		button.dataset.copied = 'true'
-		button.querySelector('span')!.textContent = '已复制'
-		setTimeout(() => {
+		const previousTimer = copyResetTimers.get(button)
+		if (previousTimer) clearTimeout(previousTimer)
+		const locale = getClientLocale()
+		const feedback = button.parentElement?.querySelector<HTMLElement>(
+			'[data-copy-feedback]',
+		)
+		try {
+			await navigator.clipboard.writeText(button.dataset.copyFeed ?? '')
+		} catch {
 			button.dataset.copied = 'false'
-			button.querySelector('span')!.textContent = '复制地址'
-		}, 1400)
+			button.querySelector<HTMLElement>('[data-copy-label]')!.textContent =
+				translate('subscribe.copy', locale)
+			if (feedback)
+				feedback.textContent = translate('subscribe.copyFailed', locale)
+			return
+		}
+		button.dataset.copied = 'true'
+		if (feedback)
+			feedback.textContent = translate('subscribe.copySuccess', locale)
+		button.querySelector<HTMLElement>('[data-copy-label]')!.textContent =
+			translate('subscribe.copied', locale)
+		copyResetTimers.set(
+			button,
+			setTimeout(() => {
+				button.dataset.copied = 'false'
+				if (feedback) feedback.textContent = ''
+				button.querySelector<HTMLElement>('[data-copy-label]')!.textContent =
+					translate('subscribe.copy', getClientLocale())
+			}, 1400),
+		)
 	})
+	enableCopyButtons()
+	document.addEventListener('astro:page-load', enableCopyButtons)
 </script>
 
 <style>
 	.subscribe-page {
 		padding-top: 128px;
+		padding-bottom: 128px;
 	}
 	header h1 {
 		margin: 0;
@@ -128,19 +179,47 @@ const feeds = [
 		line-height: 1;
 		cursor: pointer;
 	}
+	.copy-feedback {
+		color: var(--color-text-secondary);
+		font-size: 14px;
+		line-height: 1.4;
+	}
+	.copy-feedback:empty {
+		display: none;
+	}
+	.copy-icons {
+		position: relative;
+		display: grid;
+		width: 16px;
+		height: 16px;
+		place-items: center;
+	}
+	.copy-icons :global(svg) {
+		grid-area: 1 / 1;
+		color: var(--color-background-accent-contrast);
+		transition:
+			opacity 180ms cubic-bezier(0.2, 0.2, 0.2, 1),
+			transform 180ms cubic-bezier(0.2, 0.2, 0.2, 1);
+	}
+	.copy-icons :global(.copied-icon) {
+		opacity: 0;
+		transform: scale(0.85);
+	}
 	.feed-card button:hover {
 		background: var(--color-background-accent-hover);
 		text-decoration: none;
 	}
-	.feed-card .copied {
-		display: none;
+	.feed-card button:disabled {
+		cursor: default;
+		opacity: 0.6;
 	}
-	.feed-card button[data-copied='true'] > :first-child {
-		display: none;
+	.feed-card button[data-copied='true'] .copy-icons :global(.copy-icon) {
+		opacity: 0;
+		transform: scale(0.85);
 	}
-	.feed-card button[data-copied='true'] .copied {
-		display: block;
-		color: #1d9d48;
+	.feed-card button[data-copied='true'] .copy-icons :global(.copied-icon) {
+		opacity: 1;
+		transform: scale(1);
 	}
 	@media (max-width: 1000px) {
 		.feed-grid {

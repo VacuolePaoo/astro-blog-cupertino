@@ -1,4 +1,5 @@
 ---
+import { translate } from '../utils/i18n'
 import { getPaginatedUrl, getPaginationItems } from '../utils/pagination'
 
 interface Props {
@@ -13,13 +14,19 @@ const items = getPaginationItems(current, total)
 
 {
 	total > 1 && (
-		<nav class="pagination" aria-label="文章分页">
+		<nav
+			class="pagination"
+			aria-label={translate('pagination.label')}
+			data-i18n-aria-label="pagination.label"
+		>
 			{current > 1 && (
 				<a
 					class="page-control prev"
 					href={getPaginatedUrl(basePath, current - 1)}
 				>
-					上一页
+					<span data-i18n="pagination.previous">
+						{translate('pagination.previous')}
+					</span>
 				</a>
 			)}
 			{items.map(item =>
@@ -27,12 +34,12 @@ const items = getPaginationItems(current, total)
 					<span class="page-ellipsis" aria-hidden="true">
 						…
 					</span>
+				) : item.page === current ? (
+					<span class="page-number current" aria-current="page">
+						{item.page}
+					</span>
 				) : (
-					<a
-						class="page-number"
-						href={getPaginatedUrl(basePath, item.page!)}
-						aria-current={item.page === current ? 'page' : undefined}
-					>
+					<a class="page-number" href={getPaginatedUrl(basePath, item.page!)}>
 						{item.page}
 					</a>
 				),
@@ -42,7 +49,9 @@ const items = getPaginationItems(current, total)
 					class="page-control next"
 					href={getPaginatedUrl(basePath, current + 1)}
 				>
-					下一页
+					<span data-i18n="pagination.next">
+						{translate('pagination.next')}
+					</span>
 				</a>
 			)}
 		</nav>
@@ -56,8 +65,10 @@ const items = getPaginationItems(current, total)
 		text-align: center;
 	}
 	.pagination a,
-	.page-ellipsis {
+	.page-ellipsis,
+	.page-number.current {
 		display: inline-flex;
+		user-select: none;
 		height: 32px;
 		align-items: center;
 		border-radius: var(--radius-small);
@@ -81,10 +92,10 @@ const items = getPaginationItems(current, total)
 		background: var(--color-background-primary-active);
 		color: var(--color-text-primary-active);
 	}
-	.pagination a[aria-current='page'] {
+	.pagination .page-number[aria-current='page'] {
 		color: var(--color-text-secondary);
 	}
-	.pagination a[aria-current='page']:hover {
+	.pagination .page-number[aria-current='page']:hover {
 		background: transparent;
 	}
 	.pagination a.prev {

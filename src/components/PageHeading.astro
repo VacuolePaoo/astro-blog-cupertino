@@ -1,15 +1,28 @@
 ---
+import type { UiMessageKey } from '../types/i18n'
+
 interface Props {
 	title: string
+	titleKey?: UiMessageKey | undefined
 	label?: string | undefined
+	labelKey?: UiMessageKey | undefined
+	capitalize?: boolean | undefined
+	containedOnMobile?: boolean | undefined
 }
 
-const { title, label } = Astro.props
+const {
+	title,
+	titleKey,
+	label,
+	labelKey,
+	capitalize = false,
+	containedOnMobile = false,
+} = Astro.props
 ---
 
-<header class="page-meta">
-	{label && <span>{label}</span>}
-	<h1>{title}</h1>
+<header class:list={['page-meta', { 'contained-mobile': containedOnMobile }]}>
+	{label && <span data-i18n={labelKey}>{label}</span>}
+	<h1 class:list={{ capitalize }} data-i18n={titleKey}>{title}</h1>
 </header>
 
 <style>
@@ -28,5 +41,18 @@ const { title, label } = Astro.props
 		font-size: 48px;
 		font-weight: 700;
 		line-height: normal;
+	}
+	.page-meta h1.capitalize {
+		text-transform: capitalize;
+	}
+	@media (max-width: 832px) {
+		.page-meta {
+			width: calc(100% + 32px);
+			margin-left: -16px;
+		}
+		.page-meta.contained-mobile {
+			width: 100%;
+			margin-left: 0;
+		}
 	}
 </style>

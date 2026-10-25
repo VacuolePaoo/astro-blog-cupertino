@@ -7,6 +7,7 @@ import Pagination from '../../../components/Pagination.astro'
 import { ARCHIVE_PAGE_SIZE } from '../../../consts'
 import Layout from '../../../layouts/Layout.astro'
 import { getArticles } from '../../../utils/article'
+import { translate, translateWithValues } from '../../../utils/i18n'
 import { paginate } from '../../../utils/pagination'
 
 export const getStaticPaths = (async () => {
@@ -24,11 +25,17 @@ const { page } = Astro.props as {
 ---
 
 <Layout
-	title={`归档 · 第 ${page.currentPage} 页`}
-	description="按发布时间浏览全部文章。"
+	title={translateWithValues('page.pageNumber', {
+		title: translate('page.archives'),
+		page: page.currentPage,
+	})}
+	titleKey="page.pageNumber"
+	titleValues={{ title: translate('page.archives'), page: page.currentPage }}
+	description={translate('page.archivesDescription')}
+	descriptionKey="page.archivesDescription"
 >
 	<div class="page-shell">
-		<PageHeading title="归档" />
+		<PageHeading title={translate('page.archives')} titleKey="page.archives" />
 		<ArchiveList articles={page.items} />
 		<Pagination
 			current={page.currentPage}

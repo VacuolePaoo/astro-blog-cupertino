@@ -1,10 +1,11 @@
 ---
-import { ClientRouter } from 'astro:transitions'
+import type { UiMessageKey } from '../types/i18n'
 import blogConfig from '../../blog.config'
 import Footer from '../components/Footer.astro'
 import Header from '../components/Header.astro'
 import RainbowBanner from '../components/RainbowBanner.astro'
 import SeoHead from '../components/seo/SeoHead.astro'
+import { translate } from '../utils/i18n'
 import { assertAllowedImageSource } from '../utils/image'
 import '@fontsource-variable/inter'
 import '../styles/global.scss'
@@ -18,10 +19,22 @@ interface Props {
 	type?: 'website' | 'article' | undefined
 	pubDate?: string | undefined
 	updatedDate?: string | undefined
+	titleKey?: UiMessageKey | undefined
+	descriptionKey?: UiMessageKey | undefined
+	titleValues?: Record<string, string | number> | undefined
+	descriptionValues?: Record<string, string | number> | undefined
 }
 
 const props = Astro.props
-const defaultTheme = blogConfig.theme.colorScheme
+const pageType =
+	props.type === 'article'
+		? 'article'
+		: Astro.url.pathname === '/search/'
+			? 'search'
+			: Astro.url.pathname === '/'
+				? 'home'
+				: 'website'
+const defaultTheme = blogConfig.theme.appearance.colorScheme
 const siteLogo =
 	'logo' in blogConfig && typeof blogConfig.logo === 'string'
 		? blogConfig.logo
@@ -46,6 +59,7 @@ window.__vite_plugin_react_preamble_installed__ = true
 	lang={blogConfig.language}
 	data-time-zone={blogConfig.timeZone}
 	data-default-theme={defaultTheme}
+	data-site-title={blogConfig.title}
 	style={`--site-accent:${blogConfig.accentColor}`}
 >
 	<head>
@@ -76,7 +90,11 @@ window.__vite_plugin_react_preamble_installed__ = true
 			})()
 		</script>
 		<SeoHead {...props} />
-		<ClientRouter />
+		{
+			blogConfig.theme.motion.viewTransition && (
+				<style is:inline set:html={'@view-transition { navigation: auto; }'} />
+			)
+		}
 		{
 			blogConfig.headScripts.map(script =>
 				'src' in script ? (
@@ -96,75 +114,76 @@ window.__vite_plugin_react_preamble_installed__ = true
 		}
 	</head>
 	<body
-		data-page-type={props.type ?? 'website'}
-		style="--config-corner-squircle:true"
+		data-page-type={pageType}
+		data-i18n-title={props.titleKey}
+		data-i18n-description={props.descriptionKey}
+		data-i18n-title-values={props.titleValues
+			? JSON.stringify(props.titleValues)
+			: undefined}
+		data-i18n-description-values={props.descriptionValues
+			? JSON.stringify(props.descriptionValues)
+			: undefined}
+		style={`--config-corner-squircle:${blogConfig.theme.appearance.squircle}`}
 	>
-		<a class="skip-link" href="#main-content"> 跳到正文 </a>
+		<a class="skip-link" href="#main-content" data-i18n="skip.content"
+			>{translate('skip.content')}</a
+		>
 		<Header />
 		<RainbowBanner />
 		<main id="main-content">
 			<slot />
 		</main>
-		<Footer />
+		{pageType !== 'search' && <Footer />}
 		<script>
 			import blogConfig from '../../blog.config'
+			import { resolveUiLocale, translateWithValues } from '../utils/i18n'
+			import { getClientLocale, initializeI18n } from '../utils/i18n-client'
 			import { initializeScrollReveal } from '../utils/scroll-reveal'
 			import { initializeSmoothScroll } from '../utils/smooth-scroll'
 
-			function formatListDate(value: string) {
-				const timeZone = document.documentElement.dataset.timeZone || 'UTC'
-				const parts = new Intl.DateTimeFormat('en-CA', {
-					timeZone,
-					year: 'numeric',
-					month: '2-digit',
-					day: '2-digit',
-				}).formatToParts(new Date())
-				const record = Object.fromEntries(
-					parts.map(part => [part.type, part.value]),
-				)
-				const today = Date.UTC(
-					Number(record.year),
-					Number(record.month) - 1,
-					Number(record.day),
-				)
-				const [year, month, day] = value.split('-').map(Number)
-				const target = Date.UTC(year!, month! - 1, day!)
-				const days = Math.floor((today - target) / 86_400_000)
-				if (days <= 0) return '今天'
-				if (days <= 7) return `${days}天前`
-				if (year === Number(record.year)) return `${month}月${day}日`
-				return `${String(year).slice(-2)}年${month}月${day}日`
-			}
-
 			function enhancePage() {
+				initializeI18n()
 				initializeScrollReveal()
-				void initializeSmoothScroll(blogConfig.theme.smoothScroll.enabled)
-				document
-					.querySelectorAll<HTMLElement>('.prose pre.astro-code')
-					.forEach(pre => {
-						if (pre.querySelector('.code-copy')) return
-						const button = document.createElement('button')
-						button.type = 'button'
-						button.className = 'code-copy'
-						button.textContent = '复制'
-						button.addEventListener('click', async () => {
-							await navigator.clipboard.writeText(
-								pre.querySelector('code')?.textContent ?? '',
+				void initializeSmoothScroll(
+					blogConfig.theme.motion.smoothScroll.enabled &&
+						document.body.dataset.pageType !== 'search',
+				)
+				const times =
+					document.querySelectorAll<HTMLTimeElement>('time[data-date]')
+				const locale = getClientLocale()
+				if (times.length && locale !== resolveUiLocale(blogConfig.language)) {
+					void import('../utils/date-display').then(({ formatDisplayDate }) => {
+						times.forEach(time => {
+							const text = formatDisplayDate(
+								time.dataset.date!,
+								blogConfig.theme.content.dates.displayFormat,
+								locale,
 							)
-							button.textContent = '已复制'
-							setTimeout(() => (button.textContent = '复制'), 1200)
+							const primary = time.querySelector<HTMLElement>('.date-primary')
+							if (primary) primary.textContent = text
+							const updated = time.dataset.updatedDate
+							if (updated) {
+								const updatedText = translateWithValues(
+									'article.updated',
+									{
+										date: formatDisplayDate(
+											updated,
+											blogConfig.theme.content.dates.displayFormat,
+											locale,
+										),
+									},
+									locale,
+								)
+								const tooltip = time.querySelector<HTMLElement>('.date-updated')
+								if (tooltip) tooltip.textContent = updatedText
+								time.setAttribute(
+									'aria-label',
+									`${text}${locale === 'zh-CN' ? '，' : ', '}${updatedText}`,
+								)
+							} else time.setAttribute('aria-label', text)
 						})
-						pre.append(button)
 					})
-				document
-					.querySelectorAll<HTMLTimeElement>(
-						'time[data-mode="list"][data-date]',
-					)
-					.forEach(time => {
-						const primary = time.querySelector<HTMLElement>('.date-primary')
-						if (primary)
-							primary.textContent = formatListDate(time.dataset.date!)
-					})
+				}
 			}
 			enhancePage()
 			document.addEventListener('astro:page-load', enhancePage)
@@ -175,11 +194,11 @@ window.__vite_plugin_react_preamble_installed__ = true
 <style>
 	.skip-link {
 		position: fixed;
-		top: 0.5rem;
-		left: 0.5rem;
+		top: 0;
+		left: 50%;
 		z-index: 1100;
 		border: 1px solid var(--color-border-primary);
-		transform: translateY(-150%);
+		transform: translateX(-50%) translateY(-100%) scale(0.9);
 		border-radius: var(--radius-full);
 		background: var(--color-background-secondary-translucent);
 		backdrop-filter: var(--filter-blur);
@@ -192,9 +211,7 @@ window.__vite_plugin_react_preamble_installed__ = true
 			opacity 200ms ease-out;
 	}
 	.skip-link:focus {
-		transform: translate(-50%, calc(-50% + 48px));
-		left: 50%;
-		top: 0;
+		transform: translateX(-50%) translateY(calc(-50% + 48px));
 		box-shadow: 0 8px 24px rgb(0 0 0 / 0.13);
 		opacity: 1;
 	}

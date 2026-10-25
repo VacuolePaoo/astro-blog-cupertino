@@ -4,6 +4,7 @@ import HomeArticles from '../../components/HomeArticles.astro'
 import { HOME_PAGE_SIZE } from '../../consts'
 import Layout from '../../layouts/Layout.astro'
 import { getArticles } from '../../utils/article'
+import { translateWithValues } from '../../utils/i18n'
 
 export const getStaticPaths = (async ({ paginate }) => {
 	const articles = await getArticles()
@@ -16,8 +17,14 @@ const { page } = Astro.props
 ---
 
 <Layout
-	title={`第 ${page.currentPage} 页`}
-	description={`最新文章列表，第 ${page.currentPage} 页。`}
+	title={translateWithValues('page.homePageNumber', { page: page.currentPage })}
+	titleKey="page.homePageNumber"
+	titleValues={{ page: page.currentPage }}
+	description={translateWithValues('page.latestPageDescription', {
+		page: page.currentPage,
+	})}
+	descriptionKey="page.latestPageDescription"
+	descriptionValues={{ page: page.currentPage }}
 >
 	<HomeArticles
 		articles={page.data}
