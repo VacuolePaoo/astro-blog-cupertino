@@ -7,15 +7,15 @@
 ```bash
 pnpm install
 pnpm run generate:covers
-pnpm run dev
+pnpm astro dev --background
 ```
 
 开发服务器使用 Astro 后台模式：
 
 ```bash
-pnpm run dev:status
-pnpm run dev:logs
-pnpm run dev:stop
+pnpm astro dev status
+pnpm astro dev logs
+pnpm astro dev stop
 ```
 
 质量检查：

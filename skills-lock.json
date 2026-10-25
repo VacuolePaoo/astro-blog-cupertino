@@ -45,18 +45,17 @@
 			"skillPath": "skills/gpt-tasteskill/SKILL.md",
 			"computedHash": "11bf97d9ddfc5b946e46d650e9a81237f1765c32f465ad4a5befa39e74ff1662"
 		},
-		"minimalist-ui": {
-			"source": "leonxlnx/taste-skill",
-			"ref": "main",
-			"sourceType": "github",
-			"skillPath": "skills/minimalist-skill/SKILL.md",
-			"computedHash": "f9174b67ed00bce3f62641ac6393911a53f61f210f5b59ee3248acbed2ad11a0"
-		},
 		"performance": {
 			"source": "addyosmani/web-quality-skills",
 			"sourceType": "github",
 			"skillPath": "skills/performance/SKILL.md",
 			"computedHash": "25074989a0bbf636fd92e9079270b262a1c63422ed72a854494a8241dea0fcc5"
+		},
+		"review-frontend-production": {
+			"source": "BadbotAI/BadGoods",
+			"sourceType": "github",
+			"skillPath": "skills/review-frontend-production/SKILL.md",
+			"computedHash": "ececa32f1e4d3938f68fbc7a129e7009b7c1f806e487f6d2f23171518b4b25cb"
 		},
 		"seo": {
 			"source": "addyosmani/web-quality-skills",
