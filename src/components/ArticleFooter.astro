@@ -3,8 +3,8 @@ import type { ArticleEntry } from '../types/article'
 import { Tags } from 'lucide-astro'
 import blogConfig from '../../blog.config'
 import { getArticleUrl } from '../utils/article'
+import { translate, translateWithValues } from '../utils/i18n'
 import { getTaxonomyUrl } from '../utils/taxonomy'
-import DateDisplay from './DateDisplay.astro'
 
 interface Props {
 	article: ArticleEntry
@@ -14,42 +14,59 @@ interface Props {
 }
 
 const { article, newer, older, preview = false } = Astro.props
-const copyright = article.data.copyright ?? blogConfig.copyright
+const license = article.data.copyright ?? blogConfig.license
 ---
 
 <footer class="article-footer">
 	<section class="copyright-card">
-		<h2>关于本文</h2>
-		<strong>{article.data.title}</strong>
-		<p>
-			本文由 {blogConfig.author.name} 发布于{' '}
-			<DateDisplay date={article.data.pubDate} mode="full" />，版权归
+		<h2 data-i18n="article.about">{translate('article.about')}</h2>
+		<div class="copyright-details">
+			<span
+				data-i18n-template="article.licenseBefore"
+				data-i18n-value-author={blogConfig.author.name}
+				>{
+					translateWithValues('article.licenseBefore', {
+						author: blogConfig.author.name,
+					})
+				}</span
+			>
 			{
-				copyright.url ? (
-					<a href={copyright.url}>{copyright.name}</a>
-				) : (
-					copyright.name
-				)
-			}{' '}
-			所有。
-		</p>
+				license.url ? <a href={license.url}>{license.name}</a> : license.name
+			}<span data-i18n="article.licenseEnd"
+				>{translate('article.licenseEnd')}</span
+			>
+		</div>
 		{
 			article.data.tags?.length && (
-				<div class="article-tags" aria-label="文章标签">
+				<div
+					class:list={[
+						'article-tags',
+						{ 'capitalize-tags': blogConfig.theme.content.tags.capitalize },
+					]}
+					aria-label={translate('article.tags')}
+					data-i18n-aria-label="article.tags"
+				>
 					<Tags size={14} aria-hidden="true" />
 					{article.data.tags.map(tag => (
-						<a href={getTaxonomyUrl('tags', tag)}>#{tag}</a>
+						<a href={getTaxonomyUrl('tags', tag)}>
+							{blogConfig.theme.content.tags.hashtagPrefix ? '#' : ''}
+							{tag}
+						</a>
 					))}
 				</div>
 			)
 		}
 	</section>
 
-	<nav class="article-surround" aria-label="相邻文章">
+	<nav
+		class="article-surround"
+		aria-label={translate('article.surround')}
+		data-i18n-aria-label="article.surround"
+	>
 		{
 			older ? (
 				<a class="next" href={getArticleUrl(older, preview)}>
-					<span>下一篇</span>
+					<span data-i18n="article.next">{translate('article.next')}</span>
 					<strong>{older.data.title}</strong>
 				</a>
 			) : (
@@ -59,7 +76,9 @@ const copyright = article.data.copyright ?? blogConfig.copyright
 		{
 			newer ? (
 				<a class="prev" href={getArticleUrl(newer, preview)}>
-					<span>上一篇</span>
+					<span data-i18n="article.previous">
+						{translate('article.previous')}
+					</span>
 					<strong>{newer.data.title}</strong>
 				</a>
 			) : (
@@ -86,37 +105,40 @@ const copyright = article.data.copyright ?? blogConfig.copyright
 		font-weight: 700;
 		line-height: normal;
 	}
-	.copyright-card strong {
-		display: block;
-		font-size: 16px;
-		font-weight: 700;
-		line-height: normal;
-	}
-	.copyright-card p {
+	.copyright-details {
 		margin: 0 0 16px;
-		color: var(--color-text-secondary);
+		color: var(--color-text-primary);
 		font-size: 16px;
 		font-weight: 400;
 		line-height: normal;
 	}
 	.copyright-card a {
 		color: var(--color-accent);
-		text-decoration: underline;
-		text-underline-offset: 0.15em;
 	}
 	.article-tags {
 		display: flex;
 		align-items: center;
 		flex-wrap: wrap;
-		gap: 4px;
+		gap: 4px 6px;
 		margin-top: 0;
-		color: var(--color-text-accent);
+		color: var(--color-text-primary);
 		font-size: 14px;
+		line-height: 20px;
 		margin-bottom: 0;
 	}
 	.article-tags a {
-		color: inherit;
+		display: inline-flex;
+		align-items: center;
+		min-height: 20px;
+		color: var(--color-text-accent);
 		text-decoration: none;
+	}
+	.article-tags :global(svg) {
+		margin-right: 2px;
+		flex: none;
+	}
+	.article-tags.capitalize-tags {
+		text-transform: capitalize;
 	}
 	.article-tags a:hover,
 	.article-tags a:focus-visible {

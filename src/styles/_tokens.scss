@@ -18,7 +18,8 @@
 	color-scheme: light;
 	--filter-blur: blur(32px);
 	@include radii;
-	--font-sans-serif: 'Inter Variable', Inter, sans-serif, system-ui;
+	--font-sans-serif:
+		InterVariable, 'Inter Variable', Inter, sans-serif, system-ui;
 	--font-sans-serif-feature-settings: 'liga' 1, 'calt' 1;
 	--page-max: 980px;
 	--article-max: 800px;
@@ -72,11 +73,7 @@
 		from var(--site-accent, #0071e3) r calc(g - 3) calc(b - 8)
 	);
 	--color-background-accent-contrast: #ffffff;
-	--color-background-accent-lite: color-mix(
-		in srgb,
-		var(--site-accent, #0071e3) 10%,
-		white
-	);
+	--color-background-accent-lite: #e4efff;
 	--color-background-warning: #fcf0d5;
 	--color-background-success: #d7ecdb;
 	--color-text-primary: #333333;
@@ -113,11 +110,7 @@
 		from var(--site-accent, #0071e3) r calc(g - 3) calc(b - 8)
 	);
 	--color-background-accent-contrast: #ffffff;
-	--color-background-accent-lite: color-mix(
-		in srgb,
-		var(--site-accent, #0071e3) 18%,
-		#101010
-	);
+	--color-background-accent-lite: #233140;
 	--color-background-warning: #403415;
 	--color-background-success: #1a311d;
 	--color-text-primary: #dddddd;

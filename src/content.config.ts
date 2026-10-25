@@ -17,6 +17,7 @@ const articles = defineCollection({
 			.object({
 				title: z.string().min(1),
 				description: z.string().min(1),
+				excerpt: z.string().optional(),
 				pubDate: articleDate,
 				collection: z.string().min(1),
 				tags: z.array(z.string()).optional(),

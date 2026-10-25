@@ -32,6 +32,6 @@ import SearchButton from './SearchButton.astro'
 
 即使脚本加载失败，文章、归档、订阅源和站内链接仍然可以正常访问。交互是增强，而不是内容的入口门槛。
 
-![抽象的群岛结构示意](../assets/cover-1.png#width=75%)
+![抽象的群岛结构示意](../assets/cover-1.png)
 
 这也是这个博客的实现原则：让 HTML 承担内容，让 JavaScript 只承担状态。

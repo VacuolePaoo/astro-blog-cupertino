@@ -79,18 +79,21 @@ const rendererPromise = (async () => {
 })()
 
 async function getArticleCover(article: ArticleEntry) {
-	if (!article.data.cover) return undefined
-	const markdownPath = join(root, 'content', 'posts', `${article.id}.md`)
-	const raw = await readFile(markdownPath, 'utf8')
-	const coverLine = raw.split(/\r?\n/).find(line => line.startsWith('cover:'))
-	const declared = coverLine
-		?.slice('cover:'.length)
-		.trim()
-		.replace(/^['"]|['"]$/g, '')
-	if (!declared) return undefined
-	if (/^https?:\/\//.test(declared)) {
+	const cover = article.data.cover
+	if (!cover) return undefined
+	const frontmatter: unknown = article.rendered?.metadata?.frontmatter
+	const declared =
+		typeof cover === 'string'
+			? cover
+			: frontmatter && typeof frontmatter === 'object' && 'cover' in frontmatter
+				? frontmatter.cover
+				: undefined
+	if (typeof declared !== 'string' || !declared.trim())
+		throw new Error(`无法读取《${article.data.title}》已验证封面的源路径`)
+	const source = declared.trim()
+	if (/^https?:\/\//.test(source)) {
 		try {
-			return { src: 'article-cover', data: await readConfiguredImage(declared) }
+			return { src: 'article-cover', data: await readConfiguredImage(source) }
 		} catch (error) {
 			console.warn(
 				`无法读取《${article.data.title}》的远程封面，OG 图将使用无图版式：${String(error)}`,
@@ -98,9 +101,13 @@ async function getArticleCover(article: ArticleEntry) {
 			return undefined
 		}
 	}
-	const filePath = declared.startsWith('/')
-		? join(root, 'public', declared.slice(1))
-		: resolve(dirname(markdownPath), declared)
+	const markdownPath = resolve(
+		root,
+		article.filePath ?? join('content', 'posts', `${article.id}.md`),
+	)
+	const filePath = source.startsWith('/')
+		? join(root, 'public', source.slice(1))
+		: resolve(dirname(markdownPath), source)
 	return { src: 'article-cover', data: await readFile(filePath) }
 }
 

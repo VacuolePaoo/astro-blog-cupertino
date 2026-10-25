@@ -1,10 +1,12 @@
 ---
 import type { MarkdownHeading } from 'astro'
 import type { ArticleEntry } from '../types/article'
+import blogConfig from '../../blog.config'
 import ArticleCover from '../components/ArticleCover.astro'
 import ArticleFooter from '../components/ArticleFooter.astro'
 import ArticleToc from '../components/ArticleToc.astro'
 import DateDisplay from '../components/DateDisplay.astro'
+import { translate } from '../utils/i18n'
 import { getTaxonomyUrl } from '../utils/taxonomy'
 import Layout from './Layout.astro'
 
@@ -33,14 +35,31 @@ const ogImage = `/og/${preview ? 'previews' : 'posts'}/${article.id}.png`
 		{
 			article.data.cover && (
 				<div class="article-cover" aria-hidden="true" data-article-cover>
-					<ArticleCover src={article.data.cover} alt="" eager />
+					<div
+						class:list={[
+							'article-cover-media',
+							{
+								'animate-cover':
+									blogConfig.theme.motion.heroExitWhileScrolling.enabled,
+								'with-blur':
+									blogConfig.theme.motion.heroExitWhileScrolling.blurFilter,
+							},
+						]}
+					>
+						<ArticleCover src={article.data.cover} alt="" eager />
+					</div>
 				</div>
 			)
 		}
 		<header class="article-header">
 			<div class="article-header-copy article-shell">
 				<div class="article-meta">
-					<a href={getTaxonomyUrl('categories', article.data.collection)}>
+					<a
+						class:list={{
+							uppercase: blogConfig.theme.content.categories.uppercase,
+						}}
+						href={getTaxonomyUrl('categories', article.data.collection)}
+					>
 						{article.data.collection}
 					</a>
 					<DateDisplay
@@ -48,7 +67,13 @@ const ogImage = `/og/${preview ? 'previews' : 'posts'}/${article.id}.png`
 						updatedDate={article.data.updatedDate}
 						mode="full"
 					/>
-					{preview && <span class="draft-badge">非正式版</span>}
+					{
+						preview && (
+							<span class="draft-badge" data-i18n="article.draft">
+								{translate('article.draft')}
+							</span>
+						)
+					}
 				</div>
 				<h1 class="article-title">{article.data.title}</h1>
 			</div>
@@ -71,6 +96,7 @@ const ogImage = `/og/${preview ? 'previews' : 'posts'}/${article.id}.png`
 <style>
 	.article-page {
 		position: relative;
+		container-type: inline-size;
 	}
 	.article-header {
 		position: relative;
@@ -95,6 +121,9 @@ const ogImage = `/og/${preview ? 'previews' : 'posts'}/${article.id}.png`
 	.article-meta > a {
 		color: var(--color-text-accent);
 		font-size: 13px;
+		line-height: 20px;
+	}
+	.article-meta > a.uppercase {
 		text-transform: uppercase;
 	}
 	.article-meta a:hover {
@@ -110,9 +139,16 @@ const ogImage = `/og/${preview ? 'previews' : 'posts'}/${article.id}.png`
 	.article-cover {
 		position: relative;
 		width: 100%;
-		height: 300px;
+		height: 124px;
 		overflow: clip visible;
-		margin-bottom: -180px;
+		pointer-events: none;
+	}
+	.article-cover-media {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 300px;
 		--cover-height: 300px;
 		mask-image: linear-gradient(
 			to bottom,
@@ -133,15 +169,14 @@ const ogImage = `/og/${preview ? 'previews' : 'posts'}/${article.id}.png`
 			rgb(0 0 0 / 0.013) 91.9%,
 			transparent 100%
 		);
-		pointer-events: none;
 	}
-	.article-cover :global(picture),
-	.article-cover :global(img) {
+	.article-cover-media :global(picture),
+	.article-cover-media :global(img) {
 		display: block;
 		width: 100%;
 		height: 100%;
 	}
-	.article-cover :global(img) {
+	.article-cover-media :global(img) {
 		object-fit: cover;
 	}
 	.article-content-shell {
@@ -158,23 +193,39 @@ const ogImage = `/og/${preview ? 'previews' : 'posts'}/${article.id}.png`
 		color: var(--color-text-warning);
 	}
 	@supports (animation-timeline: scroll()) {
-		.article-cover {
+		.article-cover-media.animate-cover {
 			--cover-scroll-range: calc(var(--cover-height) * 3);
-			--cover-offset: 0.5;
-			animation: article-cover-exit linear both;
-			animation-timeline: scroll();
+			will-change: filter, opacity, transform;
+			animation-name: article-cover-exit;
+			animation-duration: 1s;
+			animation-timing-function: linear;
+			animation-fill-mode: both;
+			animation-timeline: scroll(root block);
 			animation-range: 0 var(--cover-scroll-range);
+		}
+		.article-cover-media.with-blur {
+			animation-name: article-cover-exit-with-blur;
 		}
 		@keyframes article-cover-exit {
 			to {
 				opacity: 0;
-				scale: 1.2;
-				margin-top: calc(var(--cover-scroll-range) * var(--cover-offset));
-				margin-bottom: calc(
-					-1 * var(--cover-scroll-range) * var(--cover-offset)
-				);
+				transform: translateY(450px) scale(1.2);
+			}
+		}
+		@keyframes article-cover-exit-with-blur {
+			to {
+				opacity: 0;
+				transform: translateY(450px) scale(1.2);
 				filter: var(--filter-blur);
 			}
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.article-cover-media {
+			animation: none !important;
+			opacity: 1;
+			filter: none;
+			transform: none;
 		}
 	}
 </style>

@@ -1,21 +1,26 @@
 ---
 import type { MarkdownHeading } from 'astro'
 import blogConfig from '../../blog.config'
+import { translate } from '../utils/i18n'
 
 interface Props {
 	headings: MarkdownHeading[]
 }
 
-const visible = blogConfig.theme.toc.enabled
+const visible = blogConfig.theme.content.toc.enabled
 	? Astro.props.headings.filter(
-			heading => heading.depth <= blogConfig.theme.toc.maxDepth,
+			heading => heading.depth <= blogConfig.theme.content.toc.maxDepth,
 		)
 	: []
 ---
 
 {
 	visible.length > 0 && (
-		<aside class="article-toc" aria-label="文章目录">
+		<aside
+			class="article-toc"
+			aria-label={translate('article.toc')}
+			data-i18n-aria-label="article.toc"
+		>
 			{visible.map(heading => (
 				<p class:list={{ nested: heading.depth === 3 }}>
 					<a href={`#${heading.slug}`} data-toc-link={heading.slug}>
@@ -70,9 +75,6 @@ const visible = blogConfig.theme.toc.enabled
 	.article-toc p {
 		margin: 0;
 	}
-	.article-toc p.nested {
-		margin-left: 16px;
-	}
 	.article-toc a {
 		display: inline-block;
 		border-left: 1px solid var(--color-border-primary);
@@ -84,8 +86,7 @@ const visible = blogConfig.theme.toc.enabled
 			border-color 200ms;
 	}
 	.article-toc a:hover,
-	.article-toc a:focus-visible,
-	.article-toc a[aria-current] {
+	.article-toc a:focus-visible {
 		border-color: var(--color-text-secondary-hover);
 		color: var(--color-text-secondary-hover);
 		text-decoration: none;

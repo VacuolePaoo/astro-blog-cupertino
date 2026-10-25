@@ -1,3 +1,6 @@
+import type { UiLocale } from '../types/i18n'
+import { translateWithValues } from './i18n'
+
 export function isRemoteImage(source: string) {
 	return /^https?:\/\//.test(source)
 }
@@ -6,8 +9,8 @@ export function isPublicImage(source: string) {
 	return source.startsWith('/')
 }
 
-export function fallbackCoverAlt(title: string) {
-	return `文章《${title}》的封面图片`
+export function fallbackCoverAlt(title: string, locale: UiLocale = 'zh-CN') {
+	return translateWithValues('article.coverAlt', { title }, locale)
 }
 
 export function isAllowedImageSource(
