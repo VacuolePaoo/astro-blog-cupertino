@@ -70,7 +70,7 @@ const siteLogo =
 						moreNav.map((item, index) => (
 							<a
 								href={item.url}
-								style={`--index:${primaryNav.length + index + 1}`}
+								style={`--index:${index}`}
 								target={item.external ? '_blank' : undefined}
 								rel={item.external ? 'noopener noreferrer' : undefined}
 							>
@@ -437,6 +437,11 @@ const siteLogo =
 		opacity: 0;
 		padding: 0.45rem;
 		backdrop-filter: var(--filter-blur);
+		clip-path: inset(0 0 100% 0 round var(--radius-medium));
+		transition:
+			clip-path 180ms cubic-bezier(0.4, 0, 1, 1),
+			opacity 120ms cubic-bezier(0.4, 0, 1, 1),
+			visibility 0s linear 180ms;
 	}
 	.more-menu:not([data-managed]):hover .more-panel,
 	.more-menu:not([data-managed]):focus-within .more-panel,
@@ -444,6 +449,11 @@ const siteLogo =
 		visibility: visible;
 		pointer-events: auto;
 		opacity: 1;
+		clip-path: inset(0 0 0 0 round var(--radius-medium));
+		transition:
+			clip-path 300ms cubic-bezier(0.22, 1, 0.36, 1),
+			opacity 160ms cubic-bezier(0.22, 1, 0.36, 1),
+			visibility 0s;
 	}
 	.more-panel a {
 		display: flex;
@@ -454,6 +464,25 @@ const siteLogo =
 		font-size: 16px;
 		color: var(--color-text-secondary);
 		text-decoration: none;
+		opacity: 0;
+		transform: translateY(-6px);
+		transition:
+			opacity 100ms cubic-bezier(0.4, 0, 1, 1),
+			transform 140ms cubic-bezier(0.4, 0, 1, 1);
+	}
+	.more-menu:not([data-managed]):hover .more-panel a,
+	.more-menu:not([data-managed]):focus-within .more-panel a,
+	.more-menu[data-open='true'] .more-panel a {
+		opacity: 1;
+		transform: translateY(0);
+		transition:
+			opacity 180ms cubic-bezier(0.22, 1, 0.36, 1),
+			transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
+		transition-delay: calc(var(--index, 0) * 50ms + 40ms);
+	}
+	.more-menu:has(:focus-visible) .more-panel,
+	.more-menu:has(:focus-visible) .more-panel a {
+		transition: none;
 	}
 	.more-panel a:hover {
 		background: var(--color-background-secondary-hover);
@@ -465,6 +494,13 @@ const siteLogo =
 	.mobile-toggle,
 	.mobile-menu {
 		display: none;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.more-menu .more-panel,
+		.more-menu .more-panel a {
+			transition: none !important;
+		}
 	}
 
 	@media (max-width: 600px) {
