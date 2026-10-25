@@ -1,3 +1,5 @@
+import type { TwikooConfig } from './comments'
+
 export interface ExternalHeadScript {
 	src: string
 	async?: boolean
@@ -68,6 +70,7 @@ export interface BlogConfig {
 	license: { name: string; url: string }
 	imageDomains: string[]
 	feed: { limit: number; xslt: boolean }
+	comments: TwikooConfig
 	theme: ThemeConfig
 	headScripts: HeadScript[]
 }

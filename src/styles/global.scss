@@ -112,6 +112,20 @@ body[data-page-type='home'] {
 }
 
 @layer components {
+	.page-top-action {
+		position: fixed;
+		top: 0;
+		left: 50%;
+		z-index: 1100;
+		max-width: calc(100% - 2 * var(--page-gutter));
+		border: 1px solid var(--color-border-primary);
+		border-radius: var(--radius-full);
+		background: var(--color-background-secondary-translucent);
+		backdrop-filter: var(--filter-blur);
+		padding: 10px 20px;
+		color: var(--color-text-primary);
+	}
+
 	.page-shell {
 		width: min(100%, calc(var(--page-max) + 2 * var(--page-gutter)));
 		margin-inline: auto;

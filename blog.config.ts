@@ -25,8 +25,18 @@ export default {
 	},
 
 	// Media and feeds / 图片与订阅
-	imageDomains: ['astro.build'],
+	imageDomains: ['astro.build', 'dinoimg.236668.xyz'],
 	feed: { limit: 20, xslt: true },
+
+	// Article comments / 文章评论（Twikoo 2.0.17）
+	comments: {
+		enabled: true,
+		envId: 'https://twikoo.vacu.top/.netlify/functions/twikoo',
+		region: '', // Only for Tencent Cloud / 仅腾讯云环境需要
+		lang: '', // Empty follows the visitor / 留空跟随访客语言
+		scriptSrc:
+			'https://registry.npmmirror.com/twikoo/2.0.17/files/dist/twikoo.nocss.js',
+	},
 
 	// Theme and interaction / 主题与交互
 	theme: {

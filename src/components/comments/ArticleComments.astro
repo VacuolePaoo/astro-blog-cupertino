@@ -1,0 +1,132 @@
+---
+import type { ArticleCommentsProps as Props } from '../../types/comments'
+import blogConfig from '../../../blog.config'
+import { translate } from '../../utils/i18n'
+import '../../styles/comments/twikoo.css'
+
+const { path } = Astro.props
+const { comments } = blogConfig
+---
+
+{
+	comments.enabled && comments.envId.trim() && (
+		<article-comments
+			class="article-comments"
+			data-env-id={comments.envId}
+			data-region={comments.region}
+			data-lang={comments.lang}
+			data-script-src={comments.scriptSrc}
+			data-path={path}
+		>
+			<button
+				class="comments-restore page-top-action"
+				data-comments-restore
+				data-i18n="comments.restoreSize"
+				aria-controls="article-comments-mount"
+				type="button"
+				hidden
+			>
+				{translate('comments.restoreSize')}
+			</button>
+			<section aria-labelledby="comments-title">
+				<h2 id="comments-title" data-i18n="comments.title" tabindex="-1">
+					{translate('comments.title')}
+				</h2>
+				<p data-comments-status role="status" hidden />
+				<button
+					data-comments-retry
+					type="button"
+					hidden
+					data-i18n="comments.retry"
+				>
+					{translate('comments.retry')}
+				</button>
+				<div id="article-comments-mount" />
+				<noscript>{translate('comments.noScript')}</noscript>
+			</section>
+		</article-comments>
+	)
+}
+
+<script>
+	import { observeArticleComments } from '../../utils/comments-client'
+
+	class ArticleCommentsElement extends HTMLElement {
+		private cleanup?: () => void
+
+		connectedCallback() {
+			this.cleanup = observeArticleComments(this)
+		}
+
+		disconnectedCallback() {
+			this.cleanup?.()
+		}
+	}
+
+	if (!customElements.get('article-comments'))
+		customElements.define('article-comments', ArticleCommentsElement)
+</script>
+
+<style>
+	.article-comments {
+		display: block;
+		width: 100%;
+		max-width: calc(var(--article-max) + 2 * var(--page-gutter));
+		margin: 64px auto;
+		padding-inline: var(--page-gutter);
+	}
+	.article-comments[data-comments-expanded] {
+		--comments-expanded-width: min(
+			calc(1200px + 2 * var(--page-gutter)),
+			100cqi
+		);
+		--comments-expanded-height: max(
+			320px,
+			calc(100dvh - var(--header-height) - 112px)
+		);
+		width: var(--comments-expanded-width);
+		max-width: none;
+		margin-inline: calc((100% - var(--comments-expanded-width)) / 2);
+	}
+	.article-comments[data-comments-expanded] #article-comments-mount,
+	.article-comments[data-comments-expanded] :global(.twikoo) {
+		min-height: var(--comments-expanded-height);
+	}
+	.article-comments[data-comments-expanded] :global(.tk-admin) {
+		height: var(--comments-expanded-height);
+		max-height: none;
+	}
+	h2 {
+		margin: 0 0 24px;
+		font-size: var(--text-card-title);
+		font-weight: 700;
+	}
+	[data-comments-status] {
+		color: var(--color-text-secondary);
+	}
+	[data-comments-retry] {
+		border: 1px solid var(--color-border-primary);
+		border-radius: var(--radius-full);
+		padding: 10px 20px;
+		background: var(--color-background-secondary);
+		color: var(--color-text-accent);
+		cursor: pointer;
+	}
+	.comments-restore {
+		z-index: 1090;
+		transform: translateX(-50%) translateY(calc(-50% + 48px));
+		box-shadow: 0 8px 24px rgb(0 0 0 / 0.13);
+		cursor: pointer;
+	}
+	.comments-restore:hover {
+		background: var(--color-background-secondary-hover);
+	}
+	:global(.skip-link:focus) ~ .comments-restore {
+		visibility: hidden;
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.article-comments {
+			transition-property: none;
+		}
+	}
+</style>
