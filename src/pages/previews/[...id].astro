@@ -2,12 +2,12 @@
 import type { GetStaticPaths } from 'astro'
 import { render } from 'astro:content'
 import ArticleLayout from '../../layouts/ArticleLayout.astro'
-import { getArticles, getArticleSurround } from '../../utils/article'
+import { getArticleSlug, getArticles, getArticleSurround } from '../../utils/article'
 
 export const getStaticPaths = (async () => {
 	const articles = await getArticles({ drafts: true })
 	return articles.map(article => ({
-		params: { id: article.id },
+		params: { id: getArticleSlug(article) },
 		props: { article, articles },
 	}))
 }) satisfies GetStaticPaths

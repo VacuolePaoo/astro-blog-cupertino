@@ -1,10 +1,10 @@
 import type { APIRoute, GetStaticPaths } from 'astro'
-import { getArticles } from '../../../utils/article'
+import { getArticleSlug, getArticles } from '../../../utils/article'
 import { renderArticleOg } from '../../../utils/og'
 
 export const getStaticPaths = (async () =>
 	(await getArticles({ drafts: true })).map(article => ({
-		params: { id: article.id },
+		params: { id: getArticleSlug(article) },
 		props: { article },
 	}))) satisfies GetStaticPaths
 

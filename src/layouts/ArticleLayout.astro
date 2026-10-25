@@ -6,6 +6,7 @@ import ArticleCover from '../components/ArticleCover.astro'
 import ArticleFooter from '../components/ArticleFooter.astro'
 import ArticleToc from '../components/ArticleToc.astro'
 import DateDisplay from '../components/DateDisplay.astro'
+import { getArticleSlug } from '../utils/article'
 import { translate } from '../utils/i18n'
 import { getTaxonomyUrl } from '../utils/taxonomy'
 import Layout from './Layout.astro'
@@ -19,7 +20,7 @@ interface Props {
 }
 
 const { article, headings, newer, older, preview = false } = Astro.props
-const ogImage = `/og/${preview ? 'previews' : 'posts'}/${article.id}.png`
+const ogImage = `/og/${preview ? 'previews' : 'posts'}/${getArticleSlug(article)}.png`
 ---
 
 <Layout

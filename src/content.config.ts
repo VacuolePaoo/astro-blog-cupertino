@@ -10,6 +10,9 @@ const articleDate = z.preprocess(
 	z.string().regex(datePattern, '日期必须使用 YYYY-MM-DD'),
 )
 
+const slugPattern =
+	/^[A-Za-z0-9\u4e00-\u9fff](?:[A-Za-z0-9\u4e00-\u9fff._-]*[A-Za-z0-9\u4e00-\u9fff])?(?:\/[A-Za-z0-9\u4e00-\u9fff](?:[A-Za-z0-9\u4e00-\u9fff._-]*[A-Za-z0-9\u4e00-\u9fff])?)*$/
+
 const articles = defineCollection({
 	loader: glob({ base: './content/posts', pattern: '**/*.md' }),
 	schema: ({ image }) =>
@@ -20,6 +23,13 @@ const articles = defineCollection({
 				excerpt: z.string().optional(),
 				pubDate: articleDate,
 				collection: z.string().min(1),
+				slug: z
+					.string()
+					.regex(
+						slugPattern,
+						'slug 只能包含字母、数字、汉字、连字符、下划线和点，可用 / 分隔多级路径',
+					)
+					.optional(),
 				tags: z.array(z.string()).optional(),
 				cover: z
 					.union([

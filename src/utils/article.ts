@@ -13,8 +13,13 @@ export async function getArticles(options: { drafts?: boolean } = {}) {
 	)
 }
 
+/** URL segment for an article: frontmatter `slug` overrides the file-derived id. */
+export function getArticleSlug(article: ArticleEntry) {
+	return article.data.slug ?? article.id
+}
+
 export function getArticleUrl(article: ArticleEntry, preview = false) {
-	return `/${preview ? 'previews' : 'posts'}/${article.id}/`
+	return `/${preview ? 'previews' : 'posts'}/${getArticleSlug(article)}/`
 }
 
 export function getCoverAlt(article: ArticleEntry) {
