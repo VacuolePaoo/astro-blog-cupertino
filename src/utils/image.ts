@@ -1,6 +1,12 @@
 import type { UiLocale } from '../types/i18n'
 import { translateWithValues } from './i18n'
 
+/** Treat omitted, YAML-null, and blank image fields as absent before validation. */
+export function normalizeOptionalImageValue(value: unknown) {
+	if (value == null) return undefined
+	return typeof value === 'string' ? value.trim() || undefined : value
+}
+
 export function isRemoteImage(source: string) {
 	return /^https?:\/\//.test(source)
 }

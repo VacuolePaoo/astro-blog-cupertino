@@ -6,7 +6,6 @@
 
 ```bash
 pnpm install
-pnpm run generate:covers
 pnpm astro dev --background
 ```
 
@@ -46,6 +45,17 @@ collection: 前端
 ```
 
 可选字段：`tags`、`cover`、`coverAlt`、`updatedDate`、`draft`、`copyright`。
+
+封面可省略，也可将 `cover:` 留空或填写 `cover: ""`。没有封面时，文章页直接显示分类、日期和标题，列表卡片显示文字内容，不保留封面占位。
+
+需要封面时，使用 `cover` 指定图片，并通过 `coverAlt` 填写图片的替代文本：
+
+```yaml
+cover: ../assets/example.jpg
+coverAlt: 清晨阳光照在山间的松林上
+```
+
+`cover` 支持本地文章资源、`public/` 下的绝对路径和已加入 `imageDomains` 的远程图片。`coverAlt` 用于文章页、列表与搜索结果中的封面图片；省略或留空时，使用根据文章标题生成的默认描述。它是图片的 `alt` 文本，不会作为可见图注显示。
 
 正文图片可通过 URL fragment 调整宽度：
 
