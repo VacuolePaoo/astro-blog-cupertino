@@ -357,8 +357,10 @@ body[data-page-type='home'] {
 }
 
 .prose .astro-code .line {
+	position: relative;
 	display: inline-block;
 	min-width: 100%;
+	isolation: isolate;
 	counter-increment: code-line;
 	padding-right: 24px;
 	line-height: 20px;
@@ -381,19 +383,42 @@ body[data-page-type='home'] {
 	user-select: none;
 }
 
+.prose .astro-code .line:is(.highlighted, .diff.add, .diff.remove)::after {
+	position: absolute;
+	z-index: -1;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 56px;
+	border-radius: 6px;
+	background: var(--code-line-highlight);
+	content: '';
+}
+
 .prose .astro-code .line.highlighted {
-	background: color-mix(
+	--code-line-highlight: color-mix(
 		in srgb,
 		var(--color-background-accent) 12%,
 		transparent
 	);
 }
-
 .prose .astro-code .line.diff.add {
-	background: rgb(52 199 89 / 0.14);
+	--code-line-highlight: rgb(52 199 89 / 0.14);
 }
 .prose .astro-code .line.diff.remove {
-	background: rgb(255 69 58 / 0.14);
+	--code-line-highlight: rgb(255 69 58 / 0.14);
+}
+.prose .astro-code .line.highlighted:has(+ .line.highlighted)::after,
+.prose .astro-code .line.diff.add:has(+ .line.diff.add)::after,
+.prose .astro-code .line.diff.remove:has(+ .line.diff.remove)::after {
+	border-bottom-right-radius: 0;
+	border-bottom-left-radius: 0;
+}
+.prose .astro-code .line.highlighted + .line.highlighted::after,
+.prose .astro-code .line.diff.add + .line.diff.add::after,
+.prose .astro-code .line.diff.remove + .line.diff.remove::after {
+	border-top-left-radius: 0;
+	border-top-right-radius: 0;
 }
 .prose .astro-code .line.diff.add::before {
 	content: counter(code-line) ' +';
