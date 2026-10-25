@@ -1,23 +1,28 @@
-import type { SearchHit, SearchIndexPayload } from '../types/search'
+import type { SearchHit, SearchResults } from '../types/search'
 import { create, insertMultiple, search } from '@orama/orama'
 import { createTokenizer } from '@orama/tokenizers/mandarin'
+import { parseSearchIndexPayload } from './search'
 
 let databasePromise: ReturnType<typeof buildDatabase> | undefined
 
 async function buildDatabase() {
 	const response = await fetch('/search-index.json')
 	if (!response.ok) throw new Error(`搜索索引加载失败：${response.status}`)
-	const payload = (await response.json()) as SearchIndexPayload
+	const payload = parseSearchIndexPayload(await response.json())
 	const db = create({
 		schema: {
 			id: 'string',
-			title: 'string',
-			description: 'string',
-			body: 'string',
+			articleId: 'string',
+			articleTitle: 'string',
+			heading: 'string',
+			excerpt: 'string',
 			url: 'string',
 			pubDate: 'string',
 			cover: 'string',
 			coverAlt: 'string',
+			titleSearch: 'string',
+			headingSearch: 'string',
+			bodySearch: 'string',
 		} as const,
 		components: { tokenizer: createTokenizer() },
 	})
@@ -32,8 +37,11 @@ async function buildDatabase() {
 	return db
 }
 
-/** Searches the static index with Mandarin tokenization and favors exact text matches. */
-export async function searchArticles(term: string): Promise<SearchHit[]> {
+/** Return the first `limit` matching sections and retain the full match count. */
+export async function searchArticles(
+	term: string,
+	limit: number,
+): Promise<SearchResults> {
 	databasePromise ??= buildDatabase().catch(error => {
 		databasePromise = undefined
 		throw error
@@ -41,21 +49,22 @@ export async function searchArticles(term: string): Promise<SearchHit[]> {
 	const db = await databasePromise
 	const results = await search(db, {
 		term,
-		properties: ['title', 'description', 'body'],
-		boost: { title: 8, description: 3, body: 1 },
+		properties: ['titleSearch', 'headingSearch', 'bodySearch'],
+		boost: { titleSearch: 8, headingSearch: 4, bodySearch: 1 },
 		tolerance: 1,
-		limit: 12,
+		limit,
 	})
 	const normalizedTerm = term.toLocaleLowerCase()
-	return results.hits
+	const hits = results.hits
 		.map(hit => ({ ...hit.document, score: hit.score }) as SearchHit)
 		.toSorted((a, b) => {
-			const aExact = `${a.title} ${a.description} ${a.body}`
+			const aExact = `${a.titleSearch} ${a.headingSearch} ${a.bodySearch}`
 				.toLocaleLowerCase()
 				.includes(normalizedTerm)
-			const bExact = `${b.title} ${b.description} ${b.body}`
+			const bExact = `${b.titleSearch} ${b.headingSearch} ${b.bodySearch}`
 				.toLocaleLowerCase()
 				.includes(normalizedTerm)
 			return Number(bExact) - Number(aExact) || b.score - a.score
 		})
+	return { hits, total: results.count }
 }
