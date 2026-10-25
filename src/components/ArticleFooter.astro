@@ -14,49 +14,54 @@ interface Props {
 }
 
 const { article, newer, older, preview = false } = Astro.props
-const license = article.data.copyright ?? blogConfig.license
+const copyright = article.data.copyright
+const author = copyright?.author ?? blogConfig.author.name
+const licenseName = copyright?.license ?? blogConfig.license.name
+const licenseUrl = copyright?.licenseUrl ?? blogConfig.license.url
 ---
 
 <footer class="article-footer">
-	<section class="copyright-card">
-		<h2 data-i18n="article.about">{translate('article.about')}</h2>
-		<div class="copyright-details">
-			<span
-				data-i18n-template="article.licenseBefore"
-				data-i18n-value-author={blogConfig.author.name}
-				>{
-					translateWithValues('article.licenseBefore', {
-						author: blogConfig.author.name,
-					})
-				}</span
-			>
-			{
-				license.url ? <a href={license.url}>{license.name}</a> : license.name
-			}<span data-i18n="article.licenseEnd"
-				>{translate('article.licenseEnd')}</span
-			>
-		</div>
-		{
-			article.data.tags?.length && (
-				<div
-					class:list={[
-						'article-tags',
-						{ 'capitalize-tags': blogConfig.theme.content.tags.capitalize },
-					]}
-					aria-label={translate('article.tags')}
-					data-i18n-aria-label="article.tags"
-				>
-					<Tags size={14} aria-hidden="true" />
-					{article.data.tags.map(tag => (
-						<a href={getTaxonomyUrl('tags', tag)}>
-							{blogConfig.theme.content.tags.hashtagPrefix ? '#' : ''}
-							{tag}
-						</a>
-					))}
+	{
+		article.data.about !== false && (
+			<section class="copyright-card">
+				<h2 data-i18n="article.about">{translate('article.about')}</h2>
+				<div class="copyright-details">
+					<span
+						data-i18n-template="article.licenseBefore"
+						data-i18n-value-author={author}
+						>{translateWithValues('article.licenseBefore', { author })}</span
+					>
+					{licenseUrl ? <a href={licenseUrl}>{licenseName}</a> : licenseName}<span
+						data-i18n="article.licenseEnd"
+						>{translate('article.licenseEnd')}</span
+					>
 				</div>
-			)
-		}
-	</section>
+				{
+					article.data.tags?.length && (
+						<div
+							class:list={[
+								'article-tags',
+								{ 'capitalize-tags': blogConfig.theme.content.tags.capitalize },
+							]}
+							aria-label={translate('article.tags')}
+							data-i18n-aria-label="article.tags"
+						>
+							<Tags size={14} aria-hidden="true" />
+							{article.data.tags.map(tag => (
+								<a href={getTaxonomyUrl('tags', tag)}>
+									{blogConfig.theme.content.tags.hashtagPrefix ? '#' : ''}
+									{tag}
+								</a>
+							))}
+						</div>
+					)
+				}
+				{article.data.extra_info && (
+					<div class="extra-info">{article.data.extra_info}</div>
+				)}
+			</section>
+		)
+	}
 
 	<nav
 		class="article-surround"
@@ -114,6 +119,12 @@ const license = article.data.copyright ?? blogConfig.license
 	}
 	.copyright-card a {
 		color: var(--color-accent);
+	}
+	.extra-info {
+		margin-top: 12px;
+		color: var(--color-text-secondary);
+		font-size: 14px;
+		line-height: normal;
 	}
 	.article-tags {
 		display: flex;

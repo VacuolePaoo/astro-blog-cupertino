@@ -2,7 +2,12 @@ import { glob } from 'astro/loaders'
 import { z } from 'astro/zod'
 import { defineCollection } from 'astro:content'
 import blogConfig from '../blog.config'
-import { isAllowedImageSource } from './utils/image'
+import {
+	isAllowedImageSource,
+	isPublicImage,
+	isRemoteImage,
+	normalizeOptionalImageValue,
+} from './utils/image'
 
 const datePattern = /^\d{4}-\d{2}-\d{2}$/
 const articleDate = z.preprocess(
@@ -31,28 +36,41 @@ const articles = defineCollection({
 					)
 					.optional(),
 				tags: z.array(z.string()).optional(),
-				cover: z
-					.union([
-						image(),
-						z
-							.string()
-							.min(1)
-							.refine(
-								source => isAllowedImageSource(source, blogConfig.imageDomains),
-								'远程封面域名未加入 imageDomains',
-							),
-					])
-					.optional(),
-				coverAlt: z.string().optional(),
-				updatedDate: articleDate.optional(),
+				cover: z.preprocess(
+					normalizeOptionalImageValue,
+					z
+						.union([
+							// Public and remote URLs bypass Astro's local image importer.
+							z
+								.string()
+								.refine(
+									source => isPublicImage(source) || isRemoteImage(source),
+								),
+							image(),
+						])
+						.refine(
+							source =>
+								typeof source !== 'string' ||
+								isAllowedImageSource(source, blogConfig.imageDomains),
+							'远程封面域名未加入 imageDomains',
+						)
+						.optional(),
+				),
+				coverAlt: z.preprocess(
+					normalizeOptionalImageValue,
+					z.string().optional(),
+				),
 				draft: z.boolean().default(false),
+				comments: z.boolean().optional(),
+				about: z.boolean().optional(),
+				extra_info: z.string().optional(),
 				copyright: z
-					.object({ name: z.string().min(1), url: z.url().optional() })
+					.object({
+						author: z.string().min(1).optional(),
+						license: z.string().min(1).optional(),
+						licenseUrl: z.url().optional(),
+					})
 					.optional(),
-			})
-			.refine(data => !data.updatedDate || data.updatedDate >= data.pubDate, {
-				message: 'updatedDate 不能早于 pubDate',
-				path: ['updatedDate'],
 			}),
 })
 

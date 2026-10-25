@@ -1,87 +1,22 @@
 ---
 import blogConfig from '../../blog.config'
 import { formatDisplayDate } from '../utils/date-display'
-import { resolveUiLocale, translateWithValues } from '../utils/i18n'
+import { resolveUiLocale } from '../utils/i18n'
 
 interface Props {
 	date: string
-	updatedDate?: string | undefined
 	mode?: 'list' | 'full'
 }
 
-const { date, updatedDate, mode = 'list' } = Astro.props
+const { date, mode = 'list' } = Astro.props
 const locale = resolveUiLocale(blogConfig.language)
 const text = formatDisplayDate(
 	date,
 	blogConfig.theme.content.dates.displayFormat,
 	locale,
 )
-const updateText = updatedDate
-	? translateWithValues(
-			'article.updated',
-			{
-				date: formatDisplayDate(
-					updatedDate,
-					blogConfig.theme.content.dates.displayFormat,
-					locale,
-				),
-			},
-			locale,
-		)
-	: undefined
 ---
 
-<time
-	datetime={date}
-	data-date={date}
-	data-mode={mode}
-	data-updated-date={updatedDate}
-	tabindex={updateText ? 0 : undefined}
-	aria-label={updateText ? `${text}，${updateText}` : text}
->
+<time datetime={date} data-date={date} data-mode={mode} aria-label={text}>
 	<span class="date-primary">{text}</span>
-	{
-		updateText && (
-			<span class="date-updated" role="tooltip">
-				{updateText}
-			</span>
-		)
-	}
 </time>
-
-<style>
-	time {
-		position: relative;
-		display: inline-block;
-	}
-	.date-updated {
-		position: absolute;
-		bottom: calc(100% + 0.45rem);
-		left: 50%;
-		z-index: 4;
-		width: max-content;
-		max-width: 15rem;
-		transform: translate(-50%, 0.2rem);
-		visibility: hidden;
-		border: 1px solid var(--color-border-primary);
-		border-radius: var(--radius-small);
-		background: var(--color-background-secondary-translucent);
-		backdrop-filter: var(--filter-blur);
-		box-shadow: 0 8px 24px rgb(0 0 0 / 0.13);
-		opacity: 0;
-		padding: 0.35rem 0.5rem;
-		color: var(--color-text-primary);
-		font-size: 12px;
-		font-weight: 400;
-		transition:
-			opacity 120ms ease,
-			transform 120ms ease,
-			visibility 120ms;
-	}
-	time:hover .date-updated,
-	time:focus .date-updated {
-		visibility: visible;
-		opacity: 1;
-		transform: translate(-50%, 0);
-	}
-</style>

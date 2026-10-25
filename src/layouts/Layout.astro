@@ -18,7 +18,6 @@ interface Props {
 	noindex?: boolean | undefined
 	type?: 'website' | 'article' | undefined
 	pubDate?: string | undefined
-	updatedDate?: string | undefined
 	titleKey?: UiMessageKey | undefined
 	descriptionKey?: UiMessageKey | undefined
 	titleValues?: Record<string, string | number> | undefined
@@ -125,8 +124,10 @@ window.__vite_plugin_react_preamble_installed__ = true
 			: undefined}
 		style={`--config-corner-squircle:${blogConfig.theme.appearance.squircle}`}
 	>
-		<a class="skip-link" href="#main-content" data-i18n="skip.content"
-			>{translate('skip.content')}</a
+		<a
+			class="skip-link page-top-action"
+			href="#main-content"
+			data-i18n="skip.content">{translate('skip.content')}</a
 		>
 		<Header />
 		<RainbowBanner />
@@ -136,7 +137,7 @@ window.__vite_plugin_react_preamble_installed__ = true
 		{pageType !== 'search' && <Footer />}
 		<script>
 			import blogConfig from '../../blog.config'
-			import { resolveUiLocale, translateWithValues } from '../utils/i18n'
+			import { resolveUiLocale } from '../utils/i18n'
 			import { getClientLocale, initializeI18n } from '../utils/i18n-client'
 			import { initializeScrollReveal } from '../utils/scroll-reveal'
 			import { initializeSmoothScroll } from '../utils/smooth-scroll'
@@ -161,26 +162,7 @@ window.__vite_plugin_react_preamble_installed__ = true
 							)
 							const primary = time.querySelector<HTMLElement>('.date-primary')
 							if (primary) primary.textContent = text
-							const updated = time.dataset.updatedDate
-							if (updated) {
-								const updatedText = translateWithValues(
-									'article.updated',
-									{
-										date: formatDisplayDate(
-											updated,
-											blogConfig.theme.content.dates.displayFormat,
-											locale,
-										),
-									},
-									locale,
-								)
-								const tooltip = time.querySelector<HTMLElement>('.date-updated')
-								if (tooltip) tooltip.textContent = updatedText
-								time.setAttribute(
-									'aria-label',
-									`${text}${locale === 'zh-CN' ? '，' : ', '}${updatedText}`,
-								)
-							} else time.setAttribute('aria-label', text)
+							time.setAttribute('aria-label', text)
 						})
 					})
 				}
@@ -193,17 +175,7 @@ window.__vite_plugin_react_preamble_installed__ = true
 
 <style>
 	.skip-link {
-		position: fixed;
-		top: 0;
-		left: 50%;
-		z-index: 1100;
-		border: 1px solid var(--color-border-primary);
 		transform: translateX(-50%) translateY(-100%) scale(0.9);
-		border-radius: var(--radius-full);
-		background: var(--color-background-secondary-translucent);
-		backdrop-filter: var(--filter-blur);
-		padding: 10px 20px;
-		color: var(--color-text-primary);
 		opacity: 0;
 		transition:
 			transform 200ms ease-out,

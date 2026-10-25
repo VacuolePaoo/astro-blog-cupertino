@@ -5,8 +5,9 @@ import blogConfig from '../../blog.config'
 import ArticleCover from '../components/ArticleCover.astro'
 import ArticleFooter from '../components/ArticleFooter.astro'
 import ArticleToc from '../components/ArticleToc.astro'
+import ArticleComments from '../components/comments/ArticleComments.astro'
 import DateDisplay from '../components/DateDisplay.astro'
-import { getArticleSlug } from '../utils/article'
+import { getArticleSlug, getArticleUrl, getCoverAlt } from '../utils/article'
 import { translate } from '../utils/i18n'
 import { getTaxonomyUrl } from '../utils/taxonomy'
 import Layout from './Layout.astro'
@@ -30,12 +31,18 @@ const ogImage = `/og/${preview ? 'previews' : 'posts'}/${getArticleSlug(article)
 	noindex={preview}
 	type="article"
 	pubDate={article.data.pubDate}
-	updatedDate={article.data.updatedDate}
 >
 	<article class="article-page">
 		{
 			article.data.cover && (
-				<div class="article-cover" aria-hidden="true" data-article-cover>
+				<div
+					class="article-cover"
+					data-article-cover
+					data-i18n-alt-template={
+						article.data.coverAlt ? undefined : 'article.coverAlt'
+					}
+					data-i18n-value-title={article.data.title}
+				>
 					<div
 						class:list={[
 							'article-cover-media',
@@ -47,7 +54,11 @@ const ogImage = `/og/${preview ? 'previews' : 'posts'}/${getArticleSlug(article)
 							},
 						]}
 					>
-						<ArticleCover src={article.data.cover} alt="" eager />
+						<ArticleCover
+							src={article.data.cover}
+							alt={getCoverAlt(article)}
+							eager
+						/>
 					</div>
 				</div>
 			)
@@ -63,11 +74,7 @@ const ogImage = `/og/${preview ? 'previews' : 'posts'}/${getArticleSlug(article)
 					>
 						{article.data.collection}
 					</a>
-					<DateDisplay
-						date={article.data.pubDate}
-						updatedDate={article.data.updatedDate}
-						mode="full"
-					/>
+					<DateDisplay date={article.data.pubDate} mode="full" />
 					{
 						preview && (
 							<span class="draft-badge" data-i18n="article.draft">
@@ -90,6 +97,9 @@ const ogImage = `/og/${preview ? 'previews' : 'posts'}/${getArticleSlug(article)
 				older={older}
 				preview={preview}
 			/>
+			{!preview && article.data.comments !== false && (
+				<ArticleComments path={getArticleUrl(article)} />
+			)}
 		</div>
 	</article>
 </Layout>

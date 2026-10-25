@@ -7,8 +7,7 @@ import { absoluteUrl } from '../utils/link'
 
 export const GET: APIRoute = async () => {
 	const articles = (await getArticles()).slice(0, blogConfig.feed.limit)
-	const updated =
-		articles[0]?.data.updatedDate ?? articles[0]?.data.pubDate ?? '1970-01-01'
+	const updated = articles[0]?.data.pubDate ?? '1970-01-01'
 	const entries = articles
 		.map(article => {
 			const url = absoluteUrl(getArticleUrl(article), blogConfig.site)
@@ -17,7 +16,7 @@ export const GET: APIRoute = async () => {
 <id>${escapeXml(url)}</id>
 <link href="${escapeXml(url)}" />
 <published>${toFeedInstant(article.data.pubDate)}</published>
-<updated>${toFeedInstant(article.data.updatedDate ?? article.data.pubDate)}</updated>
+	<updated>${toFeedInstant(article.data.pubDate)}</updated>
 <summary type="html">${escapeXml(article.data.description)}</summary>
 </entry>`
 		})

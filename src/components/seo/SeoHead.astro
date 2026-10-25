@@ -10,7 +10,6 @@ interface Props {
 	noindex?: boolean | undefined
 	type?: 'website' | 'article' | undefined
 	pubDate?: string | undefined
-	updatedDate?: string | undefined
 }
 
 const {
@@ -21,7 +20,6 @@ const {
 	noindex = false,
 	type = 'website',
 	pubDate,
-	updatedDate,
 } = Astro.props
 
 const pageTitle = title ? `${title} - ${blogConfig.title}` : blogConfig.title
@@ -36,7 +34,7 @@ const structuredData =
 				description,
 				image: imageUrl,
 				datePublished: pubDate,
-				dateModified: updatedDate ?? pubDate,
+				dateModified: pubDate,
 				mainEntityOfPage: canonicalUrl,
 				author: { '@type': 'Person', name: blogConfig.author.name },
 				publisher: {
@@ -82,11 +80,6 @@ const structuredData =
 {
 	type === 'article' && pubDate && (
 		<meta property="article:published_time" content={pubDate} />
-	)
-}
-{
-	type === 'article' && updatedDate && (
-		<meta property="article:modified_time" content={updatedDate} />
 	)
 }
 <link
