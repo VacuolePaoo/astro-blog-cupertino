@@ -18,7 +18,7 @@ export default defineConfig({
 		// Astro-native CDN prefix for generated JS/CSS/_astro assets; blank disables
 		assetsPrefix: blogConfig.cdn?.assetsPrefix || undefined,
 	},
-	devToolbar: { enabled: false },
+	devToolbar: { enabled: true },
 	prefetch: { prefetchAll: true, defaultStrategy: 'hover' },
 	integrations: [
 		react(),
