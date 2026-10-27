@@ -18,6 +18,14 @@ export default defineConfig({
 		// Astro-native CDN prefix for generated JS/CSS/_astro assets; blank disables
 		assetsPrefix: blogConfig.cdn?.assetsPrefix || undefined,
 	},
+	vite: {
+		build: {
+			// Pin the CSS minifier (Vite's default, kept explicit for stability).
+			// Note: lightningcss collapses a prefixed/standard property pair into
+			// whichever is written last — order matters in component styles.
+			cssMinify: 'lightningcss',
+		},
+	},
 	devToolbar: { enabled: true },
 	prefetch: { prefetchAll: true, defaultStrategy: 'hover' },
 	integrations: [

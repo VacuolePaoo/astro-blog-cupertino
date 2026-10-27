@@ -1938,8 +1938,10 @@
 	border-radius: var(--radius-medium);
 	background: var(--color-background-secondary);
 	color: var(--color-text-primary);
-	backdrop-filter: none;
+	/* -webkit- first: the CSS minifier keeps only the last declaration of a
+	   prefixed/standard pair, and Chrome/Firefox ignore the -webkit- alias. */
 	-webkit-backdrop-filter: none;
+	backdrop-filter: none;
 	scrollbar-color: var(--color-text-tertiary) transparent;
 	scrollbar-width: thin;
 	height: auto;
@@ -2109,8 +2111,10 @@
 		transparent
 	);
 	border-radius: inherit;
-	backdrop-filter: none;
+	/* -webkit- first: the CSS minifier keeps only the last declaration of a
+	   prefixed/standard pair, and Chrome/Firefox ignore the -webkit- alias. */
 	-webkit-backdrop-filter: none;
+	backdrop-filter: none;
 }
 .twikoo .tk-loading-spinner .path {
 	stroke: var(--color-background-accent);
