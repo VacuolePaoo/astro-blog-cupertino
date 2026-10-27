@@ -99,7 +99,13 @@ const siteLogo =
 		</button>
 	</div>
 
-	<div class="mobile-menu" id="mobile-menu" aria-hidden="true" data-mobile-menu>
+	<div
+		class="mobile-menu"
+		id="mobile-menu"
+		aria-hidden="true"
+		inert
+		data-mobile-menu
+	>
 		<nav
 			class="page-shell mobile-menu-inner"
 			aria-label={translate('nav.mobile')}
@@ -119,7 +125,7 @@ const siteLogo =
 					</a>
 				))
 			}
-			<div class="mobile-more">
+			<div class="mobile-more" data-mobile-more data-open="false">
 				<button
 					type="button"
 					class="mobile-more-toggle"
@@ -129,19 +135,18 @@ const siteLogo =
 					style={`--index:${primaryNav.length + 1}`}
 				>
 					<span data-i18n="nav.more">{translate('nav.more')}</span>
-					<span class="mobile-more-chevron" aria-hidden="true"></span>
 				</button>
 				<div
 					class="mobile-more-panel"
 					id="mobile-more-panel"
-					hidden
+					inert
 					data-mobile-more-panel
 				>
 					{
 						moreNav.map((item, index) => (
 							<a
 								href={item.url}
-								style={`--index:${primaryNav.length + index + 2}`}
+								style={`--index:${index}`}
 								target={item.external ? '_blank' : undefined}
 								rel={item.external ? 'noopener noreferrer' : undefined}
 							>
@@ -206,27 +211,37 @@ const siteLogo =
 		})
 	}
 
-	function updateMenuHeight() {
-		const height =
-			document.querySelector<HTMLElement>('.mobile-menu-inner')?.scrollHeight
-		if (height)
-			document.documentElement.style.setProperty(
-				'--mobile-menu-height',
-				`${height}px`,
-			)
+	const MOBILE_NAV_MAX_WIDTH = 600
+
+	function isMobileLayout() {
+		return window.innerWidth <= MOBILE_NAV_MAX_WIDTH
+	}
+
+	function isMenuOpen() {
+		return document.documentElement.classList.contains('menu-open')
+	}
+
+	function measureOpenHeight() {
+		const header = document.querySelector<HTMLElement>('[data-site-header]')
+		if (!header || !isMobileLayout()) return
+		document.documentElement.style.setProperty(
+			'--open-height',
+			`${header.scrollHeight}px`,
+		)
 	}
 
 	function setMoreOpen(open: boolean) {
+		const wrap = document.querySelector<HTMLElement>('[data-mobile-more]')
 		const toggle = document.querySelector<HTMLButtonElement>(
 			'[data-mobile-more-toggle]',
 		)
 		const panel = document.querySelector<HTMLElement>(
 			'[data-mobile-more-panel]',
 		)
-		toggle?.setAttribute('aria-expanded', String(open))
-		if (panel) panel.hidden = !open
-		if (document.documentElement.classList.contains('menu-open'))
-			updateMenuHeight()
+		if (!wrap || !toggle || !panel) return
+		wrap.dataset.open = String(open)
+		toggle.setAttribute('aria-expanded', String(open))
+		panel.inert = !open
 	}
 
 	function setOpen(open: boolean) {
@@ -235,18 +250,16 @@ const siteLogo =
 			'[data-mobile-toggle]',
 		)
 		const menu = document.querySelector<HTMLElement>('[data-mobile-menu]')
+		if (open) measureOpenHeight()
+		document.documentElement.classList.toggle('menu-open', open)
 		toggle?.setAttribute('aria-expanded', String(open))
 		toggle?.setAttribute(
 			'aria-label',
 			translate(open ? 'nav.collapse' : 'nav.expand', getClientLocale()),
 		)
 		menu?.setAttribute('aria-hidden', String(!open))
-		document.documentElement.classList.toggle('menu-open', open)
-		if (open && menu) updateMenuHeight()
-		else {
-			setMoreOpen(false)
-			document.documentElement.style.removeProperty('--mobile-menu-height')
-		}
+		if (menu) menu.inert = !open
+		if (!open) setMoreOpen(false)
 	}
 	function updateBrandLabel() {
 		const brand = document.querySelector<HTMLAnchorElement>('[data-brand-home]')
@@ -263,13 +276,11 @@ const siteLogo =
 	updateBrandLabel()
 	document.addEventListener('astro:page-load', updateBrandLabel)
 	window.addEventListener('resize', () => {
-		const isOpen =
-			document
-				.querySelector('[data-mobile-toggle]')
-				?.getAttribute('aria-expanded') === 'true'
-		if (isOpen) setOpen(true)
-		if (window.innerWidth > 600) setOpen(false)
-		else setDesktopMoreOpen(false)
+		if (isMenuOpen()) {
+			if (isMobileLayout()) measureOpenHeight()
+			else setOpen(false)
+		}
+		if (!isMobileLayout()) setDesktopMoreOpen(false)
 	})
 	document.addEventListener('click', event => {
 		if (event.defaultPrevented) return
@@ -288,6 +299,8 @@ const siteLogo =
 		}
 		if (target.closest('[data-desktop-more-panel] a')) setDesktopMoreOpen(false)
 		else if (!target.closest('[data-desktop-more]')) setDesktopMoreOpen(false)
+		if (!isMobileLayout()) return
+
 		const moreToggle = target.closest<HTMLButtonElement>(
 			'[data-mobile-more-toggle]',
 		)
@@ -296,15 +309,12 @@ const siteLogo =
 			setMoreOpen(moreToggle.getAttribute('aria-expanded') !== 'true')
 			return
 		}
-		const toggle = target.closest<HTMLButtonElement>('[data-mobile-toggle]')
-		if (toggle) {
-			event.preventDefault()
-			setOpen(toggle.getAttribute('aria-expanded') !== 'true')
-			return
-		}
 		if (target.closest('[data-mobile-menu] a')) {
 			setOpen(false)
+			return
 		}
+		if (target.closest('[data-mobile-more]')) return
+		if (target.closest('[data-site-header]')) setOpen(!isMenuOpen())
 	})
 	document.addEventListener('keydown', event => {
 		if (event.key === 'Escape' && desktopMore?.dataset.open === 'true') {
@@ -345,6 +355,10 @@ const siteLogo =
 		background: var(--color-background-secondary-translucent);
 		backdrop-filter: var(--filter-blur);
 	}
+	/* Height animates on the wrapper only; it has no filter/mask/opacity so the
+	   pseudo-layers' backdrop still reaches the page content. The blur radius
+	   itself never transitions — a variable radius forces a full backdrop
+	   re-filter on all layers every frame, which stutters on mobile. */
 	.nav-mask > div {
 		--mask-base-height: 100px;
 		position: fixed;
@@ -353,19 +367,34 @@ const siteLogo =
 		left: 0;
 		z-index: 1000;
 		height: calc(var(--mask-base-height) / pow(1.2, calc(var(--sharp) - 1)));
+		pointer-events: none;
+		transition: height 600ms cubic-bezier(0.86, 0, 0.07, 1);
+	}
+	.nav-mask > div::before,
+	.nav-mask > div::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		-webkit-mask-image: linear-gradient(to bottom, #000, transparent);
+		mask-image: linear-gradient(to bottom, #000, transparent);
+		mask-composite: destination-in;
+		pointer-events: none;
+	}
+	.nav-mask > div::before {
 		background-color: color-mix(
 			in srgb,
 			var(--color-background-primary) 20%,
 			transparent
 		);
 		backdrop-filter: blur(1px);
-		-webkit-mask-image: linear-gradient(to bottom, #000, transparent);
-		mask-image: linear-gradient(to bottom, #000, transparent);
-		mask-composite: destination-in;
-		pointer-events: none;
-		transition:
-			height 600ms cubic-bezier(0.86, 0, 0.07, 1),
-			backdrop-filter 600ms cubic-bezier(0.86, 0, 0.07, 1);
+		-webkit-backdrop-filter: blur(1px);
+	}
+	.nav-mask > div::after {
+		backdrop-filter: blur(36px);
+		-webkit-backdrop-filter: blur(36px);
+		opacity: 0;
+		will-change: opacity;
+		transition: opacity 600ms cubic-bezier(0.86, 0, 0.07, 1);
 	}
 	.header-inner {
 		position: relative;
@@ -498,18 +527,31 @@ const siteLogo =
 
 	@media (prefers-reduced-motion: reduce) {
 		.more-menu .more-panel,
-		.more-menu .more-panel a {
+		.more-menu .more-panel a,
+		.site-header,
+		.nav-mask > div,
+		.nav-mask > div::after,
+		.brand,
+		.mobile-menu a,
+		.mobile-more-toggle {
 			transition: none !important;
 		}
 	}
 
 	@media (max-width: 600px) {
+		.site-header {
+			height: 48px;
+			overflow: hidden;
+		}
 		.header-inner {
-			display: block;
 			height: 48px;
 		}
 		.desktop-nav {
 			display: none;
+		}
+		.brand {
+			pointer-events: none;
+			transition-delay: 350ms;
 		}
 		.mobile-toggle {
 			position: absolute;
@@ -564,36 +606,13 @@ const siteLogo =
 			transform-origin: 0 0;
 		}
 		.mobile-menu {
-			position: fixed;
-			top: 0;
-			left: 0;
 			display: block;
 			width: 100%;
-			height: 48px;
-			overflow: hidden;
-			visibility: hidden;
-			background: transparent;
-			opacity: 0;
-			transition:
-				height 400ms var(--ease-standard),
-				opacity 180ms ease;
-		}
-		.mobile-menu[aria-hidden='false'] {
-			visibility: visible;
-			height: min(var(--mobile-menu-height, 100dvh), 100dvh);
-			overflow-y: auto;
-			opacity: 1;
 		}
 		.mobile-menu-inner {
 			display: flex;
-			flex-direction: column;
-			gap: 0;
-			padding-top: 48px;
-		}
-		.brand {
-			height: 48px;
-			pointer-events: auto;
-			transition-delay: 350ms;
+			width: 100%;
+			flex-wrap: wrap;
 		}
 		.mobile-menu a,
 		.mobile-more-toggle {
@@ -601,7 +620,6 @@ const siteLogo =
 			align-items: center;
 			gap: 0.45rem;
 			height: 48px;
-			min-height: 48px;
 			padding: 0 4px;
 			color: var(--color-text-secondary);
 			font-size: 16px;
@@ -614,8 +632,16 @@ const siteLogo =
 				opacity 400ms ease,
 				color 500ms ease;
 		}
-		.mobile-more-toggle {
+		.mobile-menu-inner > a:not(.mobile-search-button),
+		.mobile-more {
 			width: 100%;
+		}
+		.mobile-more {
+			display: flex;
+			align-items: center;
+		}
+		.mobile-more-toggle {
+			flex: none;
 			border: 0;
 			background: transparent;
 			text-align: left;
@@ -623,26 +649,34 @@ const siteLogo =
 		}
 		.mobile-more-panel {
 			display: flex;
-			flex-direction: column;
+			min-width: 0;
+			flex: 1;
+			align-items: center;
+			overflow-x: auto;
+			overflow-y: hidden;
+			pointer-events: none;
+			scrollbar-width: none;
 		}
-		.mobile-more-panel[hidden] {
+		.mobile-more-panel::-webkit-scrollbar {
 			display: none;
 		}
-		.mobile-more-chevron {
-			width: 8px;
-			height: 8px;
-			margin-left: auto;
-			border-right: 1px solid currentColor;
-			border-bottom: 1px solid currentColor;
-			transform: rotate(45deg);
-			transition: transform 200ms var(--ease-standard);
-		}
-		.mobile-more-toggle[aria-expanded='true'] .mobile-more-chevron {
-			transform: rotate(225deg);
+		.mobile-more-panel a {
+			flex: none;
+			transform: translateY(50%);
 		}
 		.mobile-menu[aria-hidden='false'] .mobile-menu-inner > a,
-		.mobile-menu[aria-hidden='false'] .mobile-more-toggle,
-		.mobile-menu[aria-hidden='false'] .mobile-more-panel a {
+		.mobile-menu[aria-hidden='false'] .mobile-more-toggle {
+			transform: translateY(0);
+			opacity: 1;
+			pointer-events: auto;
+			transition-delay: calc(var(--index, 0) * 50ms + 100ms);
+		}
+		.mobile-menu[aria-hidden='false'] .mobile-more[data-open='true'] .mobile-more-panel {
+			pointer-events: auto;
+		}
+		.mobile-menu[aria-hidden='false']
+			.mobile-more[data-open='true']
+			.mobile-more-panel a {
 			transform: translateY(0);
 			opacity: 1;
 			pointer-events: auto;
@@ -655,24 +689,19 @@ const siteLogo =
 		.mobile-menu a:focus-visible {
 			text-decoration: none;
 		}
-		.mobile-search-button {
-			align-self: flex-start;
-			width: 32px;
-			padding: 0 4px;
-		}
 		:global(.menu-open) {
 			overflow: hidden;
 		}
 		:global(.menu-open) .nav-mask > div {
-			--mask-base-height: calc(var(--mobile-menu-height, 100dvh) * 4);
-			backdrop-filter: blur(36px);
+			--mask-base-height: calc(var(--open-height, 100dvh) * 4);
+		}
+		:global(.menu-open) .nav-mask > div::after {
+			opacity: 1;
 		}
 		:global(.menu-open) .site-header {
-			height: min(var(--mobile-menu-height, 100dvh), 100dvh);
-			overflow: hidden;
+			height: var(--open-height, 100dvh);
 		}
 		:global(.menu-open) .brand {
-			pointer-events: none;
 			transform: translateY(8px);
 			opacity: 0;
 			transition-delay: 0s;
