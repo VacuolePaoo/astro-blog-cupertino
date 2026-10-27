@@ -55,6 +55,14 @@ export interface ThemeConfig {
 	search: { enabled: boolean; trigger: 'debounce' | 'submit'; delayMs: number }
 }
 
+/**
+ * Astro `build.assetsPrefix` value: a single CDN origin covering all
+ * generated assets, or per-extension origins that require a `fallback`
+ * origin for every other file type.
+ * @see https://docs.astro.build/en/reference/configuration-reference/#build-assetsprefix
+ */
+export type CdnAssetsPrefix = string | ({ fallback: string } & Record<string, string>)
+
 export interface BlogConfig {
 	title: string
 	subtitle: string
@@ -69,6 +77,7 @@ export interface BlogConfig {
 	copyright: { name: string; url?: string }
 	license: { name: string; url: string }
 	imageDomains: string[]
+	cdn?: { assetsPrefix: CdnAssetsPrefix }
 	feed: { limit: number; xslt: boolean }
 	comments: TwikooConfig
 	theme: ThemeConfig

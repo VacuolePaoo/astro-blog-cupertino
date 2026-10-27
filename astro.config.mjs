@@ -14,6 +14,10 @@ export default defineConfig({
 	site: blogConfig.site,
 	output: 'static',
 	trailingSlash: 'always',
+	build: {
+		// Astro-native CDN prefix for generated JS/CSS/_astro assets; blank disables
+		assetsPrefix: blogConfig.cdn?.assetsPrefix || undefined,
+	},
 	devToolbar: { enabled: false },
 	prefetch: { prefetchAll: true, defaultStrategy: 'hover' },
 	integrations: [

@@ -28,6 +28,14 @@ export default {
 	imageDomains: ['astro.build', 'dinoimg.236668.xyz'],
 	feed: { limit: 20, xslt: true },
 
+	// Asset CDN / 资源 CDN
+	// Astro-native build.assetsPrefix: generated JS/CSS and hashed _astro
+	// assets are served from the CDN, which must mirror the built dist/_astro
+	// directory. Public-directory files (favicon, etc.) are not prefixed.
+	cdn: {
+		assetsPrefix: '', // CDN origin, blank disables / CDN 源，留空关闭
+	},
+
 	// Article comments / 文章评论（Twikoo 2.0.17）
 	comments: {
 		enabled: true,
