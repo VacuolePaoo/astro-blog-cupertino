@@ -35,13 +35,33 @@ const gradient = `linear-gradient(90deg, ${rainbowBanner.colors.join(', ')})`
 </script>
 
 <style>
+	/* 6px solid stripe, then a soft eased fade below: the extra mask stops
+	   approximate an ease-out curve so the glow dissipates instead of
+	   tapering linearly. */
 	.rainbow-banner {
 		position: fixed;
 		top: 0;
 		right: 0;
 		left: 0;
 		z-index: 900;
-		height: 6px;
+		height: 48px;
 		background-image: var(--rainbow-gradient);
+		pointer-events: none;
+		-webkit-mask-image: linear-gradient(
+			to bottom,
+			#000 0,
+			#000 6px,
+			rgb(0 0 0 / 0.5) 18px,
+			rgb(0 0 0 / 0.16) 32px,
+			transparent 48px
+		);
+		mask-image: linear-gradient(
+			to bottom,
+			#000 0,
+			#000 6px,
+			rgb(0 0 0 / 0.5) 18px,
+			rgb(0 0 0 / 0.16) 32px,
+			transparent 48px
+		);
 	}
 </style>

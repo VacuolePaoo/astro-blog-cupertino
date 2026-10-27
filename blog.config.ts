@@ -45,7 +45,7 @@ export default {
 			colorScheme: 'auto', // Light, dark, or system / 亮色、暗色或跟随系统
 			squircle: true, // Squircle corners / 方圆角
 			rainbowBanner: {
-				enabled: false, // Top rainbow stripe / 顶部彩条
+				enabled: true, // Top rainbow stripe / 顶部彩条
 				colors: [
 					'#e50000',
 					'#ff8d00',
@@ -54,7 +54,7 @@ export default {
 					'#004cff',
 					'#760188',
 				],
-				shown: 'auto', // Always or selected month / 始终显示或指定月份
+				shown: 'always', // Always or selected month / 始终显示或指定月份
 				month: 10, // Display month / 显示月份
 			},
 		},
