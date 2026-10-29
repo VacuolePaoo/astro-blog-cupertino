@@ -41,7 +41,7 @@ export default {
 		enabled: true,
 		envId: 'https://twikoo.vacu.top/.netlify/functions/twikoo',
 		region: '', // Only for Tencent Cloud / 仅腾讯云环境需要
-		lang: '', // Empty follows the visitor / 留空跟随访客语言
+		lang: 'zh-CN', // Fixed comment language / 评论固定语言
 		scriptSrc:
 			'https://registry.npmmirror.com/twikoo/2.0.17/files/dist/twikoo.nocss.js',
 	},
@@ -53,7 +53,7 @@ export default {
 			colorScheme: 'auto', // Light, dark, or system / 亮色、暗色或跟随系统
 			squircle: true, // Squircle corners / 方圆角
 			rainbowBanner: {
-				enabled: true, // Top rainbow stripe / 顶部彩条
+				enabled: false, // Top rainbow stripe / 顶部彩条
 				colors: [
 					'#e50000',
 					'#ff8d00',
