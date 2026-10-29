@@ -1,7 +1,6 @@
 ---
 import type { ArticleEntry } from '../types/article'
 import blogConfig from '../../blog.config'
-import { translate } from '../utils/i18n'
 import ArticleCard from './ArticleCard.astro'
 import Pagination from './Pagination.astro'
 
@@ -44,15 +43,10 @@ const { articles, currentPage, totalPages } = Astro.props
 		{ 'home-articles--not-index': currentPage > 1 },
 	]}
 	aria-labelledby={currentPage === 1 ? 'latest-heading' : undefined}
-	aria-label={currentPage > 1 ? translate('home.latest') : undefined}
-	data-i18n-aria-label={currentPage > 1 ? 'home.latest' : undefined}
+	aria-label={currentPage > 1 ? '最近文章' : undefined}
 >
 	{
-		currentPage === 1 && (
-			<h2 id="latest-heading" data-i18n="home.latest">
-				{translate('home.latest')}
-			</h2>
-		)
+		currentPage === 1 && <h2 id="latest-heading">最近文章</h2>
 	}
 	<div class="article-grid">
 		{articles.map(article => <ArticleCard article={article} variant="grid" />)}

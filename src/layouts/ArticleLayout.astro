@@ -8,7 +8,6 @@ import ArticleToc from '../components/ArticleToc.astro'
 import ArticleComments from '../components/comments/ArticleComments.astro'
 import DateDisplay from '../components/DateDisplay.astro'
 import { getArticleSlug, getArticleUrl, getCoverAlt } from '../utils/article'
-import { translate } from '../utils/i18n'
 import { getTaxonomyUrl } from '../utils/taxonomy'
 import Layout from './Layout.astro'
 
@@ -35,14 +34,7 @@ const ogImage = `/og/${preview ? 'previews' : 'posts'}/${getArticleSlug(article)
 	<article class="article-page">
 		{
 			article.data.cover && (
-				<div
-					class="article-cover"
-					data-article-cover
-					data-i18n-alt-template={
-						article.data.coverAlt ? undefined : 'article.coverAlt'
-					}
-					data-i18n-value-title={article.data.title}
-				>
+				<div class="article-cover" data-article-cover>
 					<div
 						class:list={[
 							'article-cover-media',
@@ -76,11 +68,7 @@ const ogImage = `/og/${preview ? 'previews' : 'posts'}/${getArticleSlug(article)
 					</a>
 					<DateDisplay date={article.data.pubDate} mode="full" />
 					{
-						preview && (
-							<span class="draft-badge" data-i18n="article.draft">
-								{translate('article.draft')}
-							</span>
-						)
+						preview && <span class="draft-badge">非正式版</span>
 					}
 				</div>
 				<h1 class="article-title">{article.data.title}</h1>

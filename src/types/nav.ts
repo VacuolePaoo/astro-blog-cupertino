@@ -1,14 +1,10 @@
-import type { UiMessageKey } from './i18n'
-
-interface NavLinkBase {
+export interface NavItem {
 	url: string
+	text: string
 	external?: boolean
 }
 
-export type NavItem = NavLinkBase &
-	({ text: string; textKey?: never } | { textKey: UiMessageKey; text?: never })
-
-export type NavGroup = { items: NavItem[] } & (
-	| { title: string; titleKey?: never }
-	| { titleKey: UiMessageKey; title?: never }
-)
+export interface NavGroup {
+	title: string
+	items: NavItem[]
+}

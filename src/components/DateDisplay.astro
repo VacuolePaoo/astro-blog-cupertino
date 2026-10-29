@@ -1,7 +1,6 @@
 ---
 import blogConfig from '../../blog.config'
 import { formatDisplayDate } from '../utils/date-display'
-import { resolveUiLocale } from '../utils/i18n'
 
 interface Props {
 	date: string
@@ -9,11 +8,9 @@ interface Props {
 }
 
 const { date, mode = 'list' } = Astro.props
-const locale = resolveUiLocale(blogConfig.language)
 const text = formatDisplayDate(
 	date,
 	blogConfig.theme.content.dates.displayFormat,
-	locale,
 )
 ---
 

@@ -2,53 +2,43 @@
 import { Atom, Check, Copy, Rss } from 'lucide-astro'
 import blogConfig from '../../blog.config'
 import Layout from '../layouts/Layout.astro'
-import { translate } from '../utils/i18n'
 
 const feeds = [
 	{
 		title: 'Atom',
-		descriptionKey: 'subscribe.atomDescription',
+		description: '结构清晰、支持稳定标识的 Atom 1.0 摘要订阅。',
 		url: new URL('/atom.xml', blogConfig.site).href,
 		Icon: Atom,
 	},
 	{
 		title: 'RSS',
-		descriptionKey: 'subscribe.rssDescription',
+		description: '兼容广泛阅读器的 RSS 2.0 摘要订阅。',
 		url: new URL('/rss.xml', blogConfig.site).href,
 		Icon: Rss,
 	},
 ] as const
 ---
 
-<Layout
-	title={translate('page.subscribe')}
-	titleKey="page.subscribe"
-	description={translate('page.subscribeMetaDescription')}
-	descriptionKey="page.subscribeMetaDescription"
->
+<Layout title="订阅" description="通过 Atom 或 RSS 获取最近更新。">
 	<section class="page-shell subscribe-page">
 		<header>
-			<h1 data-i18n="page.subscribe">{translate('page.subscribe')}</h1>
-			<p data-i18n="page.subscribeDescription">
-				{translate('page.subscribeDescription')}
-			</p>
+			<h1>订阅</h1>
+			<p>选择你习惯的格式，将地址添加到 RSS 阅读器即可。</p>
 		</header>
 		<div class="feed-grid">
 			{
-				feeds.map(({ title, descriptionKey, url, Icon }) => (
+				feeds.map(({ title, description, url, Icon }) => (
 					<article class="feed-card surface-card">
 						<Icon size={24} strokeWidth={1.7} />
 						<h2>{title}</h2>
-						<p data-i18n={descriptionKey}>{translate(descriptionKey)}</p>
+						<p>{description}</p>
 						<a href={url}>{url}</a>
 						<button type="button" data-copy-feed={url} disabled>
 							<span class="copy-icons" aria-hidden="true">
 								<Copy class="copy-icon" size={16} />
 								<Check class="copied-icon" size={16} />
 							</span>
-							<span data-copy-label data-i18n="subscribe.copy">
-								{translate('subscribe.copy')}
-							</span>
+							<span data-copy-label>复制地址</span>
 						</button>
 						<span class="copy-feedback" role="status" data-copy-feedback />
 					</article>
@@ -59,9 +49,6 @@ const feeds = [
 </Layout>
 
 <script>
-	import { translate } from '../utils/i18n'
-	import { getClientLocale } from '../utils/i18n-client'
-
 	const copyResetTimers = new WeakMap<
 		HTMLButtonElement,
 		ReturnType<typeof setTimeout>
@@ -78,7 +65,6 @@ const feeds = [
 		if (!button) return
 		const previousTimer = copyResetTimers.get(button)
 		if (previousTimer) clearTimeout(previousTimer)
-		const locale = getClientLocale()
 		const feedback = button.parentElement?.querySelector<HTMLElement>(
 			'[data-copy-feedback]',
 		)
@@ -87,23 +73,21 @@ const feeds = [
 		} catch {
 			button.dataset.copied = 'false'
 			button.querySelector<HTMLElement>('[data-copy-label]')!.textContent =
-				translate('subscribe.copy', locale)
-			if (feedback)
-				feedback.textContent = translate('subscribe.copyFailed', locale)
+				'复制地址'
+			if (feedback) feedback.textContent = '复制失败，请手动复制上方地址。'
 			return
 		}
 		button.dataset.copied = 'true'
-		if (feedback)
-			feedback.textContent = translate('subscribe.copySuccess', locale)
+		if (feedback) feedback.textContent = '订阅地址已复制。'
 		button.querySelector<HTMLElement>('[data-copy-label]')!.textContent =
-			translate('subscribe.copied', locale)
+			'已复制'
 		copyResetTimers.set(
 			button,
 			setTimeout(() => {
 				button.dataset.copied = 'false'
 				if (feedback) feedback.textContent = ''
 				button.querySelector<HTMLElement>('[data-copy-label]')!.textContent =
-					translate('subscribe.copy', getClientLocale())
+					'复制地址'
 			}, 1400),
 		)
 	})

@@ -3,19 +3,13 @@ import ArchiveList from '../../components/ArchiveList.astro'
 import PageHeading from '../../components/PageHeading.astro'
 import Layout from '../../layouts/Layout.astro'
 import { getArticles } from '../../utils/article'
-import { translate } from '../../utils/i18n'
 
 const articles = await getArticles()
 ---
 
-<Layout
-	title={translate('page.posts')}
-	titleKey="page.posts"
-	description={translate('page.archivesDescription')}
-	descriptionKey="page.archivesDescription"
->
+<Layout title="文章" description="按发布时间浏览全部文章。">
 	<div class="page-shell">
-		<PageHeading title={translate('page.posts')} titleKey="page.posts" />
+		<PageHeading title="文章" />
 		<ArchiveList articles={articles} />
 	</div>
 </Layout>

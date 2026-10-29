@@ -1,12 +1,7 @@
 ---
 import blogConfig from '../../blog.config'
 import { footerNav } from '../consts'
-import { translate } from '../utils/i18n'
-import {
-	getNavGroupTitle,
-	getNavItemLabel,
-	getVisibleFooterNav,
-} from '../utils/nav'
+import { getVisibleFooterNav } from '../utils/nav'
 
 const visibleFooterNav = getVisibleFooterNav(
 	footerNav,
@@ -20,23 +15,16 @@ const visibleFooterNav = getVisibleFooterNav(
 			{
 				visibleFooterNav.map(group => (
 					<section>
-						<h2 data-i18n={group.titleKey}>{getNavGroupTitle(group)}</h2>
+						<h2>{group.title}</h2>
 						<ul>
 							{group.items.map(item => (
 								<li>
 									<a
 										href={item.url}
-										data-i18n={item.textKey}
-										target={
-											'external' in item && item.external ? '_blank' : undefined
-										}
-										rel={
-											'external' in item && item.external
-												? 'noopener noreferrer'
-												: undefined
-										}
+										target={item.external ? '_blank' : undefined}
+										rel={item.external ? 'noopener noreferrer' : undefined}
 									>
-										{getNavItemLabel(item)}
+										{item.text}
 									</a>
 								</li>
 							))}
@@ -65,20 +53,15 @@ const visibleFooterNav = getVisibleFooterNav(
 			}
 			{
 				blogConfig.theme.footer.showColorSchemeToggle && (
-					<div
-						class="theme-switcher"
-						role="group"
-						aria-label={translate('footer.theme')}
-						data-i18n-aria-label="footer.theme"
-					>
+					<div class="theme-switcher" role="group" aria-label="主题">
 						<button type="button" data-theme="light">
-							<span data-i18n="footer.light">{translate('footer.light')}</span>
+							<span>亮色</span>
 						</button>
 						<button type="button" data-theme="dark">
-							<span data-i18n="footer.dark">{translate('footer.dark')}</span>
+							<span>暗色</span>
 						</button>
 						<button type="button" data-theme="auto">
-							<span data-i18n="footer.auto">{translate('footer.auto')}</span>
+							<span>自动</span>
 						</button>
 					</div>
 				)

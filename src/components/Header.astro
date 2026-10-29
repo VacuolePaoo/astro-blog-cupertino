@@ -2,8 +2,6 @@
 import { ExternalLink, Search } from 'lucide-astro'
 import blogConfig from '../../blog.config'
 import { moreNav, primaryNav } from '../consts'
-import { translate, translateWithValues } from '../utils/i18n'
-import { getNavItemLabel } from '../utils/nav'
 import SearchLauncher from './SearchLauncher.astro'
 
 const blurLayers = [1, 2, 3, 4, 5, 6]
@@ -33,28 +31,18 @@ const siteLogo =
 		<a
 			class="brand"
 			href="/"
-			aria-label={translateWithValues('nav.brandHome', {
-				site: blogConfig.title,
-			})}
+			aria-label={`${blogConfig.title} 首页`}
 			data-brand-home
 		>
 			{siteLogo && <img src={siteLogo} alt="" width="28" height="28" />}
 			<span>{blogConfig.title}</span>
 		</a>
 
-		<nav
-			class="desktop-nav"
-			aria-label={translate('nav.main')}
-			data-i18n-aria-label="nav.main"
-		>
+		<nav class="desktop-nav" aria-label="主导航">
 			{
 				primaryNav.map((item, index) => (
-					<a
-						href={item.url}
-						style={`--index:${index + 1}`}
-						data-i18n={item.textKey}
-					>
-						{getNavItemLabel(item)}
+					<a href={item.url} style={`--index:${index + 1}`}>
+						{item.text}
 					</a>
 				))
 			}
@@ -62,8 +50,7 @@ const siteLogo =
 				<button
 					type="button"
 					aria-controls="desktop-more-panel"
-					data-desktop-more-toggle
-					data-i18n="nav.more">{translate('nav.more')}</button
+					data-desktop-more-toggle>更多</button
 				>
 				<div class="more-panel" id="desktop-more-panel" data-desktop-more-panel>
 					{
@@ -74,7 +61,7 @@ const siteLogo =
 								target={item.external ? '_blank' : undefined}
 								rel={item.external ? 'noopener noreferrer' : undefined}
 							>
-								<span data-i18n={item.textKey}>{getNavItemLabel(item)}</span>
+								<span>{item.text}</span>
 								{item.external && <ExternalLink size={13} aria-hidden="true" />}
 							</a>
 						))
@@ -89,7 +76,7 @@ const siteLogo =
 			type="button"
 			aria-expanded="false"
 			aria-controls="mobile-menu"
-			aria-label={translate('nav.expand')}
+			aria-label="展开导航"
 			data-mobile-toggle
 		>
 			<span class="mobile-chevron" aria-hidden="true">
@@ -106,22 +93,12 @@ const siteLogo =
 		inert
 		data-mobile-menu
 	>
-		<nav
-			class="page-shell mobile-menu-inner"
-			aria-label={translate('nav.mobile')}
-			data-i18n-aria-label="nav.mobile"
-		>
-			<a href="/" style="--index:0" data-i18n="nav.home"
-				>{translate('nav.home')}</a
-			>
+		<nav class="page-shell mobile-menu-inner" aria-label="移动端导航">
+			<a href="/" style="--index:0">首页</a>
 			{
 				primaryNav.map((item, index) => (
-					<a
-						href={item.url}
-						style={`--index:${index + 1}`}
-						data-i18n={item.textKey}
-					>
-						{getNavItemLabel(item)}
+					<a href={item.url} style={`--index:${index + 1}`}>
+						{item.text}
 					</a>
 				))
 			}
@@ -134,7 +111,7 @@ const siteLogo =
 					data-mobile-more-toggle
 					style={`--index:${primaryNav.length + 1}`}
 				>
-					<span data-i18n="nav.more">{translate('nav.more')}</span>
+					<span>更多</span>
 				</button>
 				<div
 					class="mobile-more-panel"
@@ -150,7 +127,7 @@ const siteLogo =
 								target={item.external ? '_blank' : undefined}
 								rel={item.external ? 'noopener noreferrer' : undefined}
 							>
-								<span data-i18n={item.textKey}>{getNavItemLabel(item)}</span>
+								<span>{item.text}</span>
 								{item.external && <ExternalLink size={14} aria-hidden="true" />}
 							</a>
 						))
@@ -162,8 +139,7 @@ const siteLogo =
 					<a
 						class="mobile-search-button"
 						href="/search/"
-						aria-label={translate('search.label')}
-						data-i18n-aria-label="search.label"
+						aria-label="搜索文章"
 						style={`--index:${primaryNav.length + 2}`}
 					>
 						<Search size={24} strokeWidth={1.8} aria-hidden="true" />
@@ -175,9 +151,6 @@ const siteLogo =
 </header>
 
 <script>
-	import { translate, translateWithValues } from '../utils/i18n'
-	import { getClientLocale } from '../utils/i18n-client'
-
 	const desktopMore = document.querySelector<HTMLElement>('[data-desktop-more]')
 	let desktopMorePinned = false
 
@@ -253,10 +226,7 @@ const siteLogo =
 		if (open) measureOpenHeight()
 		document.documentElement.classList.toggle('menu-open', open)
 		toggle?.setAttribute('aria-expanded', String(open))
-		toggle?.setAttribute(
-			'aria-label',
-			translate(open ? 'nav.collapse' : 'nav.expand', getClientLocale()),
-		)
+		toggle?.setAttribute('aria-label', open ? '收起导航' : '展开导航')
 		menu?.setAttribute('aria-hidden', String(!open))
 		if (menu) menu.inert = !open
 		if (!open) setMoreOpen(false)
@@ -266,11 +236,7 @@ const siteLogo =
 		if (brand)
 			brand.setAttribute(
 				'aria-label',
-				translateWithValues(
-					'nav.brandHome',
-					{ site: brand.textContent?.trim() ?? '' },
-					getClientLocale(),
-				),
+				`${brand.textContent?.trim() ?? ''} 首页`,
 			)
 	}
 	updateBrandLabel()

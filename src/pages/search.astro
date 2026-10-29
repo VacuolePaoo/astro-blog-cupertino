@@ -2,27 +2,20 @@
 import blogConfig from '../../blog.config'
 import { SearchPage } from '../components/search/SearchPage'
 import Layout from '../layouts/Layout.astro'
-import { translate } from '../utils/i18n'
 import '../styles/search.scss'
 ---
 
 <Layout
-	title={translate('page.search')}
-	titleKey="page.search"
-	description={translate('page.searchDescription')}
-	descriptionKey="page.searchDescription"
+	title="搜索"
+	description="搜索博客文章。"
 	noindex={!blogConfig.theme.search.enabled}
 >
-	<section
-		class="page-shell search-page"
-		aria-label={translate('search.label')}
-		data-i18n-aria-label="search.label"
-	>
+	<section class="page-shell search-page" aria-label="搜索文章">
 		{
 			blogConfig.theme.search.enabled ? (
 				<SearchPage client:load />
 			) : (
-				<p data-i18n="search.disabled">{translate('search.disabled')}</p>
+				<p>搜索功能已关闭。</p>
 			)
 		}
 	</section>

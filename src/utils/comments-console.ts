@@ -1,6 +1,3 @@
-import { translate } from './i18n'
-import { getClientLocale } from './i18n-client'
-
 /** Own the page-local expand command and restore button without remounting Twikoo. */
 export function registerCommentsConsole(element: HTMLElement): () => void {
 	if (typeof window === 'undefined') return () => {}
@@ -9,10 +6,7 @@ export function registerCommentsConsole(element: HTMLElement): () => void {
 	)
 	if (!restoreButton) return () => {}
 	restoreButton.hidden = !element.hasAttribute('data-comments-expanded')
-	restoreButton.textContent = translate(
-		'comments.restoreSize',
-		getClientLocale(),
-	)
+	restoreButton.textContent = '恢复评论区尺寸'
 	// A body child remains viewport-fixed outside article containment and FLIP transforms.
 	document.body.append(restoreButton)
 	let animation: Animation | undefined
@@ -30,10 +24,7 @@ export function registerCommentsConsole(element: HTMLElement): () => void {
 		const before = element.getBoundingClientRect()
 		animation?.cancel()
 		element.toggleAttribute('data-comments-expanded', expanded)
-		restoreButton.textContent = translate(
-			'comments.restoreSize',
-			getClientLocale(),
-		)
+		restoreButton.textContent = '恢复评论区尺寸'
 		restoreButton.hidden = !expanded
 		const after = element.getBoundingClientRect()
 

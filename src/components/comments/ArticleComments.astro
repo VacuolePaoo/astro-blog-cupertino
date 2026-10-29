@@ -1,7 +1,6 @@
 ---
 import type { ArticleCommentsProps as Props } from '../../types/comments'
 import blogConfig from '../../../blog.config'
-import { translate } from '../../utils/i18n'
 import '../../styles/comments/twikoo.css'
 
 const { path } = Astro.props
@@ -21,28 +20,20 @@ const { comments } = blogConfig
 			<button
 				class="comments-restore page-top-action"
 				data-comments-restore
-				data-i18n="comments.restoreSize"
 				aria-controls="article-comments-mount"
 				type="button"
 				hidden
 			>
-				{translate('comments.restoreSize')}
+				恢复评论区尺寸
 			</button>
 			<section aria-labelledby="comments-title">
-				<h2 id="comments-title" data-i18n="comments.title" tabindex="-1">
-					{translate('comments.title')}
+				<h2 id="comments-title" tabindex="-1">
+					评论
 				</h2>
 				<p data-comments-status role="status" hidden />
-				<button
-					data-comments-retry
-					type="button"
-					hidden
-					data-i18n="comments.retry"
-				>
-					{translate('comments.retry')}
-				</button>
+				<button data-comments-retry type="button" hidden>重新加载</button>
 				<div id="article-comments-mount" />
-				<noscript>{translate('comments.noScript')}</noscript>
+				<noscript>开启 JavaScript 后即可查看和参与评论。</noscript>
 			</section>
 		</article-comments>
 	)

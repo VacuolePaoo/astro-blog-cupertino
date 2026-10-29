@@ -3,7 +3,6 @@ import type { ArticleEntry } from '../types/article'
 import { Tags } from 'lucide-astro'
 import blogConfig from '../../blog.config'
 import { getArticleUrl } from '../utils/article'
-import { translate, translateWithValues } from '../utils/i18n'
 import { getTaxonomyUrl } from '../utils/taxonomy'
 
 interface Props {
@@ -21,76 +20,63 @@ const licenseUrl = copyright?.licenseUrl ?? blogConfig.license.url
 ---
 
 <footer class="article-footer">
-	{
-		article.data.about !== false && (
-			<section class="copyright-card">
-				<h2 data-i18n="article.about">{translate('article.about')}</h2>
-				<div class="copyright-details">
-					<span
-						data-i18n-template="article.licenseBefore"
-						data-i18n-value-author={author}
-						>{translateWithValues('article.licenseBefore', { author })}</span
-					>
-					{licenseUrl ? <a href={licenseUrl}>{licenseName}</a> : licenseName}<span
-						data-i18n="article.licenseEnd"
-						>{translate('article.licenseEnd')}</span
-					>
-				</div>
-				{
-					article.data.tags?.length && (
-						<div
-							class:list={[
-								'article-tags',
-								{ 'capitalize-tags': blogConfig.theme.content.tags.capitalize },
-							]}
-							aria-label={translate('article.tags')}
-							data-i18n-aria-label="article.tags"
-						>
-							<Tags size={14} aria-hidden="true" />
-							{article.data.tags.map(tag => (
-								<a href={getTaxonomyUrl('tags', tag)}>
-									{blogConfig.theme.content.tags.hashtagPrefix ? '#' : ''}
-									{tag}
-								</a>
-							))}
-						</div>
-					)
-				}
-				{article.data.extra_info && (
-					<div class="extra-info">{article.data.extra_info}</div>
-				)}
-			</section>
-		)
-	}
+		{
+			article.data.about !== false && (
+				<section class="copyright-card">
+					<h2>关于本文</h2>
+					<div class="copyright-details">
+						<span>由 {author} 撰写，采用 </span>
+						{licenseUrl ? <a href={licenseUrl}>{licenseName}</a> : licenseName}
+						<span> 许可协议。</span>
+					</div>
+					{
+						article.data.tags?.length && (
+							<div
+								class:list={[
+									'article-tags',
+									{ 'capitalize-tags': blogConfig.theme.content.tags.capitalize },
+								]}
+								aria-label="文章标签"
+							>
+								<Tags size={14} aria-hidden="true" />
+								{article.data.tags.map(tag => (
+									<a href={getTaxonomyUrl('tags', tag)}>
+										{blogConfig.theme.content.tags.hashtagPrefix ? '#' : ''}
+										{tag}
+									</a>
+								))}
+							</div>
+						)
+					}
+					{article.data.extra_info && (
+						<div class="extra-info">{article.data.extra_info}</div>
+					)}
+				</section>
+			)
+		}
 
-	<nav
-		class="article-surround"
-		aria-label={translate('article.surround')}
-		data-i18n-aria-label="article.surround"
-	>
-		{
-			older ? (
-				<a class="next" href={getArticleUrl(older, preview)}>
-					<span data-i18n="article.next">{translate('article.next')}</span>
-					<strong>{older.data.title}</strong>
-				</a>
-			) : (
-				<span class="article-surround-spacer" />
-			)
-		}
-		{
-			newer ? (
-				<a class="prev" href={getArticleUrl(newer, preview)}>
-					<span data-i18n="article.previous">
-						{translate('article.previous')}
-					</span>
-					<strong>{newer.data.title}</strong>
-				</a>
-			) : (
-				<span class="article-surround-spacer" />
-			)
-		}
-	</nav>
+		<nav class="article-surround" aria-label="相邻文章">
+			{
+				older ? (
+					<a class="next" href={getArticleUrl(older, preview)}>
+						<span>下一篇</span>
+						<strong>{older.data.title}</strong>
+					</a>
+				) : (
+					<span class="article-surround-spacer" />
+				)
+			}
+			{
+				newer ? (
+					<a class="prev" href={getArticleUrl(newer, preview)}>
+						<span>上一篇</span>
+						<strong>{newer.data.title}</strong>
+					</a>
+				) : (
+					<span class="article-surround-spacer" />
+				)
+			}
+		</nav>
 </footer>
 
 <style>

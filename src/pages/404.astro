@@ -2,28 +2,17 @@
 import ArticleCard from '../components/ArticleCard.astro'
 import Layout from '../layouts/Layout.astro'
 import { getArticles } from '../utils/article'
-import { translate } from '../utils/i18n'
 
 const articles = (await getArticles()).slice(0, 3)
 ---
 
-<Layout
-	title={translate('page.notFound')}
-	titleKey="page.notFound"
-	description={translate('page.notFoundMetaDescription')}
-	descriptionKey="page.notFoundMetaDescription"
-	noindex
->
+<Layout title="页面未找到" description="请求的页面不存在。" noindex>
 	<section class="page-shell not-found">
 		<p class="error-code">404</p>
-		<h1 data-i18n="page.notFoundDescription">
-			{translate('page.notFoundDescription')}
-		</h1>
-		<a class="home-button" href="/" data-i18n="page.backHome"
-			>{translate('page.backHome')}</a
-		>
+		<h1>这里没有你寻找的页面</h1>
+		<a class="home-button" href="/">返回首页</a>
 		<div class="recommendations">
-			<h2 data-i18n="home.latest">{translate('home.latest')}</h2>
+			<h2>最近文章</h2>
 			{
 				articles.map(article => (
 					<ArticleCard article={article} variant="archive" />

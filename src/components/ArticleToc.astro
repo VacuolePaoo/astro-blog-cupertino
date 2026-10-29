@@ -1,7 +1,6 @@
 ---
 import type { MarkdownHeading } from 'astro'
 import blogConfig from '../../blog.config'
-import { translate } from '../utils/i18n'
 
 interface Props {
 	headings: MarkdownHeading[]
@@ -16,11 +15,7 @@ const visible = blogConfig.theme.content.toc.enabled
 
 {
 	visible.length > 0 && (
-		<aside
-			class="article-toc"
-			aria-label={translate('article.toc')}
-			data-i18n-aria-label="article.toc"
-		>
+		<aside class="article-toc" aria-label="文章目录">
 			{visible.map(heading => (
 				<p class:list={{ nested: heading.depth === 3 }}>
 					<a href={`#${heading.slug}`} data-toc-link={heading.slug}>

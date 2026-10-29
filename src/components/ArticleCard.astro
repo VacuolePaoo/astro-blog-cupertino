@@ -2,7 +2,6 @@
 import type { ArticleEntry } from '../types/article'
 import blogConfig from '../../blog.config'
 import { getArticleExcerpt, getArticleUrl, getCoverAlt } from '../utils/article'
-import { translateWithValues } from '../utils/i18n'
 import ArticleCover from './ArticleCover.astro'
 import DateDisplay from './DateDisplay.astro'
 
@@ -29,21 +28,11 @@ const excerpt = blogConfig.theme.content.cards.showExcerpt
 	<a
 		class="article-card-link"
 		href={href}
-		aria-label={translateWithValues('article.read', {
-			title: article.data.title,
-		})}
-		data-i18n-aria-template="article.read"
-		data-i18n-value-title={article.data.title}
+		aria-label={`阅读《${article.data.title}》`}
 	>
 		{
 			article.data.cover && (
-				<div
-					class="article-card-media"
-					data-i18n-alt-template={
-						article.data.coverAlt ? undefined : 'article.coverAlt'
-					}
-					data-i18n-value-title={article.data.title}
-				>
+				<div class="article-card-media">
 					<ArticleCover
 						src={article.data.cover}
 						alt={getCoverAlt(article)}

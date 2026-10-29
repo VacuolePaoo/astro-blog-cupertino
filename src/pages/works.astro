@@ -1,21 +1,12 @@
 ---
 import Layout from '../layouts/Layout.astro'
-import { translate } from '../utils/i18n'
 ---
 
-<Layout
-	title={translate('page.works')}
-	titleKey="page.works"
-	description={translate('page.worksMetaDescription')}
-	descriptionKey="page.worksMetaDescription"
-	noindex
->
+<Layout title="作品" description="作品功能即将上线。" noindex>
 	<section class="page-shell coming-soon">
-		<p data-i18n="page.works">{translate('page.works')}</p>
-		<h1 data-i18n="page.comingSoon">{translate('page.comingSoon')}</h1>
-		<span data-i18n="page.worksDescription"
-			>{translate('page.worksDescription')}</span
-		>
+		<p>作品</p>
+		<h1>即将上线</h1>
+		<span>项目与创作会在这里逐步整理。</span>
 	</section>
 </Layout>
 

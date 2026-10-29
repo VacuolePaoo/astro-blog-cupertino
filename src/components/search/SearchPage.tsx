@@ -1,16 +1,10 @@
 import type { ThemeConfig } from '../../types/config'
-import type { UiLocale } from '../../types/i18n'
 import type { SearchResults } from '../../types/search'
 import { CornerDownRight, Search, X } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import blogConfig from '../../../blog.config'
 import { SEARCH_PAGE_SIZE } from '../../consts'
 import { formatDisplayDate } from '../../utils/date-display'
-import {
-	resolveUiLocale,
-	translate,
-	translateWithValues,
-} from '../../utils/i18n'
 import {
 	getSearchArticleUrl,
 	highlightSnippet,
@@ -24,7 +18,6 @@ export function SearchPage() {
 	const inputRef = useRef<HTMLInputElement>(null)
 	const resultsRef = useRef<HTMLDivElement>(null)
 	const focusNewResultsFrom = useRef<number | null>(null)
-	const [locale, setLocale] = useState<UiLocale>('zh-CN')
 	const [term, setTerm] = useState('')
 	const [query, setQuery] = useState('')
 	const [results, setResults] = useState<SearchResults>(emptyResults)
@@ -38,7 +31,6 @@ export function SearchPage() {
 	const { trigger, delayMs } = searchSettings
 
 	useEffect(() => {
-		setLocale(resolveUiLocale(navigator.languages?.[0] ?? navigator.language))
 		const initialTerm =
 			new URLSearchParams(location.search).get('q')?.trim() ?? ''
 		setTerm(initialTerm)
@@ -140,11 +132,7 @@ export function SearchPage() {
 					submitSearch()
 				}}
 			>
-				<button
-					className="search-submit"
-					type="submit"
-					aria-label={translate('search.submit', locale)}
-				>
+				<button className="search-submit" type="submit" aria-label="搜索">
 					<Search size={18} aria-hidden="true" />
 				</button>
 				<input
@@ -159,14 +147,14 @@ export function SearchPage() {
 							setQuery('')
 						}
 					}}
-					placeholder={translate('search.placeholder', locale)}
-					aria-label={translate('search.label', locale)}
+					placeholder="搜索文章"
+					aria-label="搜索文章"
 				/>
 				{term && (
 					<button
 						className="search-clear"
 						type="button"
-						aria-label={translate('search.clear', locale)}
+						aria-label="清除搜索"
 						onClick={() => {
 							focusNewResultsFrom.current = null
 							setTerm('')
@@ -180,32 +168,28 @@ export function SearchPage() {
 				)}
 			</form>
 			<div className="search-status" aria-live="polite">
-				{current && loading && (
-					<p className="search-empty">{translate('search.loading', locale)}</p>
-				)}
+				{current && loading && <p className="search-empty">正在搜索…</p>}
 				{current && error && (
 					<>
-						<p className="search-empty">{translate('search.error', locale)}</p>
+						<p className="search-empty">
+							搜索暂时不可用，请稍后重试。
+						</p>
 						<button
 							className="search-retry"
 							type="button"
 							onClick={() => setRetryVersion(version => version + 1)}
 						>
-							{translate('search.retry', locale)}
+							重试
 						</button>
 					</>
 				)}
 				{showResults && (
 					<p className="search-count">
-						{translateWithValues(
-							'search.countShown',
-							{ total: results.total, shown: results.hits.length },
-							locale,
-						)}
+						{`共 ${results.total} 条结果，已显示 ${results.hits.length} 条`}
 					</p>
 				)}
 				{showResults && results.total === 0 && (
-					<p className="search-empty">{translate('search.empty', locale)}</p>
+					<p className="search-empty">没有找到相关内容。</p>
 				)}
 			</div>
 			<div
@@ -213,7 +197,7 @@ export function SearchPage() {
 				className="search-results"
 				data-lenis-prevent=""
 				role="region"
-				aria-label={translate('search.results', locale)}
+				aria-label="搜索结果列表"
 				tabIndex={showResults && results.hits.length > 0 ? 0 : undefined}
 			>
 				{showResults &&
@@ -224,11 +208,7 @@ export function SearchPage() {
 									src={result.cover}
 									alt={
 										result.coverAlt ||
-										translateWithValues(
-											'article.coverAlt',
-											{ title: result.articleTitle },
-											locale,
-										)
+										`文章《${result.articleTitle}》的封面图片`
 									}
 									loading="lazy"
 								/>
@@ -250,11 +230,7 @@ export function SearchPage() {
 										<span
 											dangerouslySetInnerHTML={{
 												__html: highlightText(
-													translateWithValues(
-														'search.heading',
-														{ heading: result.heading },
-														locale,
-													),
+													`位于“${result.heading}”`,
 													query,
 												),
 											}}
@@ -265,7 +241,6 @@ export function SearchPage() {
 									{formatDisplayDate(
 										result.pubDate,
 										blogConfig.theme.content.dates.displayFormat,
-										locale,
 									)}
 								</time>
 								{result.excerpt && (
@@ -282,9 +257,7 @@ export function SearchPage() {
 				{hasMore && (
 					<div className="search-more">
 						{moreError && (
-							<p className="search-more-error">
-								{translate('search.error', locale)}
-							</p>
+							<p className="search-more-error">搜索暂时不可用，请稍后重试。</p>
 						)}
 						<button
 							type="button"
@@ -298,14 +271,7 @@ export function SearchPage() {
 								}
 							}}
 						>
-							{translate(
-								loadingMore
-									? 'search.loadingMore'
-									: moreError
-										? 'search.retry'
-										: 'search.loadMore',
-								locale,
-							)}
+							{loadingMore ? '正在加载更多…' : moreError ? '重试' : '加载更多结果'}
 						</button>
 					</div>
 				)}

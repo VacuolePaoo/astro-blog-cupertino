@@ -1,12 +1,9 @@
-import type { UiLocale, UiMessageKey } from '../types/i18n'
-import { translate } from './i18n'
-
 /** Twikoo 2.0.17 strips icon names; match only the three verified toolbar SVGs. */
-function getToolbarAction(element: Element): UiMessageKey | undefined {
+function getToolbarAction(element: Element) {
 	const path = element.querySelector('svg path')?.getAttribute('d') ?? ''
-	if (path.startsWith('M416 208')) return 'comments.search'
-	if (path.startsWith('M65.9 228.5')) return 'comments.refresh'
-	if (path.startsWith('M195.1 9.5')) return 'comments.manage'
+	if (path.startsWith('M416 208')) return '搜索评论'
+	if (path.startsWith('M65.9 228.5')) return '刷新评论'
+	if (path.startsWith('M195.1 9.5')) return '管理评论'
 	return undefined
 }
 
@@ -19,10 +16,7 @@ function labelButton(element: HTMLElement, label: string) {
 }
 
 /** Add missing semantics while retaining Twikoo's own click handlers and state. */
-export function observeCommentsAccessibility(
-	root: HTMLElement,
-	locale: UiLocale,
-): () => void {
+export function observeCommentsAccessibility(root: HTMLElement): () => void {
 	if (typeof window === 'undefined' || typeof document === 'undefined')
 		return () => {}
 	let adminWasOpen = false
@@ -35,10 +29,10 @@ export function observeCommentsAccessibility(
 			if (input && label) input.setAttribute('aria-label', label)
 		}
 		for (const textarea of root.querySelectorAll('.tk-submit textarea'))
-			textarea.setAttribute('aria-label', translate('comments.content', locale))
+			textarea.setAttribute('aria-label', '评论内容')
 		root
 			.querySelector('.tk-comments-search input')
-			?.setAttribute('aria-label', translate('comments.search', locale))
+			?.setAttribute('aria-label', '搜索评论')
 
 		const admin = root.querySelector<HTMLElement>('.tk-admin')
 		// Keep the scroll wheel inside Twikoo's configuration panel with Lenis enabled.
@@ -49,11 +43,11 @@ export function observeCommentsAccessibility(
 		)) {
 			const key = getToolbarAction(action)
 			if (!key) continue
-			labelButton(action, translate(key, locale))
-			if (key === 'comments.manage') {
+			labelButton(action, key)
+			if (key === '管理评论') {
 				adminTrigger = action
 				action.setAttribute('aria-expanded', String(adminOpen))
-			} else if (key === 'comments.search') {
+			} else if (key === '搜索评论') {
 				action.setAttribute(
 					'aria-expanded',
 					String(action.classList.contains('__active')),
@@ -61,7 +55,7 @@ export function observeCommentsAccessibility(
 			}
 		}
 		for (const logo of root.querySelectorAll<HTMLElement>('.OwO-logo')) {
-			labelButton(logo, translate('comments.emoji', locale))
+			labelButton(logo, '表情')
 			logo.setAttribute(
 				'aria-expanded',
 				String(logo.parentElement?.classList.contains('OwO-open') ?? false),
@@ -72,9 +66,7 @@ export function observeCommentsAccessibility(
 		)) {
 			labelButton(
 				item,
-				item.title ||
-					item.textContent?.trim() ||
-					translate('comments.emoji', locale),
+				item.title || item.textContent?.trim() || '表情',
 			)
 			if (item.matches('.OwO-packages > li'))
 				item.setAttribute(
@@ -85,9 +77,9 @@ export function observeCommentsAccessibility(
 		for (const upload of root.querySelectorAll<HTMLElement>(
 			'.tk-row-actions-start > .tk-submit-action-icon:not(.OwO)',
 		))
-			labelButton(upload, translate('comments.uploadImage', locale))
+			labelButton(upload, '上传图片')
 		const close = admin?.querySelector<HTMLElement>(':scope > .tk-admin-close')
-		if (close) labelButton(close, translate('comments.closeAdmin', locale))
+		if (close) labelButton(close, '关闭评论管理')
 		if (adminOpen && !adminWasOpen) {
 			admin?.scrollIntoView({ block: 'center', behavior: 'instant' })
 			close?.focus({ preventScroll: true })

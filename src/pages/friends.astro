@@ -3,7 +3,6 @@ import { Rss } from 'lucide-astro'
 import blogConfig from '../../blog.config'
 import { friendGroups } from '../friends-links'
 import Layout from '../layouts/Layout.astro'
-import { translate, translateWithValues } from '../utils/i18n'
 import { assertAllowedImageSource } from '../utils/image'
 
 for (const group of friendGroups)
@@ -15,18 +14,11 @@ for (const group of friendGroups)
 		)
 ---
 
-<Layout
-	title={translate('page.friends')}
-	titleKey="page.friends"
-	description={translate('page.friendsDescription')}
-	descriptionKey="page.friendsDescription"
->
+<Layout title="友链" description="一些持续创作、互相启发的朋友与站点。">
 	<section class="page-shell friends-page">
 		<header>
-			<h1 data-i18n="page.friends">{translate('page.friends')}</h1>
-			<p data-i18n="page.friendsDescription">
-				{translate('page.friendsDescription')}
-			</p>
+			<h1>友链</h1>
+			<p>一些持续创作、互相启发的朋友与站点。</p>
 		</header>
 		{
 			friendGroups.map(group => (
@@ -48,11 +40,7 @@ for (const group of friendGroups)
 									>
 										<img
 											src={friend.avatar}
-											alt={translateWithValues('friend.avatar', {
-												title: friend.title,
-											})}
-											data-i18n-alt-template="friend.avatar"
-											data-i18n-value-title={friend.title}
+											alt={`${friend.title} 的头像`}
 											loading="lazy"
 										/>
 									</span>
@@ -68,11 +56,7 @@ for (const group of friendGroups)
 										href={friend.feed}
 										target="_blank"
 										rel="noopener noreferrer"
-										aria-label={translateWithValues('friend.subscribe', {
-											title: friend.title,
-										})}
-										data-i18n-aria-template="friend.subscribe"
-										data-i18n-value-title={friend.title}
+										aria-label={`订阅 ${friend.title}`}
 									>
 										<Rss size={17} />
 									</a>

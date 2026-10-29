@@ -1,8 +1,6 @@
 import type { TwikooClient } from '../types/comments'
 import { observeCommentsAccessibility } from './comments-accessibility'
 import { registerCommentsConsole } from './comments-console'
-import { resolveUiLocale, translate } from './i18n'
-import { getClientLocale } from './i18n-client'
 
 let clientPromise: Promise<TwikooClient> | undefined
 
@@ -56,10 +54,7 @@ export function observeArticleComments(element: HTMLElement): () => void {
 	const mount = element.querySelector<HTMLElement>('#article-comments-mount')
 	if (!status || !retry || !mount) return () => {}
 	const cleanupConsole = registerCommentsConsole(element)
-	const cleanupAccessibility = observeCommentsAccessibility(
-		mount,
-		resolveUiLocale(element.dataset.lang || getClientLocale()),
-	)
+	const cleanupAccessibility = observeCommentsAccessibility(mount)
 	let disposed = false
 	let loading = false
 
@@ -68,7 +63,7 @@ export function observeArticleComments(element: HTMLElement): () => void {
 		loading = true
 		retry.hidden = true
 		status.hidden = false
-		status.textContent = translate('comments.loading', getClientLocale())
+		status.textContent = '正在加载评论…'
 		mount.setAttribute('aria-busy', 'true')
 		try {
 			const client = await loadTwikoo(element.dataset.scriptSrc!)
@@ -77,13 +72,13 @@ export function observeArticleComments(element: HTMLElement): () => void {
 				envId: element.dataset.envId!,
 				el: '#article-comments-mount',
 				path: element.dataset.path!,
-				lang: element.dataset.lang || getClientLocale(),
+				lang: element.dataset.lang || 'zh-CN',
 				...(element.dataset.region ? { region: element.dataset.region } : {}),
 			})
 			status.hidden = true
 		} catch {
 			if (disposed) return
-			status.textContent = translate('comments.error', getClientLocale())
+			status.textContent = '评论暂时无法加载，请重试。'
 			retry.hidden = false
 		} finally {
 			loading = false

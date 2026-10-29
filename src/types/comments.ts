@@ -2,7 +2,7 @@ export interface TwikooConfig {
 	enabled: boolean
 	envId: string
 	region: string
-	/** Empty follows the visitor's UI language. */
+	/** Fixed comment UI language, e.g. 'zh-CN'. */
 	lang: string
 	scriptSrc: string
 }

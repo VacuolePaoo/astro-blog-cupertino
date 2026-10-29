@@ -1,6 +1,3 @@
-import type { UiLocale } from '../types/i18n'
-import { translateWithValues } from './i18n'
-
 /** Treat omitted, YAML-null, and blank image fields as absent before validation. */
 export function normalizeOptionalImageValue(value: unknown) {
 	if (value == null) return undefined
@@ -15,8 +12,8 @@ export function isPublicImage(source: string) {
 	return source.startsWith('/')
 }
 
-export function fallbackCoverAlt(title: string, locale: UiLocale = 'zh-CN') {
-	return translateWithValues('article.coverAlt', { title }, locale)
+export function fallbackCoverAlt(title: string) {
+	return `文章《${title}》的封面图片`
 }
 
 export function isAllowedImageSource(

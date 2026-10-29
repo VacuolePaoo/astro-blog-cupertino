@@ -1,14 +1,8 @@
 ---
 import { Search } from 'lucide-astro'
-import { translate } from '../utils/i18n'
 ---
 
-<a
-	class="search-launcher"
-	href="/search/"
-	aria-label={translate('search.label')}
-	data-i18n-aria-label="search.label"
->
+<a class="search-launcher" href="/search/" aria-label="搜索文章">
 	<Search size={24} strokeWidth={1.8} />
 </a>
 

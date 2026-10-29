@@ -1,16 +1,10 @@
 ---
 import Layout from '../layouts/Layout.astro'
-import { translate } from '../utils/i18n'
 ---
 
-<Layout
-	title={translate('page.about')}
-	titleKey="page.about"
-	description={translate('page.aboutDescription')}
-	descriptionKey="page.aboutDescription"
->
+<Layout title="关于" description="关于本站与作者。">
 	<section class="page-shell empty-page">
-		<h1 data-i18n="page.about">{translate('page.about')}</h1>
+		<h1>关于</h1>
 	</section>
 </Layout>
 

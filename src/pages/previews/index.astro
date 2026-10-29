@@ -3,20 +3,13 @@ import ArchiveList from '../../components/ArchiveList.astro'
 import PageHeading from '../../components/PageHeading.astro'
 import Layout from '../../layouts/Layout.astro'
 import { getArticles } from '../../utils/article'
-import { translate } from '../../utils/i18n'
 
 const drafts = await getArticles({ drafts: true })
 ---
 
-<Layout
-	title={translate('page.previews')}
-	titleKey="page.previews"
-	description={translate('page.previewDescription')}
-	descriptionKey="page.previewDescription"
-	noindex
->
+<Layout title="文章预览" description="尚未正式发布的文章预览。" noindex>
 	<div class="page-shell">
-		<PageHeading title={translate('page.previews')} titleKey="page.previews" />
+		<PageHeading title="文章预览" />
 		<ArchiveList articles={drafts} preview />
 	</div>
 </Layout>
