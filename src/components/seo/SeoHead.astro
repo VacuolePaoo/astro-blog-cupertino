@@ -1,6 +1,7 @@
 ---
 import blogConfig from '../../../blog.config'
 import { absoluteUrl } from '../../utils/link'
+import { siteOrigin } from '../../utils/site'
 
 interface Props {
 	title?: string | undefined
@@ -23,8 +24,8 @@ const {
 } = Astro.props
 
 const pageTitle = title ? `${title} - ${blogConfig.title}` : blogConfig.title
-const canonicalUrl = absoluteUrl(canonical, blogConfig.site)
-const imageUrl = absoluteUrl(image, blogConfig.site)
+const canonicalUrl = absoluteUrl(canonical, siteOrigin)
+const imageUrl = absoluteUrl(image, siteOrigin)
 const structuredData =
 	type === 'article'
 		? {
@@ -42,7 +43,7 @@ const structuredData =
 					name: blogConfig.title,
 					logo: {
 						'@type': 'ImageObject',
-						url: absoluteUrl(blogConfig.author.avatar, blogConfig.site),
+						url: absoluteUrl(blogConfig.author.avatar, siteOrigin),
 					},
 				},
 			}
@@ -51,7 +52,7 @@ const structuredData =
 				'@type': 'WebSite',
 				name: blogConfig.title,
 				description: blogConfig.description,
-				url: blogConfig.site,
+				url: siteOrigin,
 				inLanguage: blogConfig.language,
 				author: { '@type': 'Person', name: blogConfig.author.name },
 			}

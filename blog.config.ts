@@ -6,6 +6,8 @@ export default {
 	subtitle: 'Dinosaur is talking here.',
 	description:
 		'记录软件开发、工程实践与日常思考，在持续写作中整理经验、问题与新的理解。',
+	// 生产域名；预览环境的覆盖逻辑见 src/utils/site
+	// Production origin; per-environment overrides live in src/utils/site
 	site: 'https://blog.vacu.top',
 	language: 'zh-CN',
 	timeZone: 'Asia/Shanghai',

@@ -9,9 +9,10 @@ import rehypeSlug from 'rehype-slug'
 import blogConfig from './blog.config'
 import { remarkImageWidth } from './src/markdown/remark-image-width'
 import { transformerCodeMeta } from './src/utils/code'
+import { siteOrigin } from './src/utils/site'
 
 export default defineConfig({
-	site: blogConfig.site,
+	site: siteOrigin,
 	output: 'static',
 	trailingSlash: 'always',
 	build: {

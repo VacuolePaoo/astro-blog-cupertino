@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro'
-import blogConfig from '../../blog.config'
+import { siteOrigin } from '../utils/site'
 
 export const GET: APIRoute = () =>
 	new Response(
@@ -8,7 +8,7 @@ export const GET: APIRoute = () =>
 			'Allow: /',
 			'Disallow: /previews/',
 			'',
-			`Sitemap: ${new URL('/sitemap-index.xml', blogConfig.site).href}`,
+			`Sitemap: ${new URL('/sitemap-index.xml', siteOrigin).href}`,
 		].join('\n'),
 		{ headers: { 'Content-Type': 'text/plain; charset=utf-8' } },
 	)
