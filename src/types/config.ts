@@ -61,7 +61,8 @@ export interface ThemeConfig {
  * origin for every other file type.
  * @see https://docs.astro.build/en/reference/configuration-reference/#build-assetsprefix
  */
-export type CdnAssetsPrefix = string | ({ fallback: string } & Record<string, string>)
+export type CdnAssetsPrefix =
+	string | ({ fallback: string } & Record<string, string>)
 
 export interface BlogConfig {
 	title: string

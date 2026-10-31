@@ -1,5 +1,5 @@
 import type { APIRoute, GetStaticPaths } from 'astro'
-import { getArticleSlug, getArticles } from '../../../utils/article'
+import { getArticles, getArticleSlug } from '../../../utils/article'
 import { renderArticleOg } from '../../../utils/og'
 
 export const getStaticPaths = (async () =>

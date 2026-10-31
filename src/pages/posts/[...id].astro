@@ -2,7 +2,11 @@
 import type { GetStaticPaths } from 'astro'
 import { render } from 'astro:content'
 import ArticleLayout from '../../layouts/ArticleLayout.astro'
-import { getArticleSlug, getArticles, getArticleSurround } from '../../utils/article'
+import {
+	getArticles,
+	getArticleSlug,
+	getArticleSurround,
+} from '../../utils/article'
 
 export const getStaticPaths = (async () => {
 	const articles = await getArticles()

@@ -64,10 +64,7 @@ export function observeCommentsAccessibility(root: HTMLElement): () => void {
 		for (const item of root.querySelectorAll<HTMLElement>(
 			'.OwO-item, .OwO-packages > li, .tk-expand',
 		)) {
-			labelButton(
-				item,
-				item.title || item.textContent?.trim() || '表情',
-			)
+			labelButton(item, item.title || item.textContent?.trim() || '表情')
 			if (item.matches('.OwO-packages > li'))
 				item.setAttribute(
 					'aria-pressed',
