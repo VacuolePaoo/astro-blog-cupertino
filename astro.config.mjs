@@ -38,7 +38,8 @@ export default defineConfig({
 				),
 		}),
 	],
-	image: { domains: blogConfig.imageDomains },
+	// constrained: markdown images get responsive srcset capped at their natural width
+	image: { domains: blogConfig.imageDomains, layout: 'constrained' },
 	markdown: {
 		processor: unified({
 			gfm: true,

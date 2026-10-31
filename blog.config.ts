@@ -27,7 +27,8 @@ export default {
 	},
 
 	// Media and feeds / 图片与订阅
-	imageDomains: ['astro.build', 'dinoimg.236668.xyz'],
+	// Article images are all local now; this allowlist remains for friend avatars only
+	imageDomains: ['astro.build'],
 	feed: { limit: 20, xslt: true },
 
 	// Asset CDN / 资源 CDN
