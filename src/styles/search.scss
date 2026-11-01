@@ -50,7 +50,7 @@ body[data-page-type='search'] #main-content {
 	font-size: 21px;
 }
 .search-field input::placeholder {
-	opacity: 0.2;
+	color: var(--color-muted);
 }
 .search-field input::-webkit-search-cancel-button {
 	display: none;
