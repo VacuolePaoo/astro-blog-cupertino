@@ -7,7 +7,7 @@ slug: dd1bd85
 tags:
   - Trae
   - AI
-cover: https://dinoimg.236668.xyz/file/P4mHAQ3N.png
+cover: img/trae-responses-api/cover.png
 ---
 
 Responses API是OpenAI最新版本也是最推荐的API格式，其对工具调用和多模态的支持非常良好，而传统的Chat Completions格式只能用于对话（内建工具调用在客户端处理）
@@ -22,7 +22,7 @@ Responses API是OpenAI最新版本也是最推荐的API格式，其对工具调�
 2. CCSwitch: [官网](https://www.ccswitch.io)
 3. 要接入的中转站或API
 
-[![Hellocoder中转站](https://dinoimg.236668.xyz/file/RDQ4i5Bv.png)](https://hicoder.de)
+[![Hellocoder中转站](img/trae-responses-api/RDQ4i5Bv.png)](https://hicoder.de)
 
 [Hellocoder中转站](https://hicoder.de)
 
@@ -32,23 +32,23 @@ AI印斯坦力推 | GPT系列低至0.06x Claude系列低至0.6x
 
 新建Claude Code配置，因为只有它能将常见格式通过路由转换为A\ Messages格式，设置好请求地址和Key
 
-![在 CCSwitch 中新建 Claude Code 配置](https://dinoimg.236668.xyz/file/8v3TIvxq.png)
+![在 CCSwitch 中新建 Claude Code 配置](img/trae-responses-api/8v3TIvxq.png)
 
 展开高级选项，将API格式改为你要接入的供应商的格式
 
-![在高级选项中选择供应商的 API 格式](https://dinoimg.236668.xyz/file/WPS496pI.png)
+![在高级选项中选择供应商的 API 格式](img/trae-responses-api/WPS496pI.png)
 
 添加供应商，然后在主页中启用这个配置
 
 进入设置页面-路由，打开路由总开关，启用Claude路由，并复制服务地址
 
-![启用 CCSwitch 的 Claude 路由并复制服务地址](https://dinoimg.236668.xyz/file/PQaeBb36.png)
+![启用 CCSwitch 的 Claude 路由并复制服务地址](img/trae-responses-api/PQaeBb36.png)
 
 ## 在Trae中添加模型
 
 在服务商复制模型ID备用，不同服务商的ID可能不一样
 
-![在服务商处复制模型 ID](https://dinoimg.236668.xyz/file/ZgLJfG8b.png)
+![在服务商处复制模型 ID](img/trae-responses-api/ZgLJfG8b.png)
 
 打开Trae-设置-模型-添加模型-自定义配置
 
@@ -63,11 +63,11 @@ AI印斯坦力推 | GPT系列低至0.06x Claude系列低至0.6x
 
 尝试对话，Trae能正常请求并接收返回内容
 
-![Trae 通过 CCSwitch 接收模型回复](https://dinoimg.236668.xyz/file/ilb9u8Jh.png)
+![Trae 通过 CCSwitch 接收模型回复](img/trae-responses-api/ilb9u8Jh.png)
 
 测试是否能创建任务和子智能体
 
-![Trae 创建任务与子智能体](https://dinoimg.236668.xyz/file/xTInmIts.png)
+![Trae 创建任务与子智能体](img/trae-responses-api/xTInmIts.png)
 
 至此，Trae成功接入Responses格式的服务商
 
@@ -77,7 +77,7 @@ AI印斯坦力推 | GPT系列低至0.06x Claude系列低至0.6x
 
 通过查看配置文件发现，Claude Code向CCS路由发送请求使用的Key是PROXY_MANAGED
 
-![Claude Code 配置中的 PROXY_MANAGED 密钥](https://dinoimg.236668.xyz/file/NUKMFx6N.png)
+![Claude Code 配置中的 PROXY_MANAGED 密钥](img/trae-responses-api/NUKMFx6N.png)
 
 ### 为什么模型请求失败？
 
