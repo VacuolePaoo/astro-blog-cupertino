@@ -20,63 +20,61 @@ const licenseUrl = copyright?.licenseUrl ?? blogConfig.license.url
 ---
 
 <footer class="article-footer">
-		{
-			article.data.about !== false && (
-				<section class="copyright-card">
-					<h2>关于本文</h2>
-					<div class="copyright-details">
-						<span>由 {author} 撰写，采用 </span>
-						{licenseUrl ? <a href={licenseUrl}>{licenseName}</a> : licenseName}
-						<span> 许可协议。</span>
+	{
+		article.data.about !== false && (
+			<section class="copyright-card">
+				<h2>关于本文</h2>
+				<div class="copyright-details">
+					<span>由 {author} 撰写，采用 </span>
+					{licenseUrl ? <a href={licenseUrl}>{licenseName}</a> : licenseName}
+					<span> 许可协议。</span>
+				</div>
+				{article.data.tags?.length && (
+					<div
+						class:list={[
+							'article-tags',
+							{ 'capitalize-tags': blogConfig.theme.content.tags.capitalize },
+						]}
+						aria-label="文章标签"
+					>
+						<Tags size={14} aria-hidden="true" />
+						{article.data.tags.map(tag => (
+							<a href={getTaxonomyUrl('tags', tag)}>
+								{blogConfig.theme.content.tags.hashtagPrefix ? '#' : ''}
+								{tag}
+							</a>
+						))}
 					</div>
-					{
-						article.data.tags?.length && (
-							<div
-								class:list={[
-									'article-tags',
-									{ 'capitalize-tags': blogConfig.theme.content.tags.capitalize },
-								]}
-								aria-label="文章标签"
-							>
-								<Tags size={14} aria-hidden="true" />
-								{article.data.tags.map(tag => (
-									<a href={getTaxonomyUrl('tags', tag)}>
-										{blogConfig.theme.content.tags.hashtagPrefix ? '#' : ''}
-										{tag}
-									</a>
-								))}
-							</div>
-						)
-					}
-					{article.data.extra_info && (
-						<div class="extra-info">{article.data.extra_info}</div>
-					)}
-				</section>
+				)}
+				{article.data.extra_info && (
+					<div class="extra-info">{article.data.extra_info}</div>
+				)}
+			</section>
+		)
+	}
+
+	<nav class="article-surround" aria-label="相邻文章">
+		{
+			older ? (
+				<a class="next" href={getArticleUrl(older, preview)}>
+					<span>下一篇</span>
+					<strong>{older.data.title}</strong>
+				</a>
+			) : (
+				<span class="article-surround-spacer" />
 			)
 		}
-
-		<nav class="article-surround" aria-label="相邻文章">
-			{
-				older ? (
-					<a class="next" href={getArticleUrl(older, preview)}>
-						<span>下一篇</span>
-						<strong>{older.data.title}</strong>
-					</a>
-				) : (
-					<span class="article-surround-spacer" />
-				)
-			}
-			{
-				newer ? (
-					<a class="prev" href={getArticleUrl(newer, preview)}>
-						<span>上一篇</span>
-						<strong>{newer.data.title}</strong>
-					</a>
-				) : (
-					<span class="article-surround-spacer" />
-				)
-			}
-		</nav>
+		{
+			newer ? (
+				<a class="prev" href={getArticleUrl(newer, preview)}>
+					<span>上一篇</span>
+					<strong>{newer.data.title}</strong>
+				</a>
+			) : (
+				<span class="article-surround-spacer" />
+			)
+		}
+	</nav>
 </footer>
 
 <style>

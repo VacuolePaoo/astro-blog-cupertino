@@ -9,9 +9,10 @@ import rehypeSlug from 'rehype-slug'
 import blogConfig from './blog.config'
 import { remarkImageWidth } from './src/markdown/remark-image-width'
 import { transformerCodeMeta } from './src/utils/code'
+import { siteOrigin } from './src/utils/site'
 
 export default defineConfig({
-	site: blogConfig.site,
+	site: siteOrigin,
 	output: 'static',
 	trailingSlash: 'always',
 	build: {
@@ -37,7 +38,11 @@ export default defineConfig({
 				),
 		}),
 	],
-	image: { domains: blogConfig.imageDomains },
+	// Hybrid image strategy: local images are optimized into dist/_astro (covers
+	// via <Picture>, markdown via constrained srcset). No `domains` configured —
+	// remote markdown images are never downloaded or optimized, they keep their
+	// original URLs in the output HTML.
+	image: { layout: 'constrained' },
 	markdown: {
 		processor: unified({
 			gfm: true,

@@ -6,8 +6,12 @@ interface Props {
 	containedOnMobile?: boolean | undefined
 }
 
-const { title, label, capitalize = false, containedOnMobile = false } =
-	Astro.props
+const {
+	title,
+	label,
+	capitalize = false,
+	containedOnMobile = false,
+} = Astro.props
 ---
 
 <header class:list={['page-meta', { 'contained-mobile': containedOnMobile }]}>

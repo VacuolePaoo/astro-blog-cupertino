@@ -171,9 +171,7 @@ export function SearchPage() {
 				{current && loading && <p className="search-empty">正在搜索…</p>}
 				{current && error && (
 					<>
-						<p className="search-empty">
-							搜索暂时不可用，请稍后重试。
-						</p>
+						<p className="search-empty">搜索暂时不可用，请稍后重试。</p>
 						<button
 							className="search-retry"
 							type="button"
@@ -229,10 +227,7 @@ export function SearchPage() {
 										<CornerDownRight size={16} aria-hidden="true" />
 										<span
 											dangerouslySetInnerHTML={{
-												__html: highlightText(
-													`位于“${result.heading}”`,
-													query,
-												),
+												__html: highlightText(`位于“${result.heading}”`, query),
 											}}
 										/>
 									</a>
@@ -271,7 +266,11 @@ export function SearchPage() {
 								}
 							}}
 						>
-							{loadingMore ? '正在加载更多…' : moreError ? '重试' : '加载更多结果'}
+							{loadingMore
+								? '正在加载更多…'
+								: moreError
+									? '重试'
+									: '加载更多结果'}
 						</button>
 					</div>
 				)}

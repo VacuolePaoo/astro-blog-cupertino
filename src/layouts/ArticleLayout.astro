@@ -67,9 +67,7 @@ const ogImage = `/og/${preview ? 'previews' : 'posts'}/${getArticleSlug(article)
 						{article.data.collection}
 					</a>
 					<DateDisplay date={article.data.pubDate} mode="full" />
-					{
-						preview && <span class="draft-badge">非正式版</span>
-					}
+					{preview && <span class="draft-badge">非正式版</span>}
 				</div>
 				<h1 class="article-title">{article.data.title}</h1>
 			</div>
@@ -85,9 +83,11 @@ const ogImage = `/og/${preview ? 'previews' : 'posts'}/${getArticleSlug(article)
 				older={older}
 				preview={preview}
 			/>
-			{!preview && article.data.comments !== false && (
-				<ArticleComments path={getArticleUrl(article)} />
-			)}
+			{
+				!preview && article.data.comments !== false && (
+					<ArticleComments path={getArticleUrl(article)} />
+				)
+			}
 		</div>
 	</article>
 </Layout>

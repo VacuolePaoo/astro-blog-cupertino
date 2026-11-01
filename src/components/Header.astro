@@ -639,12 +639,15 @@ const siteLogo =
 			pointer-events: auto;
 			transition-delay: calc(var(--index, 0) * 50ms + 100ms);
 		}
-		.mobile-menu[aria-hidden='false'] .mobile-more[data-open='true'] .mobile-more-panel {
+		.mobile-menu[aria-hidden='false']
+			.mobile-more[data-open='true']
+			.mobile-more-panel {
 			pointer-events: auto;
 		}
 		.mobile-menu[aria-hidden='false']
 			.mobile-more[data-open='true']
-			.mobile-more-panel a {
+			.mobile-more-panel
+			a {
 			transform: translateY(0);
 			opacity: 1;
 			pointer-events: auto;

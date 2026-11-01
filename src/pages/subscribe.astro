@@ -1,19 +1,19 @@
 ---
 import { Atom, Check, Copy, Rss } from 'lucide-astro'
-import blogConfig from '../../blog.config'
 import Layout from '../layouts/Layout.astro'
+import { siteOrigin } from '../utils/site'
 
 const feeds = [
 	{
 		title: 'Atom',
 		description: '结构清晰、支持稳定标识的 Atom 1.0 摘要订阅。',
-		url: new URL('/atom.xml', blogConfig.site).href,
+		url: new URL('/atom.xml', siteOrigin).href,
 		Icon: Atom,
 	},
 	{
 		title: 'RSS',
 		description: '兼容广泛阅读器的 RSS 2.0 摘要订阅。',
-		url: new URL('/rss.xml', blogConfig.site).href,
+		url: new URL('/rss.xml', siteOrigin).href,
 		Icon: Rss,
 	},
 ] as const

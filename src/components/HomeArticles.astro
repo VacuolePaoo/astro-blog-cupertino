@@ -45,9 +45,7 @@ const { articles, currentPage, totalPages } = Astro.props
 	aria-labelledby={currentPage === 1 ? 'latest-heading' : undefined}
 	aria-label={currentPage > 1 ? '最近文章' : undefined}
 >
-	{
-		currentPage === 1 && <h2 id="latest-heading">最近文章</h2>
-	}
+	{currentPage === 1 && <h2 id="latest-heading">最近文章</h2>}
 	<div class="article-grid">
 		{articles.map(article => <ArticleCard article={article} variant="grid" />)}
 	</div>
