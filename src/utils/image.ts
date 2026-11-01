@@ -12,6 +12,16 @@ export function isPublicImage(source: string) {
 	return source.startsWith('/')
 }
 
+/** Return the origin of a remote image URL, or undefined for local and public paths. */
+export function getRemoteImageOrigin(source: string) {
+	if (!isRemoteImage(source)) return undefined
+	try {
+		return new URL(source).origin
+	} catch {
+		return undefined
+	}
+}
+
 export function fallbackCoverAlt(title: string) {
 	return `文章《${title}》的封面图片`
 }
