@@ -527,7 +527,8 @@ body[data-page-type='home'] {
 	.prose table tbody tr:last-child td:first-child,
 	.prose table tbody tr:last-child td:last-child,
 	.prose .astro-code,
-	.search-field
+	.search-field,
+	.more-panel
 ) {
 	@include mixins.corner-squircle;
 }
