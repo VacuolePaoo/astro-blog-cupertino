@@ -166,7 +166,7 @@ export async function renderSiteOg() {
 	const renderer = await rendererPromise
 	const host = new URL(siteOrigin).host
 	const html = `<div lang="${blogConfig.language}" style="width:1200px;height:630px;display:flex;flex-direction:column;align-items:center;justify-content:center;background-color:#fbfbfd;color:#333333;font-family:Inter,Noto Sans SC,sans-serif">
-<img src="site-avatar" style="display:flex;width:96px;height:96px;border-radius:26px;border:1px solid rgba(0,0,0,0.08)" />
+<img src="site-avatar" style="display:flex;width:96px;height:96px;border-radius:9999px" />
 <h1 style="margin:36px 0 0;font-size:92px;line-height:1.05;font-weight:700;letter-spacing:-3px">${escapeHtml(blogConfig.title)}</h1>
 <p style="margin:20px 0 0;font-size:34px;color:#666666">${escapeHtml(blogConfig.subtitle)}</p>
 <p style="margin:28px 0 0;font-size:25px;color:${blogConfig.accentColor}">${escapeHtml(host)}</p>
