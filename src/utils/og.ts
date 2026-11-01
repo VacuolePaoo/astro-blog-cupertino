@@ -1,7 +1,7 @@
 import type { ArticleEntry } from '../types/article'
 import { Buffer } from 'node:buffer'
 import { readFile } from 'node:fs/promises'
-import { dirname, join } from 'node:path'
+import { dirname, join, resolve } from 'node:path'
 import process from 'node:process'
 import { fileURLToPath } from 'node:url'
 import { render } from 'takumi-js'
@@ -78,6 +78,39 @@ const rendererPromise = (async () => {
 	return renderer
 })()
 
+async function getArticleCover(article: ArticleEntry) {
+	const cover = article.data.cover
+	if (!cover) return undefined
+	const frontmatter: unknown = article.rendered?.metadata?.frontmatter
+	const declared =
+		typeof cover === 'string'
+			? cover
+			: frontmatter && typeof frontmatter === 'object' && 'cover' in frontmatter
+				? frontmatter.cover
+				: undefined
+	if (typeof declared !== 'string' || !declared.trim())
+		throw new Error(`无法读取《${article.data.title}》已验证封面的源路径`)
+	const source = declared.trim()
+	if (/^https?:\/\//.test(source)) {
+		try {
+			return { src: 'article-cover', data: await readConfiguredImage(source) }
+		} catch (error) {
+			console.warn(
+				`无法读取《${article.data.title}》的远程封面，OG 图将使用纯色版式：${String(error)}`,
+			)
+			return undefined
+		}
+	}
+	const markdownPath = resolve(
+		root,
+		article.filePath ?? join('content', 'posts', `${article.id}.md`),
+	)
+	const filePath = source.startsWith('/')
+		? join(root, 'public', source.slice(1))
+		: resolve(dirname(markdownPath), source)
+	return { src: 'article-cover', data: await readFile(filePath) }
+}
+
 function abstractDecoration(accent: string) {
 	return `<div style="position:absolute;left:70px;bottom:54px;width:360px;height:24px;border-radius:999px;background:${accent};opacity:.92"></div>
 <div style="position:absolute;left:70px;bottom:92px;width:220px;height:24px;border-radius:999px;background:${accent};opacity:.38"></div>
@@ -86,12 +119,17 @@ function abstractDecoration(accent: string) {
 
 /**
  * Port of takumi's official blog-post template
- * (https://takumi.kane.tw/docs/templates#blog-post-template): dark gradient
- * background, category pill, oversized title, author byline. Text only.
+ * (https://takumi.kane.tw/docs/templates#blog-post-template) with the article
+ * cover as a full-bleed background under a bottom-heavy dark overlay; falls
+ * back to the plain dark gradient look when no cover is available.
  */
 export async function renderArticleOg(article: ArticleEntry, preview = false) {
 	const renderer = await rendererPromise
-	const html = `<div lang="${blogConfig.language}" style="display:flex;flex-direction:column;width:1200px;height:630px;background-color:#111111;background-image:linear-gradient(135deg,#1a1a1a 0%,#000000 100%);color:#ffffff;padding:60px;justify-content:space-between;font-family:Inter,Noto Sans SC,sans-serif">
+	const cover = await getArticleCover(article)
+	const html = `<div lang="${blogConfig.language}" style="position:relative;width:1200px;height:630px;background-color:#111111;font-family:Inter,Noto Sans SC,sans-serif">
+${cover ? '<img src="article-cover" style="position:absolute;top:0;left:0;width:1200px;height:630px;object-fit:cover" />' : ''}
+<div style="position:absolute;top:0;left:0;width:1200px;height:630px;background-image:linear-gradient(to top,rgba(0,0,0,0.92) 0%,rgba(0,0,0,0.6) 42%,rgba(0,0,0,0.28) 100%)"></div>
+<div style="position:relative;display:flex;flex-direction:column;width:100%;height:100%;padding:60px;justify-content:space-between;color:#ffffff">
 <div style="display:flex;align-items:flex-start;gap:16px">
 <div style="display:flex;background-color:#3b82f6;color:#ffffff;padding:8px 24px;border-radius:9999px;font-size:24px;font-weight:600">${escapeHtml(article.data.collection)}</div>
 ${preview ? '<div style="display:flex;border:2px solid #ff9f0a;color:#ffb340;padding:8px 24px;border-radius:9999px;font-size:24px;font-weight:600">非正式版</div>' : ''}
@@ -102,7 +140,9 @@ ${preview ? '<div style="display:flex;border:2px solid #ff9f0a;color:#ffb340;pad
 <div style="display:flex;flex-direction:column">
 <span style="font-size:32px;font-weight:600">${escapeHtml(blogConfig.author.name)}</span>
 <span style="font-size:24px;color:#a1a1aa">${escapeHtml(article.data.pubDate)}</span>
-</div></div></div>`
+</div></div></div></div>`
+	const sources = [{ src: 'site-avatar', data: await getSiteAvatar() }]
+	if (cover?.data) sources.push({ src: cover.src, data: cover.data })
 	return render(html, {
 		renderer,
 		width: 1200,
@@ -110,7 +150,7 @@ ${preview ? '<div style="display:flex;border:2px solid #ff9f0a;color:#ffb340;pad
 		format: 'png',
 		fontFamilies: ['Inter', 'Noto Sans SC'],
 		lang: blogConfig.language,
-		images: { sources: [{ src: 'site-avatar', data: await getSiteAvatar() }] },
+		images: { sources },
 	})
 }
 
