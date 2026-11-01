@@ -89,9 +89,6 @@ export default {
 				hashtagPrefix: true, // Leading hash / 前置井号
 				showPostCount: true, // Article counts / 文章数量
 			},
-			dates: {
-				displayFormat: 'MMMM D, YYYY', // Display format / 显示格式
-			},
 			toc: {
 				enabled: true, // Article outline / 文章目录
 				maxDepth: 2, // Heading depth / 标题层级

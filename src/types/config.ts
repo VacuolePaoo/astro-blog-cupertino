@@ -39,7 +39,6 @@ export interface ThemeConfig {
 			hashtagPrefix: boolean
 			showPostCount: boolean
 		}
-		dates: { displayFormat: string }
 		toc: { enabled: boolean; maxDepth: number }
 	}
 	navigation: { blurGradient: boolean }

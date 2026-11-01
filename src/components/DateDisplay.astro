@@ -1,5 +1,4 @@
 ---
-import blogConfig from '../../blog.config'
 import { formatDisplayDate } from '../utils/date-display'
 
 interface Props {
@@ -8,10 +7,7 @@ interface Props {
 }
 
 const { date, mode = 'list' } = Astro.props
-const text = formatDisplayDate(
-	date,
-	blogConfig.theme.content.dates.displayFormat,
-)
+const text = formatDisplayDate(date)
 ---
 
 <time datetime={date} data-date={date} data-mode={mode} aria-label={text}>
