@@ -38,8 +38,11 @@ export default defineConfig({
 				),
 		}),
 	],
-	// constrained: markdown images get responsive srcset capped at their natural width
-	image: { domains: blogConfig.imageDomains, layout: 'constrained' },
+	// Hybrid image strategy: local images are optimized into dist/_astro (covers
+	// via <Picture>, markdown via constrained srcset). No `domains` configured —
+	// remote markdown images are never downloaded or optimized, they keep their
+	// original URLs in the output HTML.
+	image: { layout: 'constrained' },
 	markdown: {
 		processor: unified({
 			gfm: true,

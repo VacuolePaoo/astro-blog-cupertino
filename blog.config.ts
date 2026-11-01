@@ -27,7 +27,8 @@ export default {
 	},
 
 	// Media and feeds / 图片与订阅
-	// Article images are all local now; this allowlist remains for friend avatars only
+	// Governance allowlist for authored remote images (covers + friend avatars
+	// only); remote images are never downloaded or optimized by the build.
 	imageDomains: ['astro.build'],
 	feed: { limit: 20, xslt: true },
 
