@@ -4,12 +4,22 @@ import { readFile } from 'node:fs/promises'
 import { dirname, join, resolve } from 'node:path'
 import process from 'node:process'
 import { fileURLToPath } from 'node:url'
+import sharp from 'sharp'
 import { render } from 'takumi-js'
 import { Renderer } from 'takumi-js/node'
 import blogConfig from '../../blog.config'
 import { escapeHtml } from './search'
 
 const root = process.cwd()
+
+/** Recompress takumi's full-color PNG with libimagequant; stays PNG for social-platform compatibility. */
+async function compressOgImage(
+	buffer: Buffer<ArrayBuffer> | Uint8Array<ArrayBuffer>,
+) {
+	return sharp(buffer)
+		.png({ palette: true, quality: 90, compressionLevel: 9 })
+		.toBuffer()
+}
 
 async function readConfiguredImage(source: string) {
 	if (/^https?:\/\//.test(source)) {
@@ -143,15 +153,17 @@ ${preview ? '<div style="display:flex;border:2px solid #ff9f0a;color:#ffb340;pad
 </div></div></div></div>`
 	const sources = [{ src: 'site-avatar', data: await getSiteAvatar() }]
 	if (cover?.data) sources.push({ src: cover.src, data: cover.data })
-	return render(html, {
-		renderer,
-		width: 1200,
-		height: 630,
-		format: 'png',
-		fontFamilies: ['Inter', 'Noto Sans SC'],
-		lang: blogConfig.language,
-		images: { sources },
-	})
+	return compressOgImage(
+		await render(html, {
+			renderer,
+			width: 1200,
+			height: 630,
+			format: 'png',
+			fontFamilies: ['Inter', 'Noto Sans SC'],
+			lang: blogConfig.language,
+			images: { sources },
+		}),
+	)
 }
 
 export async function renderSiteOg() {
@@ -161,13 +173,17 @@ ${abstractDecoration(blogConfig.accentColor)}
 <img src="site-avatar" style="width:72px;height:72px;border-radius:16px" />
 <div style="position:relative;max-width:900px"><h1 style="margin:0;font-size:78px;line-height:1.05;font-weight:700;letter-spacing:-3px">${escapeHtml(blogConfig.title)}</h1><p style="margin:22px 0 0;color:#6e6e73;font-size:32px">${escapeHtml(blogConfig.subtitle)}</p></div>
 </div>`
-	return render(html, {
-		renderer,
-		width: 1200,
-		height: 630,
-		format: 'png',
-		fontFamilies: ['Inter', 'Noto Sans SC'],
-		lang: blogConfig.language,
-		images: { sources: [{ src: 'site-avatar', data: await getSiteAvatar() }] },
-	})
+	return compressOgImage(
+		await render(html, {
+			renderer,
+			width: 1200,
+			height: 630,
+			format: 'png',
+			fontFamilies: ['Inter', 'Noto Sans SC'],
+			lang: blogConfig.language,
+			images: {
+				sources: [{ src: 'site-avatar', data: await getSiteAvatar() }],
+			},
+		}),
+	)
 }
