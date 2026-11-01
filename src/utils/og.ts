@@ -9,6 +9,7 @@ import { render } from 'takumi-js'
 import { Renderer } from 'takumi-js/node'
 import blogConfig from '../../blog.config'
 import { escapeHtml } from './search'
+import { siteOrigin } from './site'
 
 const root = process.cwd()
 
@@ -121,12 +122,6 @@ async function getArticleCover(article: ArticleEntry) {
 	return { src: 'article-cover', data: await readFile(filePath) }
 }
 
-function abstractDecoration(accent: string) {
-	return `<div style="position:absolute;left:70px;bottom:54px;width:360px;height:24px;border-radius:999px;background:${accent};opacity:.92"></div>
-<div style="position:absolute;left:70px;bottom:92px;width:220px;height:24px;border-radius:999px;background:${accent};opacity:.38"></div>
-<div style="position:absolute;right:72px;top:64px;width:110px;height:110px;border:18px solid ${accent};border-radius:999px;opacity:.55"></div>`
-}
-
 /**
  * Port of takumi's official blog-post template
  * (https://takumi.kane.tw/docs/templates#blog-post-template) with the article
@@ -166,12 +161,15 @@ ${preview ? '<div style="display:flex;border:2px solid #ff9f0a;color:#ffb340;pad
 	)
 }
 
+/** Cupertino-style site card: centered avatar, oversized title, subtitle and accent hostname on the site's near-white background. */
 export async function renderSiteOg() {
 	const renderer = await rendererPromise
-	const html = `<div lang="${blogConfig.language}" style="position:relative;width:1200px;height:630px;display:flex;flex-direction:column;justify-content:space-between;background:#ffffff;color:#111111;padding:74px;font-family:Inter,Noto Sans SC,sans-serif">
-${abstractDecoration(blogConfig.accentColor)}
-<img src="site-avatar" style="width:72px;height:72px;border-radius:16px" />
-<div style="position:relative;max-width:900px"><h1 style="margin:0;font-size:78px;line-height:1.05;font-weight:700;letter-spacing:-3px">${escapeHtml(blogConfig.title)}</h1><p style="margin:22px 0 0;color:#6e6e73;font-size:32px">${escapeHtml(blogConfig.subtitle)}</p></div>
+	const host = new URL(siteOrigin).host
+	const html = `<div lang="${blogConfig.language}" style="width:1200px;height:630px;display:flex;flex-direction:column;align-items:center;justify-content:center;background-color:#fbfbfd;color:#333333;font-family:Inter,Noto Sans SC,sans-serif">
+<img src="site-avatar" style="display:flex;width:96px;height:96px;border-radius:26px;border:1px solid rgba(0,0,0,0.08)" />
+<h1 style="margin:36px 0 0;font-size:92px;line-height:1.05;font-weight:700;letter-spacing:-3px">${escapeHtml(blogConfig.title)}</h1>
+<p style="margin:20px 0 0;font-size:34px;color:#666666">${escapeHtml(blogConfig.subtitle)}</p>
+<p style="margin:28px 0 0;font-size:25px;color:${blogConfig.accentColor}">${escapeHtml(host)}</p>
 </div>`
 	return compressOgImage(
 		await render(html, {
