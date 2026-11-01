@@ -4,12 +4,23 @@ import { readFile } from 'node:fs/promises'
 import { dirname, join, resolve } from 'node:path'
 import process from 'node:process'
 import { fileURLToPath } from 'node:url'
+import sharp from 'sharp'
 import { render } from 'takumi-js'
 import { Renderer } from 'takumi-js/node'
 import blogConfig from '../../blog.config'
 import { escapeHtml } from './search'
+import { siteOrigin } from './site'
 
 const root = process.cwd()
+
+/** Recompress takumi's full-color PNG with libimagequant; stays PNG for social-platform compatibility. */
+async function compressOgImage(
+	buffer: Buffer<ArrayBuffer> | Uint8Array<ArrayBuffer>,
+) {
+	return sharp(buffer)
+		.png({ palette: true, quality: 90, compressionLevel: 9 })
+		.toBuffer()
+}
 
 async function readConfiguredImage(source: string) {
 	if (/^https?:\/\//.test(source)) {
@@ -96,7 +107,7 @@ async function getArticleCover(article: ArticleEntry) {
 			return { src: 'article-cover', data: await readConfiguredImage(source) }
 		} catch (error) {
 			console.warn(
-				`无法读取《${article.data.title}》的远程封面，OG 图将使用无图版式：${String(error)}`,
+				`无法读取《${article.data.title}》的远程封面，OG 图将使用纯色版式：${String(error)}`,
 			)
 			return undefined
 		}
@@ -111,55 +122,66 @@ async function getArticleCover(article: ArticleEntry) {
 	return { src: 'article-cover', data: await readFile(filePath) }
 }
 
-function abstractDecoration(accent: string) {
-	return `<div style="position:absolute;left:70px;bottom:54px;width:360px;height:24px;border-radius:999px;background:${accent};opacity:.92"></div>
-<div style="position:absolute;left:70px;bottom:92px;width:220px;height:24px;border-radius:999px;background:${accent};opacity:.38"></div>
-<div style="position:absolute;right:72px;top:64px;width:110px;height:110px;border:18px solid ${accent};border-radius:999px;opacity:.55"></div>`
-}
-
+/**
+ * Port of takumi's official blog-post template
+ * (https://takumi.kane.tw/docs/templates#blog-post-template) with the article
+ * cover as a full-bleed background under a bottom-heavy dark overlay; falls
+ * back to the plain dark gradient look when no cover is available.
+ */
 export async function renderArticleOg(article: ArticleEntry, preview = false) {
 	const renderer = await rendererPromise
 	const cover = await getArticleCover(article)
-	const coverMarkup = cover
-		? `<img src="${escapeHtml(cover.src)}" style="width:520px;height:630px;object-fit:cover" />`
-		: `<div style="position:relative;width:460px;height:630px;background:#071b33">${abstractDecoration(blogConfig.accentColor)}</div>`
-	const html = `<div lang="${blogConfig.language}" style="width:1200px;height:630px;display:flex;background:#ffffff;color:#111111;font-family:Inter,Noto Sans SC,sans-serif">
-${coverMarkup}
-<div style="position:relative;display:flex;flex:1;flex-direction:column;justify-content:space-between;padding:64px 70px 58px">
-<div style="display:flex;align-items:center;gap:14px;color:#6e6e73;font-size:24px">
-<span>${escapeHtml(article.data.collection)}</span><span>/</span><span>${escapeHtml(article.data.pubDate)}</span>
-${preview ? '<span style="border:2px solid #ff9f0a;border-radius:999px;padding:5px 12px;color:#b86400;font-size:18px">非正式版</span>' : ''}
+	const html = `<div lang="${blogConfig.language}" style="position:relative;width:1200px;height:630px;background-color:#111111;font-family:Inter,Noto Sans SC,sans-serif">
+${cover ? '<img src="article-cover" style="position:absolute;top:0;left:0;width:1200px;height:630px;object-fit:cover" />' : ''}
+<div style="position:absolute;top:0;left:0;width:1200px;height:630px;background-image:linear-gradient(to top,rgba(0,0,0,0.92) 0%,rgba(0,0,0,0.6) 42%,rgba(0,0,0,0.28) 100%)"></div>
+<div style="position:relative;display:flex;flex-direction:column;width:100%;height:100%;padding:60px;justify-content:space-between;color:#ffffff">
+<div style="display:flex;align-items:flex-start;gap:16px">
+<div style="display:flex;background-color:#3b82f6;color:#ffffff;padding:8px 24px;border-radius:9999px;font-size:24px;font-weight:600">${escapeHtml(article.data.collection)}</div>
+${preview ? '<div style="display:flex;border:2px solid #ff9f0a;color:#ffb340;padding:8px 24px;border-radius:9999px;font-size:24px;font-weight:600">非正式版</div>' : ''}
 </div>
-<h1 style="margin:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:58px;line-height:1.18;font-weight:700;letter-spacing:-2px">${escapeHtml(article.data.title)}</h1>
-<div style="display:flex;align-items:center;gap:14px;font-size:23px;font-weight:700"><img src="site-avatar" style="width:34px;height:34px;border-radius:8px" /><span>${escapeHtml(blogConfig.title)}</span></div>
-</div></div>`
+<h1 style="margin:0;font-size:80px;font-weight:800;line-height:1.1;text-shadow:0 4px 12px rgba(0,0,0,0.5)">${escapeHtml(article.data.title)}</h1>
+<div style="display:flex;align-items:center;gap:24px">
+<img src="site-avatar" style="display:flex;width:80px;height:80px;border-radius:9999px;border:4px solid rgba(255,255,255,0.1)" />
+<div style="display:flex;flex-direction:column">
+<span style="font-size:32px;font-weight:600">${escapeHtml(blogConfig.author.name)}</span>
+<span style="font-size:24px;color:#a1a1aa">${escapeHtml(article.data.pubDate)}</span>
+</div></div></div></div>`
 	const sources = [{ src: 'site-avatar', data: await getSiteAvatar() }]
 	if (cover?.data) sources.push({ src: cover.src, data: cover.data })
-	return render(html, {
-		renderer,
-		width: 1200,
-		height: 630,
-		format: 'png',
-		fontFamilies: ['Inter', 'Noto Sans SC'],
-		lang: blogConfig.language,
-		images: { sources },
-	})
+	return compressOgImage(
+		await render(html, {
+			renderer,
+			width: 1200,
+			height: 630,
+			format: 'png',
+			fontFamilies: ['Inter', 'Noto Sans SC'],
+			lang: blogConfig.language,
+			images: { sources },
+		}),
+	)
 }
 
+/** Cupertino-style site card: centered avatar, oversized title, subtitle and accent hostname on the site's near-white background. */
 export async function renderSiteOg() {
 	const renderer = await rendererPromise
-	const html = `<div lang="${blogConfig.language}" style="position:relative;width:1200px;height:630px;display:flex;flex-direction:column;justify-content:space-between;background:#ffffff;color:#111111;padding:74px;font-family:Inter,Noto Sans SC,sans-serif">
-${abstractDecoration(blogConfig.accentColor)}
-<img src="site-avatar" style="width:72px;height:72px;border-radius:16px" />
-<div style="position:relative;max-width:900px"><h1 style="margin:0;font-size:78px;line-height:1.05;font-weight:700;letter-spacing:-3px">${escapeHtml(blogConfig.title)}</h1><p style="margin:22px 0 0;color:#6e6e73;font-size:32px">${escapeHtml(blogConfig.subtitle)}</p></div>
+	const host = new URL(siteOrigin).host
+	const html = `<div lang="${blogConfig.language}" style="width:1200px;height:630px;display:flex;flex-direction:column;align-items:center;justify-content:center;background-color:#fbfbfd;color:#333333;font-family:Inter,Noto Sans SC,sans-serif">
+<img src="site-avatar" style="display:flex;width:96px;height:96px;border-radius:9999px" />
+<h1 style="margin:36px 0 0;font-size:92px;line-height:1.05;font-weight:700;letter-spacing:-3px">${escapeHtml(blogConfig.title)}</h1>
+<p style="margin:20px 0 0;font-size:34px;color:#666666">${escapeHtml(blogConfig.subtitle)}</p>
+<p style="margin:28px 0 0;font-size:25px;color:${blogConfig.accentColor}">${escapeHtml(host)}</p>
 </div>`
-	return render(html, {
-		renderer,
-		width: 1200,
-		height: 630,
-		format: 'png',
-		fontFamilies: ['Inter', 'Noto Sans SC'],
-		lang: blogConfig.language,
-		images: { sources: [{ src: 'site-avatar', data: await getSiteAvatar() }] },
-	})
+	return compressOgImage(
+		await render(html, {
+			renderer,
+			width: 1200,
+			height: 630,
+			format: 'png',
+			fontFamilies: ['Inter', 'Noto Sans SC'],
+			lang: blogConfig.language,
+			images: {
+				sources: [{ src: 'site-avatar', data: await getSiteAvatar() }],
+			},
+		}),
+	)
 }
