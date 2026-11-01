@@ -7,7 +7,7 @@ slug: 38ee48f
 tags:
   - vscode
   - 自用
-cover: img/vscodium-config/cover.png
+cover: https://dinoimg.236668.xyz/file/DWR4byNt.png
 ---
 
 > 本文部分内容来自 https://blog.zhilu.site/2023/vscode-simple-config
@@ -31,7 +31,7 @@ cover: img/vscodium-config/cover.png
 - 产品图标：Tabler Product Icons
 
 
-![VSCodium 的主题与图标效果](img/vscodium-config/1784249578707_image.png)
+![VSCodium 的主题与图标效果](https://dinoimg.236668.xyz/file/1784249578707_image.png)
 
 ## 配置文件
 
@@ -133,7 +133,7 @@ cover: img/vscodium-config/cover.png
 
 代码中有图片URL时，本行行数左侧会显示缩略图，鼠标悬浮在URL上时可以预览图片：
 
-![Image preview 插件在代码中预览图片](img/vscodium-config/1784301877723_image.png)
+![Image preview 插件在代码中预览图片](https://dinoimg.236668.xyz/file/1784301877723_image.png)
 
 ### Color Highlight
 
@@ -151,7 +151,7 @@ oxlint与oxfmt的配套插件，我自己开发时常用，比ESLint更轻量，
 
 antfu开发，在行内显示iconify图标库的图标，支持输入时显示候选图标列表。
 
-![Iconify IntelliSense 的行内图标与候选列表](img/vscodium-config/mriMUzRO.jpg)
+![Iconify IntelliSense 的行内图标与候选列表](https://dinoimg.236668.xyz/file/mriMUzRO.png)
 
 ### Error Lens
 

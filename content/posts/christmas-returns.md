@@ -7,7 +7,7 @@ slug: ec84db6
 tags:
   - 社会
   - 思考
-cover: img/christmas-returns/cover.jpg
+cover: https://dinoimg.236668.xyz/file/ZzCbrJai.png
 ---
 
 前些年，中国互联网上关于**洋节**的态度并不友好。

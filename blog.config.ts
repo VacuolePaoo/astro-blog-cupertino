@@ -29,7 +29,7 @@ export default {
 	// Media and feeds / 图片与订阅
 	// Governance allowlist for authored remote images (covers + friend avatars
 	// only); remote images are never downloaded or optimized by the build.
-	imageDomains: ['astro.build'],
+	imageDomains: ['astro.build', 'dinoimg.236668.xyz'],
 	feed: { limit: 20, xslt: true },
 
 	// Asset CDN / 资源 CDN
