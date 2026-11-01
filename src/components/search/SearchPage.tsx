@@ -233,10 +233,7 @@ export function SearchPage() {
 									</a>
 								)}
 								<time dateTime={result.pubDate}>
-									{formatDisplayDate(
-										result.pubDate,
-										blogConfig.theme.content.dates.displayFormat,
-									)}
+									{formatDisplayDate(result.pubDate)}
 								</time>
 								{result.excerpt && (
 									<span
