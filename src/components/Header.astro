@@ -321,10 +321,9 @@ const siteLogo =
 		background: var(--color-background-secondary-translucent);
 		backdrop-filter: var(--filter-blur);
 	}
-	/* Height animates on the wrapper only; it has no filter/mask/opacity so the
-	   pseudo-layers' backdrop still reaches the page content. The blur radius
-	   itself never transitions — a variable radius forces a full backdrop
-	   re-filter on all layers every frame, which stutters on mobile. */
+	/* Verbatim port of the Cupertino reference nav-mask: each layer carries its
+	   own background, blur and gradient mask, and menu-open transitions the blur
+	   radius (1px → 36px) together with the height on that same element. */
 	.nav-mask > div {
 		--mask-base-height: 100px;
 		position: fixed;
@@ -333,36 +332,22 @@ const siteLogo =
 		left: 0;
 		z-index: 1000;
 		height: calc(var(--mask-base-height) / pow(1.2, calc(var(--sharp) - 1)));
-		pointer-events: none;
-		transition: height 600ms cubic-bezier(0.86, 0, 0.07, 1);
-	}
-	.nav-mask > div::before,
-	.nav-mask > div::after {
-		content: '';
-		position: absolute;
-		inset: 0;
-		-webkit-mask-image: linear-gradient(to bottom, #000, transparent);
-		mask-image: linear-gradient(to bottom, #000, transparent);
-		mask-composite: destination-in;
-		pointer-events: none;
-	}
-	.nav-mask > div::before {
-		background-color: color-mix(
-			in srgb,
-			var(--color-background-primary) 20%,
-			transparent
-		);
+		background-color: var(--color-background-primary-translucent);
 		/* -webkit- first: the minifier keeps only the last of a prefix/standard
 		   pair, and Chrome/Firefox ignore the -webkit- alias. */
 		-webkit-backdrop-filter: blur(1px);
 		backdrop-filter: blur(1px);
+		-webkit-mask-image: linear-gradient(to bottom, #000, transparent);
+		mask-image: linear-gradient(to bottom, #000, transparent);
+		mask-composite: destination-in;
+		pointer-events: none;
+		transition:
+			height 600ms cubic-bezier(0.86, 0, 0.07, 1),
+			backdrop-filter 600ms cubic-bezier(0.86, 0, 0.07, 1);
 	}
-	.nav-mask > div::after {
+	:global(.menu-open) .nav-mask > div {
 		-webkit-backdrop-filter: blur(36px);
 		backdrop-filter: blur(36px);
-		opacity: 0;
-		will-change: opacity;
-		transition: opacity 600ms cubic-bezier(0.86, 0, 0.07, 1);
 	}
 	.header-inner {
 		position: relative;
@@ -504,7 +489,6 @@ const siteLogo =
 		.more-menu .more-panel a,
 		.site-header,
 		.nav-mask > div,
-		.nav-mask > div::after,
 		.brand,
 		.mobile-menu a,
 		.mobile-more-toggle {
@@ -671,9 +655,6 @@ const siteLogo =
 		}
 		:global(.menu-open) .nav-mask > div {
 			--mask-base-height: calc(var(--open-height, 100dvh) * 4);
-		}
-		:global(.menu-open) .nav-mask > div::after {
-			opacity: 1;
 		}
 		:global(.menu-open) .site-header {
 			height: var(--open-height, 100dvh);
