@@ -167,23 +167,18 @@ body[data-page-type='home'] {
 	}
 
 	.scroll-reveal.scroll-reveal-show {
-		animation: scroll-reveal 800ms cubic-bezier(0.2, 0.2, 0.2, 1) 150ms forwards;
+		opacity: 1;
+		transform: none;
+		/* Transition instead of animation: transitions only run on value
+		   changes, so focus toggling inside a shown card cannot replay it. */
+		transition:
+			opacity 800ms cubic-bezier(0.2, 0.2, 0.2, 1) 150ms,
+			transform 800ms cubic-bezier(0.2, 0.2, 0.2, 1) 150ms;
 	}
 	.scroll-reveal:focus-within {
 		opacity: 1;
 		transform: none;
-		animation: none !important;
-	}
-
-	@keyframes scroll-reveal {
-		from {
-			opacity: 0;
-			transform: translateY(60px);
-		}
-		to {
-			opacity: 1;
-			transform: translateY(0);
-		}
+		transition: none;
 	}
 
 	@keyframes view-transition-fade-out {
@@ -591,6 +586,5 @@ body[data-page-type='home'] {
 	.scroll-reveal.scroll-reveal-show {
 		opacity: 1;
 		transform: none;
-		animation: none !important;
 	}
 }
