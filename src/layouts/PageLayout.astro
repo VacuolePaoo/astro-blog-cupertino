@@ -1,0 +1,44 @@
+---
+import type { PageEntry } from '../types/page'
+import ArticleComments from '../components/comments/ArticleComments.astro'
+import { getPageUrl } from '../utils/page'
+import Layout from './Layout.astro'
+
+interface Props {
+	page: PageEntry
+}
+
+const { page } = Astro.props
+---
+
+<Layout title={page.data.title} description={page.data.description}>
+	<div class="content-page">
+		<header class="page-header">
+			<div class="article-shell">
+				<h1 class="page-title">{page.data.title}</h1>
+			</div>
+		</header>
+		<div class="article-shell">
+			<div class="prose">
+				<slot />
+			</div>
+			<ArticleComments path={getPageUrl(page)} />
+		</div>
+	</div>
+</Layout>
+
+<style>
+	.page-header {
+		margin-top: 128px;
+	}
+	.page-title {
+		margin: 0;
+		padding-inline: 16px;
+		font-size: var(--text-article-title);
+		font-weight: 700;
+		line-height: normal;
+	}
+	.prose {
+		margin-top: 32px;
+	}
+</style>

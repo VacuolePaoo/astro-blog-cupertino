@@ -71,4 +71,12 @@ const articles = defineCollection({
 		}),
 })
 
-export const collections = { articles }
+const pages = defineCollection({
+	loader: glob({ base: './content', pattern: ['**/*.md', '!posts/**'] }),
+	schema: z.object({
+		title: z.string().min(1),
+		description: z.string().min(1),
+	}),
+})
+
+export const collections = { articles, pages }
