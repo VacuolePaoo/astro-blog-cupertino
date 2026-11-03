@@ -90,7 +90,7 @@ const coverOrigin =
 				preview={preview}
 			/>
 			{
-				!preview && article.data.comments !== false && (
+				!preview && !article.data.no_comments && (
 					<ArticleComments path={getArticleUrl(article)} />
 				)
 			}

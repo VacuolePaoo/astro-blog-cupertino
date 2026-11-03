@@ -58,7 +58,7 @@ const articles = defineCollection({
 				z.string().optional(),
 			),
 			draft: z.boolean().default(false),
-			comments: z.boolean().optional(),
+			no_comments: z.boolean().optional(),
 			about: z.boolean().optional(),
 			extra_info: z.string().optional(),
 			copyright: z
@@ -76,6 +76,7 @@ const pages = defineCollection({
 	schema: z.object({
 		title: z.string().min(1),
 		description: z.string().min(1),
+		comment: z.boolean().optional(),
 	}),
 })
 
