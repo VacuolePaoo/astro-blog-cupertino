@@ -1,5 +1,5 @@
 ---
-import { Atom, Check, Copy, Rss } from 'lucide-astro'
+import { Atom, Check, Copy, Rss, X } from 'lucide-astro'
 import Layout from '../layouts/Layout.astro'
 import { siteOrigin } from '../utils/site'
 
@@ -32,15 +32,19 @@ const feeds = [
 						<Icon size={24} strokeWidth={1.7} />
 						<h2>{title}</h2>
 						<p>{description}</p>
-						<a href={url}>{url}</a>
-						<button type="button" data-copy-feed={url} disabled>
+						<button type="button" data-copy-feed={url} data-copy-state="idle" disabled>
 							<span class="copy-icons" aria-hidden="true">
-								<Copy class="copy-icon" size={16} />
+								<Copy class="idle-icon" size={16} />
 								<Check class="copied-icon" size={16} />
+								<X class="failed-icon" size={16} />
 							</span>
-							<span data-copy-label>复制地址</span>
+							<span class="copy-labels">
+								<span>复制地址</span>
+								<span>已复制</span>
+								<span>复制失败</span>
+							</span>
 						</button>
-						<span class="copy-feedback" role="status" data-copy-feedback />
+						<span class="sr-only" role="status" data-copy-status />
 					</article>
 				))
 			}
@@ -49,47 +53,52 @@ const feeds = [
 </Layout>
 
 <script>
+	import { copyText } from '../utils/clipboard'
+
+	type CopyState = 'idle' | 'copied' | 'failed'
+
+	const COPY_STATUS_TEXT: Record<CopyState, string> = {
+		idle: '',
+		copied: '已复制',
+		failed: '复制失败',
+	}
+	const COPY_RESET_DELAY = 1400
 	const copyResetTimers = new WeakMap<
 		HTMLButtonElement,
 		ReturnType<typeof setTimeout>
 	>()
+
 	function enableCopyButtons() {
 		document
 			.querySelectorAll<HTMLButtonElement>('[data-copy-feed]')
 			.forEach(button => (button.disabled = false))
 	}
+
+	function setCopyState(button: HTMLButtonElement, state: CopyState) {
+		button.dataset.copyState = state
+		const status = button.parentElement?.querySelector<HTMLElement>(
+			'[data-copy-status]',
+		)
+		if (status) status.textContent = COPY_STATUS_TEXT[state]
+	}
+
+	function scheduleCopyReset(button: HTMLButtonElement) {
+		const previousTimer = copyResetTimers.get(button)
+		if (previousTimer) clearTimeout(previousTimer)
+		copyResetTimers.set(
+			button,
+			setTimeout(() => setCopyState(button, 'idle'), COPY_RESET_DELAY),
+		)
+	}
+
 	document.addEventListener('click', async event => {
 		const button = (event.target as Element).closest<HTMLButtonElement>(
 			'[data-copy-feed]',
 		)
 		if (!button) return
-		const previousTimer = copyResetTimers.get(button)
-		if (previousTimer) clearTimeout(previousTimer)
-		const feedback = button.parentElement?.querySelector<HTMLElement>(
-			'[data-copy-feedback]',
-		)
-		try {
-			await navigator.clipboard.writeText(button.dataset.copyFeed ?? '')
-		} catch {
-			button.dataset.copied = 'false'
-			button.querySelector<HTMLElement>('[data-copy-label]')!.textContent =
-				'复制地址'
-			if (feedback) feedback.textContent = '复制失败，请手动复制上方地址。'
-			return
-		}
-		button.dataset.copied = 'true'
-		if (feedback) feedback.textContent = '订阅地址已复制。'
-		button.querySelector<HTMLElement>('[data-copy-label]')!.textContent =
-			'已复制'
-		copyResetTimers.set(
-			button,
-			setTimeout(() => {
-				button.dataset.copied = 'false'
-				if (feedback) feedback.textContent = ''
-				button.querySelector<HTMLElement>('[data-copy-label]')!.textContent =
-					'复制地址'
-			}, 1400),
-		)
+		const succeeded = await copyText(button.dataset.copyFeed ?? '')
+		setCopyState(button, succeeded ? 'copied' : 'failed')
+		scheduleCopyReset(button)
 	})
 	enableCopyButtons()
 	document.addEventListener('astro:page-load', enableCopyButtons)
@@ -140,14 +149,6 @@ const feeds = [
 		font-size: 17px;
 		font-weight: 400;
 	}
-	.feed-card > a {
-		display: block;
-		overflow: hidden;
-		color: var(--color-text-accent);
-		font-size: 14px;
-		text-overflow: ellipsis;
-		white-space: nowrap;
-	}
 	.feed-card button {
 		display: inline-flex;
 		align-items: center;
@@ -163,31 +164,41 @@ const feeds = [
 		line-height: 1;
 		cursor: pointer;
 	}
-	.copy-feedback {
-		color: var(--color-text-secondary);
-		font-size: 14px;
-		line-height: 1.4;
-	}
-	.copy-feedback:empty {
-		display: none;
-	}
 	.copy-icons {
-		position: relative;
 		display: grid;
 		width: 16px;
 		height: 16px;
-		place-items: center;
 	}
-	.copy-icons :global(svg) {
+	.copy-labels {
+		display: grid;
+	}
+	.copy-icons :global(svg),
+	.copy-labels span {
 		grid-area: 1 / 1;
-		color: var(--color-background-accent-contrast);
+		opacity: 0;
+		visibility: hidden;
+		transform: scale(0.85);
+		/* Inactive items fade out first; visibility flips only after the fade
+		   so screen readers never see more than one label per state. */
+		transition:
+			opacity 180ms cubic-bezier(0.2, 0.2, 0.2, 1),
+			transform 180ms cubic-bezier(0.2, 0.2, 0.2, 1),
+			visibility 0s linear 180ms;
+	}
+	[data-copy-state='idle'] .copy-icons :global(.idle-icon),
+	[data-copy-state='copied'] .copy-icons :global(.copied-icon),
+	[data-copy-state='failed'] .copy-icons :global(.failed-icon),
+	[data-copy-state='idle'] .copy-labels span:nth-child(1),
+	[data-copy-state='copied'] .copy-labels span:nth-child(2),
+	[data-copy-state='failed'] .copy-labels span:nth-child(3) {
+		opacity: 1;
+		visibility: visible;
+		transform: scale(1);
+		/* No visibility transition in the active list, so the incoming item
+		   becomes visible immediately while it fades in. */
 		transition:
 			opacity 180ms cubic-bezier(0.2, 0.2, 0.2, 1),
 			transform 180ms cubic-bezier(0.2, 0.2, 0.2, 1);
-	}
-	.copy-icons :global(.copied-icon) {
-		opacity: 0;
-		transform: scale(0.85);
 	}
 	.feed-card button:hover {
 		background: var(--color-background-accent-hover);
@@ -196,14 +207,6 @@ const feeds = [
 	.feed-card button:disabled {
 		cursor: default;
 		opacity: 0.6;
-	}
-	.feed-card button[data-copied='true'] .copy-icons :global(.copy-icon) {
-		opacity: 0;
-		transform: scale(0.85);
-	}
-	.feed-card button[data-copied='true'] .copy-icons :global(.copied-icon) {
-		opacity: 1;
-		transform: scale(1);
 	}
 	@media (max-width: 1000px) {
 		.feed-grid {
