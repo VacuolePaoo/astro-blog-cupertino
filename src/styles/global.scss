@@ -225,7 +225,7 @@ body[data-page-type='home'] {
 }
 
 .prose {
-	font-size: 19px;
+	font-size: var(--text-article-body);
 	font-weight: 400;
 	line-height: 1.4211;
 }
@@ -556,6 +556,13 @@ body[data-page-type='home'] {
 		.article-card--archive {
 			corner-shape: squircle;
 		}
+	}
+}
+
+@media (max-width: 832px) {
+	:root {
+		--text-article-title: 40px;
+		--text-article-body: 18px;
 	}
 }
 
