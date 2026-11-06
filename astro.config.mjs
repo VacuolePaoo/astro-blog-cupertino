@@ -27,7 +27,7 @@ export default defineConfig({
 			cssMinify: 'lightningcss',
 		},
 	},
-	devToolbar: { enabled: true },
+	devToolbar: { enabled: false },
 	prefetch: { prefetchAll: true, defaultStrategy: 'hover' },
 	integrations: [
 		react(),
