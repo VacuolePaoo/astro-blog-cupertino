@@ -1,0 +1,283 @@
+---
+import type { WorkEntry } from '../../types/work'
+import { render } from 'astro:content'
+import { ArrowUpRight, X } from 'lucide-astro'
+import { getWorkDomId } from '../../utils/work'
+import ArticleCover from '../ArticleCover.astro'
+
+interface Props {
+	works: WorkEntry[]
+}
+
+const { works } = Astro.props
+const rendered = await Promise.all(works.map(work => render(work)))
+---
+
+<div class="works-overlay" data-works-overlay hidden data-lenis-prevent>
+	<div class="works-backdrop" data-works-backdrop></div>
+	{
+		works.map((work, index) => {
+			const renderedEntry = rendered[index]
+			if (!renderedEntry) return null
+			const Content = renderedEntry.Content
+			const domId = getWorkDomId(work)
+			return (
+				<div
+					class="works-panel"
+					data-works-panel={domId}
+					role="dialog"
+					aria-modal="true"
+					aria-labelledby={`works-title-${domId}`}
+					hidden
+				>
+					{/* Sticky row keeps the close button pinned to the viewport top
+					    while the panel scrolls; the scrollbar itself sits at the
+					    viewport's right edge. */}
+					<div class="works-close-row">
+						<button
+							class="works-dialog-close"
+							type="button"
+							data-works-close
+							aria-label="关闭作品详情"
+						>
+							<X size={18} strokeWidth={2.4} />
+						</button>
+					</div>
+					<div class="works-dialog">
+						{work.data.cover && (
+							<div class="works-banner" data-works-banner>
+								<ArticleCover
+									src={work.data.cover}
+									alt={`${work.data.title} 封面`}
+									eager
+								/>
+							</div>
+						)}
+						<div class="works-panel-header">
+							<p class="works-panel-meta">
+								<span class="works-panel-category">{work.data.category}</span>
+								{work.data.badge && (
+									<span class="works-panel-badge">{work.data.badge}</span>
+								)}
+							</p>
+							<h2
+								class="works-panel-title"
+								data-works-title
+								id={`works-title-${domId}`}
+							>
+								{work.data.title}
+							</h2>
+							<div class="works-panel-links" data-works-reveal>
+								<a
+									class="works-panel-link"
+									href={work.data.repo_url}
+									target="_blank"
+									rel="noopener noreferrer"
+								>
+									仓库地址
+									<ArrowUpRight size={15} strokeWidth={2.2} />
+								</a>
+								{work.data.preview_url && (
+									<a
+										class="works-panel-link"
+										href={work.data.preview_url}
+										target="_blank"
+										rel="noopener noreferrer"
+									>
+										在线演示
+										<ArrowUpRight size={15} strokeWidth={2.2} />
+									</a>
+								)}
+							</div>
+						</div>
+						<div class="prose works-prose" data-works-reveal>
+							<Content />
+						</div>
+					</div>
+				</div>
+			)
+		})
+	}
+</div>
+
+<style>
+	.works-overlay {
+		position: fixed;
+		inset: 0;
+		/* Above the fixed header (1000) and page-top-action pill (1100). */
+		z-index: 1200;
+	}
+	.works-overlay[hidden] {
+		display: none;
+	}
+	.works-backdrop {
+		position: absolute;
+		inset: 0;
+		/* -webkit- prefix must stay before the standard property: the CSS
+		   minifier keeps only the last declaration of a pair. */
+		-webkit-backdrop-filter: var(--filter-blur);
+		backdrop-filter: var(--filter-blur);
+		background: color-mix(
+			in srgb,
+			var(--color-background-underlying) 30%,
+			transparent
+		);
+	}
+	/* The panel is the scroll container spanning the whole viewport, so its
+	   scrollbar sits at the window's right edge like a normal page. */
+	.works-panel {
+		position: absolute;
+		inset: 0;
+		display: flex;
+		flex-direction: column;
+		overflow-y: auto;
+		overscroll-behavior: contain;
+	}
+	.works-panel[hidden] {
+		display: none;
+	}
+	.works-close-row {
+		position: sticky;
+		/* Dialog top margin (24px) + the 16px inset from its edge. */
+		top: 40px;
+		z-index: 2;
+		display: flex;
+		align-items: flex-start;
+		justify-content: flex-end;
+		height: 0;
+		flex: none;
+		/* The row spans the viewport-wide panel, while the dialog box is a
+		   centered card of `min(920px, 100vw - 48px)` — offset the button by
+		   half the leftover space plus its inset from the box edge. */
+		padding-right: calc((100% - min(920px, 100vw - 48px)) / 2 + 16px);
+	}
+	.works-dialog-close {
+		display: grid;
+		width: 36px;
+		height: 36px;
+		place-items: center;
+		border: 1px solid var(--color-border-primary);
+		border-radius: var(--radius-full);
+		background: var(--color-background-secondary);
+		padding: 0;
+		color: var(--color-text-primary);
+		cursor: pointer;
+	}
+	.works-dialog-close:hover {
+		background: var(--color-background-secondary-hover);
+	}
+	.works-dialog-close:focus-visible {
+		outline: 2px solid var(--color-text-accent);
+		outline-offset: 2px;
+	}
+	/* The visual dialog box: a centered card inside the viewport-wide
+	   scroller. It scrolls with its content; the bottom radius shows when the
+	   end of the article is reached. */
+	.works-dialog {
+		flex: none;
+		width: min(920px, calc(100vw - 48px));
+		min-height: calc(100dvh - 48px);
+		margin: 24px auto;
+		overflow: hidden;
+		border-radius: var(--radius-xlarge);
+		background: var(--color-background-secondary);
+	}
+	/* Top banner: the cover at its natural aspect ratio, spanning the full
+	   dialog width. */
+	.works-banner {
+		position: relative;
+		overflow: hidden;
+	}
+	.works-banner :global(picture),
+	.works-banner :global(img) {
+		display: block;
+		width: 100%;
+		height: auto;
+		object-fit: cover;
+	}
+	.works-panel-header {
+		padding: 36px 40px 0;
+	}
+	.works-panel-meta {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		margin: 0;
+	}
+	.works-panel-category {
+		color: var(--color-text-accent);
+		font-size: 12px;
+		font-weight: 600;
+		line-height: 20px;
+		text-transform: uppercase;
+	}
+	.works-panel-badge {
+		display: inline-block;
+		border-radius: var(--radius-full);
+		background: var(--color-background-accent-lite);
+		padding: 2px 10px;
+		color: var(--color-text-accent);
+		font-size: 12px;
+		font-weight: 600;
+		line-height: normal;
+	}
+	.works-panel-title {
+		margin: 10px 0 0;
+		font-size: var(--text-article-title);
+		font-weight: 700;
+		line-height: normal;
+		color: var(--color-text-primary);
+	}
+	.works-panel-links {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 10px;
+		margin-top: 20px;
+	}
+	.works-panel-link {
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+		border-radius: var(--radius-full);
+		background: var(--color-background-accent);
+		padding: 8px 16px;
+		color: var(--color-background-accent-contrast);
+		font-size: 14px;
+		font-weight: 600;
+		text-decoration: none;
+		transition: background-color 200ms ease;
+	}
+	.works-panel-link:hover {
+		background: var(--color-background-accent-hover);
+		text-decoration: none;
+	}
+	.works-prose {
+		margin-top: 40px;
+		padding-bottom: 56px;
+		/* Align the rendered article's text edge with the panel header: the
+		   prose children center a box of `--article-max + 2 gutter` with
+		   `gutter` inner padding, so shrinking the measure by 80px puts the
+		   text at 40px — the header's left edge. The container is the prose
+		   block itself, whose content box already excludes the scrollbar. */
+		container-type: inline-size;
+		--article-max: calc(100cqw - 80px);
+	}
+	@media (max-width: 600px) {
+		.works-close-row {
+			top: 16px;
+		}
+		.works-dialog {
+			width: 100vw;
+			min-height: 100dvh;
+			margin: 0;
+			border-radius: 0;
+		}
+		.works-panel-header {
+			padding: 24px 24px 0;
+		}
+		.works-prose {
+			margin-top: 28px;
+			--article-max: calc(100cqw - 48px);
+		}
+	}
+</style>

@@ -71,8 +71,43 @@ const articles = defineCollection({
 		}),
 })
 
+const works = defineCollection({
+	loader: glob({ base: './content/works', pattern: '**/*.md' }),
+	schema: ({ image }) =>
+		z.object({
+			title: z.string().min(1),
+			description: z.string().min(1),
+			category: z.string().min(1),
+			repo_url: z.url(),
+			preview_url: z.url().optional(),
+			cover: z.preprocess(
+				normalizeOptionalImageValue,
+				z
+					.union([
+						// Public and remote URLs bypass Astro's local image importer.
+						z
+							.string()
+							.refine(source => isPublicImage(source) || isRemoteImage(source)),
+						image(),
+					])
+					.refine(
+						source =>
+							typeof source !== 'string' ||
+							isAllowedImageSource(source, blogConfig.imageDomains),
+						'远程封面域名未加入 imageDomains',
+					)
+					.optional(),
+			),
+			badge: z.string().optional(),
+			draft: z.boolean().default(false),
+		}),
+})
+
 const pages = defineCollection({
-	loader: glob({ base: './content', pattern: ['**/*.md', '!posts/**'] }),
+	loader: glob({
+		base: './content',
+		pattern: ['**/*.md', '!posts/**', '!works/**'],
+	}),
 	schema: z.object({
 		title: z.string().min(1),
 		description: z.string().min(1),
@@ -80,4 +115,4 @@ const pages = defineCollection({
 	}),
 })
 
-export const collections = { articles, pages }
+export const collections = { articles, works, pages }

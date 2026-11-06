@@ -1,34 +1,75 @@
 ---
+import WorkCard from '../components/works/WorkCard.astro'
+import WorkDialog from '../components/works/WorkDialog.astro'
 import Layout from '../layouts/Layout.astro'
+import { getWorks } from '../utils/work'
+
+const works = await getWorks()
 ---
 
-<Layout title="作品" description="作品功能即将上线。" noindex>
-	<section class="page-shell coming-soon">
-		<p>作品</p>
-		<h1>即将上线</h1>
-		<span>项目与创作会在这里逐步整理。</span>
+<Layout title="作品" description="开发的项目与作品。">
+	<section class="page-shell works-page">
+		<header>
+			<h1>作品</h1>
+			<p>做过的项目与作品，点击卡片查看详情。</p>
+		</header>
+		{
+			works.length > 0 ? (
+				<div class="works-grid">
+					{works.map(work => (
+						<WorkCard work={work} />
+					))}
+				</div>
+			) : (
+				<p class="works-empty">作品正在整理中，敬请期待。</p>
+			)
+		}
 	</section>
+	<WorkDialog works={works} />
 </Layout>
 
 <style>
-	.coming-soon {
-		min-height: 58vh;
+	:global(html.works-open) {
+		overflow: hidden;
+	}
+	.works-page {
 		padding-top: 128px;
+		padding-bottom: 128px;
 	}
-	p {
-		color: var(--color-text-secondary);
-		font-size: 22px;
-		font-weight: 200;
-	}
-	h1 {
-		margin: 6px 0 0;
+	header h1 {
+		margin: 0;
 		font-size: var(--text-article-title);
 		font-weight: 700;
 		line-height: normal;
 	}
-	span {
-		display: block;
-		margin-top: 1rem;
+	header p {
+		color: var(--color-text-secondary);
+		font-size: 16px;
+		font-weight: 400;
+	}
+	.works-grid {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		/* Every card shares one row height, so all cards end up identical. */
+		grid-auto-rows: 1fr;
+		gap: 20px 16px;
+		margin-top: 64px;
+	}
+	.works-empty {
+		margin-top: 64px;
 		color: var(--color-text-secondary);
 	}
+	@media (max-width: 600px) {
+		.works-grid {
+			grid-template-columns: 1fr;
+			max-width: 366px;
+			margin-inline: auto;
+		}
+	}
 </style>
+
+<script>
+	import { initializeWorksDialog } from '../utils/works-dialog'
+
+	initializeWorksDialog()
+</script>

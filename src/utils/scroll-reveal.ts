@@ -1,5 +1,5 @@
 const revealSelector =
-	'.article-card, .friend-card, .feed-card, .prose p img, .prose .block-large img'
+	'.article-card, .work-card, .friend-card, .feed-card, .prose p img, .prose .block-large img'
 
 let revealObserver: IntersectionObserver | undefined
 

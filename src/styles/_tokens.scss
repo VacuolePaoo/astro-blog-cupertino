@@ -4,12 +4,14 @@
 		--radius-small: 20px;
 		--radius-medium: 30px;
 		--radius-large: 40px;
+		--radius-xlarge: 48px;
 		--radius-full: 999px;
 	} @else {
 		--radius-tiny: 4px;
 		--radius-small: 8px;
 		--radius-medium: 12px;
 		--radius-large: 16px;
+		--radius-xlarge: 24px;
 		--radius-full: 999px;
 	}
 }
