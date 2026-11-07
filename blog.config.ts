@@ -46,8 +46,7 @@ export default {
 		envId: 'https://twikoo.vacu.top/.netlify/functions/twikoo',
 		region: '', // Only for Tencent Cloud / 仅腾讯云环境需要
 		lang: 'zh-CN', // Fixed comment language / 评论固定语言
-		scriptSrc:
-			'https://registry.npmmirror.com/twikoo/2.0.17/files/dist/twikoo.nocss.js',
+		scriptSrc: 'https://s4.zstatic.net/npm/twikoo@2.0.17/dist/twikoo.nocss.js',
 	},
 
 	// Theme and interaction / 主题与交互
