@@ -26,3 +26,6 @@ pnpm-debug.log*
 # AI worktrees and logs
 .zcode/
 .mimosa/
+# AI agent config (kept locally, not published)
+.agents/
+AGENTS.md

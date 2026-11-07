@@ -1,3 +1,0 @@
-Command: python3 -B examples/source-only/verify_fixture.py
-Exit: 0
-PASS: label association, explicit button type, nonempty aria-label. No browser checks.
