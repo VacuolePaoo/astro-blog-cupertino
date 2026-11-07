@@ -3,62 +3,74 @@ import ArticleCard from '../components/ArticleCard.astro'
 import Layout from '../layouts/Layout.astro'
 import { getArticles } from '../utils/article'
 
-const articles = (await getArticles()).slice(0, 3)
+const [latestArticle] = await getArticles()
 ---
 
-<Layout title="页面未找到" description="请求的页面不存在。" noindex>
+<Layout title="页面不存在" description="请求的页面不存在。" noindex hideFooter>
 	<section class="page-shell not-found">
-		<p class="error-code">404</p>
-		<h1>这里没有你寻找的页面</h1>
-		<a class="home-button" href="/">返回首页</a>
-		<div class="recommendations">
-			<h2>最近文章</h2>
-			{
-				articles.map(article => (
-					<ArticleCard article={article} variant="archive" />
-				))
-			}
-		</div>
+		<h1>页面不存在，<br />先看看这篇？</h1>
+		{
+			latestArticle && (
+				<div class="recommendation">
+					<ArticleCard article={latestArticle} variant="archive" />
+				</div>
+			)
+		}
+		<a class="page-top-action home-action" href="/">
+			<svg
+				xmlns="http://www.w3.org/2000/svg"
+				width="16"
+				height="16"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="1.7"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				aria-hidden="true"
+			>
+				<path
+					d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"
+				/>
+				<path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8" />
+			</svg>
+			博客首页
+		</a>
 	</section>
 </Layout>
 
 <style>
 	.not-found {
-		padding-top: 128px;
-	}
-	.error-code {
-		color: var(--color-text-accent);
-		font-size: var(--font-size-base);
-		font-weight: 600;
+		display: flex;
+		flex-direction: column;
+		min-height: calc(100dvh - 56px);
+		padding-top: 96px;
+		padding-bottom: 40px;
 	}
 	h1 {
-		max-width: 15ch;
 		margin: 0;
 		font-size: var(--text-article-title);
 		font-weight: 700;
 		line-height: normal;
 	}
-	.home-button {
-		display: inline-block;
-		margin-top: 16px;
-		border-radius: var(--radius-full);
-		background: var(--color-background-accent);
-		padding: 6px 12px;
-		color: var(--color-background-accent-contrast);
-		font-size: var(--font-size-base);
-		line-height: 1;
-		font-weight: 400;
+	.recommendation {
+		margin-top: 48px;
 	}
-	.home-button:hover {
-		background: var(--color-background-accent-hover);
+	.recommendation :global(.article-card--archive) {
+		border-bottom: none;
+	}
+	.home-action {
+		position: static;
+		z-index: auto;
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+		align-self: center;
+		margin-top: auto;
+		cursor: pointer;
+	}
+	.home-action:hover {
+		background: var(--color-background-secondary-hover);
 		text-decoration: none;
-	}
-	.recommendations {
-		margin-top: 64px;
-	}
-	.recommendations h2 {
-		font-size: var(--text-h2);
-		font-weight: 700;
-		line-height: 1.125;
 	}
 </style>
