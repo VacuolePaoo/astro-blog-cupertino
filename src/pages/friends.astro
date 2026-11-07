@@ -2,6 +2,7 @@
 import { Rss } from 'lucide-astro'
 import blogConfig from '../../blog.config'
 import { friendGroups } from '../friends-links'
+import PageHeading from '../components/PageHeading.astro'
 import Layout from '../layouts/Layout.astro'
 import { assertAllowedImageSource } from '../utils/image'
 
@@ -16,10 +17,10 @@ for (const group of friendGroups)
 
 <Layout title="友链" description="一些持续创作、互相启发的朋友与站点。">
 	<section class="page-shell friends-page">
-		<header>
-			<h1>友链</h1>
-			<p>一些持续创作、互相启发的朋友与站点。</p>
-		</header>
+		<PageHeading
+			title="友链"
+			subtitle="一些持续创作、互相启发的朋友与站点。"
+		/>
 		{
 			friendGroups.map(group => (
 				<section class="friend-group">
@@ -90,19 +91,7 @@ for (const group of friendGroups)
 
 <style>
 	.friends-page {
-		padding-top: 128px;
 		padding-bottom: 128px;
-	}
-	header h1 {
-		margin: 0;
-		font-size: var(--text-article-title);
-		font-weight: 700;
-		line-height: normal;
-	}
-	header p {
-		color: var(--color-text-secondary);
-		font-size: 16px;
-		font-weight: 400;
 	}
 	.friend-group {
 		margin-top: 64px;

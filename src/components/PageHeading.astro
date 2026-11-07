@@ -1,21 +1,21 @@
 ---
 interface Props {
 	title: string
-	label?: string | undefined
+	subtitle?: string | undefined
 	capitalize?: boolean | undefined
 	containedOnMobile?: boolean | undefined
 }
 
 const {
 	title,
-	label,
+	subtitle,
 	capitalize = false,
 	containedOnMobile = false,
 } = Astro.props
 ---
 
 <header class:list={['page-meta', { 'contained-mobile': containedOnMobile }]}>
-	{label && <span>{label}</span>}
+	{subtitle && <p class="subtitle">{subtitle}</p>}
 	<h1 class:list={{ capitalize }}>{title}</h1>
 </header>
 
@@ -25,16 +25,21 @@ const {
 		margin: 128px auto 0;
 		padding: 0 16px;
 	}
-	.page-meta span {
-		display: block;
+	.page-meta .subtitle {
+		margin: 0;
 		color: var(--color-text-secondary);
-		font-weight: 600;
+		font-size: 22px;
+		font-weight: 200;
+		line-height: normal;
 	}
 	.page-meta h1 {
 		margin-top: 16px;
 		font-size: var(--text-article-title);
 		font-weight: 700;
 		line-height: normal;
+	}
+	.page-meta .subtitle + h1 {
+		margin-top: 6px;
 	}
 	.page-meta h1.capitalize {
 		text-transform: capitalize;

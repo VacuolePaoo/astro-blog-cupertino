@@ -6,7 +6,7 @@ export const ARCHIVE_PAGE_SIZE = 10
 export const SEARCH_PAGE_SIZE = 30
 
 export const primaryNav = [
-	{ text: '文章', url: '/posts/' },
+	{ text: '分类', url: '/categories/' },
 	{ text: '动态', url: '/moments/' },
 	{ text: '友链', url: '/friends/' },
 	{ text: '关于', url: '/about/' },
@@ -36,8 +36,7 @@ export const footerNav = [
 	{
 		title: '站点',
 		items: [
-			{ text: '文章', url: '/posts/' },
-			{ text: '归档', url: '/archives/' },
+			{ text: '文章', url: '/archives/' },
 			{ text: '分类', url: '/categories/' },
 			{ text: '标签', url: '/tags/' },
 			{ text: '搜索', url: '/search/' },

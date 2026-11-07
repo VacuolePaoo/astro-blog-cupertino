@@ -1,6 +1,7 @@
 ---
 import WorkCard from '../components/works/WorkCard.astro'
 import WorkDialog from '../components/works/WorkDialog.astro'
+import PageHeading from '../components/PageHeading.astro'
 import Layout from '../layouts/Layout.astro'
 import { getWorks } from '../utils/work'
 
@@ -9,10 +10,10 @@ const works = await getWorks()
 
 <Layout title="作品" description="开发的项目与作品。">
 	<section class="page-shell works-page">
-		<header>
-			<h1>作品</h1>
-			<p>做过的项目与作品，点击卡片查看详情。</p>
-		</header>
+		<PageHeading
+			title="作品"
+			subtitle="做过的项目与作品，点击卡片查看详情。"
+		/>
 		{
 			works.length > 0 ? (
 				<div class="works-grid">
@@ -33,19 +34,7 @@ const works = await getWorks()
 		overflow: hidden;
 	}
 	.works-page {
-		padding-top: 128px;
 		padding-bottom: 128px;
-	}
-	header h1 {
-		margin: 0;
-		font-size: var(--text-article-title);
-		font-weight: 700;
-		line-height: normal;
-	}
-	header p {
-		color: var(--color-text-secondary);
-		font-size: 16px;
-		font-weight: 400;
 	}
 	.works-grid {
 		display: grid;

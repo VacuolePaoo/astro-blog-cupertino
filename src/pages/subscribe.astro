@@ -1,5 +1,6 @@
 ---
 import { Atom, Check, Copy, Rss, X } from 'lucide-astro'
+import PageHeading from '../components/PageHeading.astro'
 import Layout from '../layouts/Layout.astro'
 import { siteOrigin } from '../utils/site'
 
@@ -21,10 +22,10 @@ const feeds = [
 
 <Layout title="订阅" description="通过 Atom 或 RSS 获取最近更新。">
 	<section class="page-shell subscribe-page">
-		<header>
-			<h1>订阅</h1>
-			<p>选择你习惯的格式，将地址添加到 RSS 阅读器即可。</p>
-		</header>
+		<PageHeading
+			title="订阅"
+			subtitle="选择你习惯的格式，将地址添加到 RSS 阅读器即可。"
+		/>
 		<div class="feed-grid">
 			{
 				feeds.map(({ title, description, url, Icon }) => (
@@ -106,19 +107,7 @@ const feeds = [
 
 <style>
 	.subscribe-page {
-		padding-top: 128px;
 		padding-bottom: 128px;
-	}
-	header h1 {
-		margin: 0;
-		font-size: var(--text-article-title);
-		font-weight: 700;
-		line-height: normal;
-	}
-	header p {
-		color: var(--color-text-secondary);
-		font-size: 16px;
-		font-weight: 400;
 	}
 	.feed-grid {
 		display: grid;
