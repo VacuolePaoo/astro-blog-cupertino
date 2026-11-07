@@ -12,8 +12,6 @@
 		"preview": "astro preview",
 		"astro": "astro",
 		"check": "astro check",
-		"test:cdn-assets": "node --test scripts/cdn-assets.test.mjs",
-		"cdn-assets": "node scripts/cdn-assets.mjs",
 		"lint": "eslint .",
 		"lint:fix": "eslint . --fix",
 		"format": "prettier . --write",
