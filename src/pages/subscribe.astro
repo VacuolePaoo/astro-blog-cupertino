@@ -29,7 +29,7 @@ const feeds = [
 					<article class="feed-card surface-card">
 						<Icon size={24} strokeWidth={1.7} />
 						<h2>{title}</h2>
-						<p>{description}</p>
+						<p class="muted">{description}</p>
 						<button type="button" data-copy-feed={url} data-copy-state="idle" disabled>
 							<span class="copy-icons" aria-hidden="true">
 								<Copy class="idle-icon" size={16} />
@@ -123,7 +123,6 @@ const feeds = [
 	}
 	.feed-card p {
 		margin: 0;
-		color: var(--color-text-secondary);
 		font-size: var(--text-card-description);
 		font-weight: 400;
 	}

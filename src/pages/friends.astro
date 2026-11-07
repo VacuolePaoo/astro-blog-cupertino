@@ -44,8 +44,10 @@ for (const group of friendGroups)
 									</span>
 									<span class="friend-copy">
 										<strong>{friend.title}</strong>
-										{friend.author && <small>{friend.author}</small>}
-										{friend.description && <span>{friend.description}</span>}
+										{friend.author && <small class="muted">{friend.author}</small>}
+										{friend.description && (
+											<span class="muted">{friend.description}</span>
+										)}
 									</span>
 								</a>
 								{friend.feed && (
@@ -93,7 +95,7 @@ for (const group of friendGroups)
 	.friend-group h2 {
 		font-size: var(--text-h2);
 		font-weight: 700;
-		line-height: 1.4211;
+		line-height: var(--text-section-line-height);
 	}
 	.friend-card {
 		position: relative;
@@ -142,14 +144,10 @@ for (const group of friendGroups)
 		text-overflow: ellipsis;
 		white-space: nowrap;
 	}
-	.friend-copy small {
-		color: var(--color-text-secondary);
-	}
 	.friend-copy > span {
 		display: -webkit-box;
 		overflow: hidden;
 		margin-top: 8px;
-		color: var(--color-text-secondary);
 		font-size: var(--text-card-description);
 		font-weight: 400;
 		line-height: 1.4211;

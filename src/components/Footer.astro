@@ -1,6 +1,7 @@
 ---
 import blogConfig from '../../blog.config'
 import { footerNav } from '../consts'
+import { getFlaggedExternalLinkProps } from '../utils/link'
 import { getVisibleFooterNav } from '../utils/nav'
 
 const visibleFooterNav = getVisibleFooterNav(
@@ -21,8 +22,7 @@ const visibleFooterNav = getVisibleFooterNav(
 								<li>
 									<a
 										href={item.url}
-										target={item.external ? '_blank' : undefined}
-										rel={item.external ? 'noopener noreferrer' : undefined}
+										{...getFlaggedExternalLinkProps(item.external)}
 									>
 										{item.text}
 									</a>

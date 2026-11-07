@@ -19,7 +19,7 @@ const works = await getWorks()
 					))}
 				</div>
 			) : (
-				<p class="works-empty">作品正在整理中，敬请期待。</p>
+				<p class="works-empty muted">作品正在整理中，敬请期待。</p>
 			)
 		}
 	</section>
@@ -37,7 +37,6 @@ const works = await getWorks()
 	}
 	.works-empty {
 		margin-top: 64px;
-		color: var(--color-text-secondary);
 	}
 </style>
 

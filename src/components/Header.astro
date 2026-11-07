@@ -2,6 +2,7 @@
 import { ExternalLink, Search } from 'lucide-astro'
 import blogConfig from '../../blog.config'
 import { moreNav, primaryNav } from '../consts'
+import { getFlaggedExternalLinkProps } from '../utils/link'
 import SearchLauncher from './SearchLauncher.astro'
 
 const blurLayers = [1, 2, 3, 4, 5, 6]
@@ -58,8 +59,7 @@ const siteLogo =
 							<a
 								href={item.url}
 								style={`--index:${index}`}
-								target={item.external ? '_blank' : undefined}
-								rel={item.external ? 'noopener noreferrer' : undefined}
+								{...getFlaggedExternalLinkProps(item.external)}
 							>
 								<span>{item.text}</span>
 								{item.external && <ExternalLink size={13} aria-hidden="true" />}
@@ -124,8 +124,7 @@ const siteLogo =
 							<a
 								href={item.url}
 								style={`--index:${index}`}
-								target={item.external ? '_blank' : undefined}
-								rel={item.external ? 'noopener noreferrer' : undefined}
+								{...getFlaggedExternalLinkProps(item.external)}
 							>
 								<span>{item.text}</span>
 								{item.external && <ExternalLink size={14} aria-hidden="true" />}

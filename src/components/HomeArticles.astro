@@ -45,7 +45,11 @@ const { articles, currentPage, totalPages } = Astro.props
 	aria-labelledby={currentPage === 1 ? 'latest-heading' : undefined}
 	aria-label={currentPage > 1 ? '最近文章' : undefined}
 >
-	{currentPage === 1 && <h2 id="latest-heading">最近文章</h2>}
+	{currentPage === 1 && (
+		<h2 id="latest-heading" class="section-heading">
+			最近文章
+		</h2>
+	)}
 	<div class="card-grid card-grid--2">
 		{articles.map(article => <ArticleCard article={article} variant="grid" />)}
 	</div>
@@ -83,13 +87,6 @@ const { articles, currentPage, totalPages } = Astro.props
 	}
 	.home-articles--not-index {
 		margin-top: 100px;
-	}
-	.home-articles > h2 {
-		margin: 0.67em 0 24px;
-		font-size: var(--text-section-title);
-		font-weight: 700;
-		line-height: 1.125;
-		color: var(--color-text-primary);
 	}
 	@media (max-width: 600px) {
 		.home-hero {
