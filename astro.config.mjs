@@ -33,7 +33,7 @@ export default defineConfig({
 		react(),
 		sitemap({
 			filter: page =>
-				!['/previews/', '/moments/', '/works/'].some(path =>
+				!['/previews/', '/works/'].some(path =>
 					new URL(page).pathname.startsWith(path),
 				),
 		}),

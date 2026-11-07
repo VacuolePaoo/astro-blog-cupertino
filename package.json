@@ -1,5 +1,5 @@
 {
-	"name": "dino-blog-v1",
+	"name": "astro-blog-cupertino",
 	"type": "module",
 	"version": "0.0.1",
 	"packageManager": "pnpm@10.31.0",
@@ -16,7 +16,6 @@
 		"lint:fix": "eslint . --fix",
 		"format": "prettier . --write",
 		"format:check": "prettier . --check",
-		"generate:covers": "node scripts/generate-covers.mjs",
 		"generate:assets": "node scripts/generate-site-assets.mjs"
 	},
 	"dependencies": {

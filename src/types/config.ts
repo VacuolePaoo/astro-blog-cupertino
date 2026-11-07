@@ -64,7 +64,10 @@ export type CdnAssetsPrefix =
 	string | ({ fallback: string } & Record<string, string>)
 
 export interface BlogConfig {
+	/** 完整站点名，用于 <title>、OG、feed、manifest 等站点级标识 */
 	title: string
+	/** 导航栏品牌短名，展示用；默认回退为站点名 */
+	brand?: string
 	subtitle: string
 	description: string
 	site: string
