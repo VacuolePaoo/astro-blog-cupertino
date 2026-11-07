@@ -1,0 +1,360 @@
+name: Deploy production
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: production
+  cancel-in-progress: false
+
+env:
+  VERCEL_CLI_VERSION: 59.1.4
+
+jobs:
+  deploy:
+    name: Build and deploy
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    environment: production
+
+    env:
+      CDN_BASE_URL: ${{ vars.CDN_BASE_URL }}
+      CDN_DEPLOYMENT_ENABLED: ${{ vars.CDN_DEPLOYMENT_ENABLED }}
+      PRODUCTION_URL: ${{ vars.PRODUCTION_URL }}
+      VERCEL_ORG_ID: ${{ vars.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ vars.VERCEL_PROJECT_ID }}
+
+    steps:
+      - name: Check out source repository
+        uses: actions/checkout@v4
+
+      - name: Validate deployment configuration
+        env:
+          VACUCDN_DEPLOY_KEY: ${{ secrets.VACUCDN_DEPLOY_KEY }}
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        shell: bash
+        run: |
+          if [[ "$CDN_DEPLOYMENT_ENABLED" != 'true' ]]; then
+            echo 'CDN deployment is locked. Set CDN_DEPLOYMENT_ENABLED=true only after Vercel Git deployments are disabled.' >&2
+            exit 1
+          fi
+
+          required=(
+            VACUCDN_DEPLOY_KEY
+            VERCEL_TOKEN
+            CDN_BASE_URL
+            PRODUCTION_URL
+            VERCEL_ORG_ID
+            VERCEL_PROJECT_ID
+          )
+          missing=()
+
+          for name in "${required[@]}"; do
+            if [[ -z "${!name:-}" ]]; then
+              missing+=("$name")
+            fi
+          done
+
+          if (( ${#missing[@]} > 0 )); then
+            printf 'Missing production configuration: %s\n' "${missing[*]}" >&2
+            exit 1
+          fi
+
+          if [[ ! "$CDN_BASE_URL" =~ ^https:// || ! "$PRODUCTION_URL" =~ ^https:// ]]; then
+            echo 'CDN_BASE_URL and PRODUCTION_URL must use HTTPS.' >&2
+            exit 1
+          fi
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.31.0
+          run_install: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.22.0
+          cache: pnpm
+
+      - name: Compute release information
+        id: release
+        shell: bash
+        run: |
+          release_date="$(TZ=Asia/Shanghai date +'%y%m%d')"
+          printf -v run_number '%08d' "$GITHUB_RUN_NUMBER"
+          printf -v run_attempt '%04d' "$GITHUB_RUN_ATTEMPT"
+          release_id="${release_date}-${run_number}-${run_attempt}-${GITHUB_SHA:0:7}"
+          cdn_base_url="${CDN_BASE_URL%/}"
+          asset_prefix="${cdn_base_url}/${release_id}"
+
+          {
+            echo "release_id=${release_id}"
+            echo "asset_prefix=${asset_prefix}"
+          } >> "$GITHUB_OUTPUT"
+
+          echo "Release: ${release_id}"
+          echo "CDN prefix: ${asset_prefix}"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Link Vercel project
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: >-
+          pnpm dlx "vercel@${VERCEL_CLI_VERSION}" link
+          --yes
+          --project="$VERCEL_PROJECT_ID"
+          --scope="$VERCEL_ORG_ID"
+          --token="$VERCEL_TOKEN"
+
+      - name: Pull Vercel production settings
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: >-
+          pnpm dlx "vercel@${VERCEL_CLI_VERSION}" pull
+          --yes
+          --environment=production
+          --token="$VERCEL_TOKEN"
+
+      - name: Build Vercel output once
+        env:
+          ASSET_CDN_PREFIX: ${{ steps.release.outputs.asset_prefix }}
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: >-
+          pnpm dlx "vercel@${VERCEL_CLI_VERSION}" build
+          --prod
+          --token="$VERCEL_TOKEN"
+
+      - name: Validate Vercel build output
+        shell: bash
+        run: |
+          test -f .vercel/output/config.json
+          test -d .vercel/output/static/_astro
+
+          asset_path="$(find .vercel/output/static/_astro -type f -print -quit)"
+          if [[ -z "$asset_path" ]]; then
+            echo 'No Astro build asset was generated' >&2
+            exit 1
+          fi
+
+      - name: Check out CDN repository
+        uses: actions/checkout@v4
+        with:
+          repository: shennhus/vacuoss
+          ref: main
+          path: _vacucdn
+          fetch-depth: 0
+          ssh-key: ${{ secrets.VACUCDN_DEPLOY_KEY }}
+
+      - name: Configure CDN repository identity
+        shell: bash
+        run: |
+          git -C _vacucdn config user.name 'github-actions[bot]'
+          git -C _vacucdn config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+
+      - name: Recover interrupted CDN metadata promotion
+        shell: bash
+        run: |
+          metadata_path='_vacucdn/.vacucdn-releases.json'
+          jq -e '
+            .schemaVersion == 1
+            and has("current")
+            and has("previous")
+            and has("candidate")
+          ' "$metadata_path" > /dev/null
+
+          current_release="$(jq -r '.current // ""' "$metadata_path")"
+          candidate_release="$(jq -r '.candidate // ""' "$metadata_path")"
+
+          if [[ -z "$candidate_release" ]]; then
+            echo 'No interrupted CDN candidate requires recovery.'
+            exit 0
+          fi
+
+          reconcile_args=(
+            --cdn-base-url "$CDN_BASE_URL"
+            --production-url "$PRODUCTION_URL"
+          )
+          if [[ -n "$current_release" ]]; then
+            reconcile_args+=(--current-release "$current_release")
+          fi
+          if [[ -n "$candidate_release" ]]; then
+            reconcile_args+=(--candidate-release "$candidate_release")
+          fi
+
+          live_json="$(node scripts/cdn-production-release.mjs "${reconcile_args[@]}")"
+          reconcile_action="$(jq -r '.action' <<< "$live_json")"
+
+          if [[ "$reconcile_action" == 'promote-candidate' ]]; then
+            echo "Completing interrupted metadata promotion for ${candidate_release}."
+            pnpm run cdn-assets -- promote \
+              --repo "$GITHUB_WORKSPACE/_vacucdn" \
+              --release "$candidate_release"
+            git -C _vacucdn add .vacucdn-releases.json
+            git -C _vacucdn commit -m "chore(cdn): promote ${candidate_release}"
+            git -C _vacucdn push origin HEAD:main
+          else
+            echo "Unknown reconciliation action: ${reconcile_action}" >&2
+            exit 1
+          fi
+
+      - name: Stage CDN candidate
+        id: stage_candidate
+        env:
+          RELEASE_ID: ${{ steps.release.outputs.release_id }}
+        shell: bash
+        run: |
+          pnpm run cdn-assets -- stage \
+            --repo "$GITHUB_WORKSPACE/_vacucdn" \
+            --release "$RELEASE_ID" \
+            --source "$GITHUB_WORKSPACE/.vercel/output/static/_astro"
+
+          git -C _vacucdn add -A -- public .vacucdn-releases.json
+          if git -C _vacucdn diff --cached --quiet; then
+            echo "Candidate ${RELEASE_ID} is already staged."
+          else
+            git -C _vacucdn commit -m "chore(cdn): stage ${RELEASE_ID}"
+            git -C _vacucdn push origin HEAD:main
+          fi
+
+      - name: Verify ESA candidate asset
+        env:
+          ASSET_PREFIX: ${{ steps.release.outputs.asset_prefix }}
+        shell: bash
+        run: |
+          asset_path="$(find "$GITHUB_WORKSPACE/.vercel/output/static/_astro" -type f -print -quit)"
+          relative_path="${asset_path#"$GITHUB_WORKSPACE/.vercel/output/static/"}"
+          asset_url="${ASSET_PREFIX}/${relative_path}"
+
+          echo "Checking ${asset_url}"
+          curl \
+            --fail \
+            --silent \
+            --show-error \
+            --location \
+            --retry 12 \
+            --retry-delay 5 \
+            --retry-all-errors \
+            --output /dev/null \
+            "$asset_url"
+
+      - name: Confirm source commit before candidate deployment
+        id: latest_before_candidate
+        shell: bash
+        run: |
+          latest_sha="$(git ls-remote origin "refs/heads/${GITHUB_REF_NAME}" | cut -f1)"
+          if [[ "$latest_sha" == "$GITHUB_SHA" ]]; then
+            echo 'is_latest=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'is_latest=false' >> "$GITHUB_OUTPUT"
+            echo "::warning::Skipping Vercel deployment because ${GITHUB_SHA} is no longer current (${latest_sha})."
+          fi
+
+      - name: Deploy prebuilt Vercel candidate
+        if: steps.latest_before_candidate.outputs.is_latest == 'true'
+        id: candidate
+        env:
+          RELEASE_ID: ${{ steps.release.outputs.release_id }}
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        shell: bash
+        run: |
+          deployment_url="$(
+            pnpm dlx "vercel@${VERCEL_CLI_VERSION}" deploy \
+              --prebuilt \
+              --prod \
+              --skip-domain \
+              --yes \
+              --meta "githubCommitSha=${GITHUB_SHA}" \
+              --meta "releaseId=${RELEASE_ID}" \
+              --token="$VERCEL_TOKEN"
+          )"
+
+          if [[ ! "$deployment_url" =~ ^https:// ]]; then
+            echo "Unexpected Vercel deployment URL: ${deployment_url}" >&2
+            exit 1
+          fi
+
+          echo "deployment_url=${deployment_url}" >> "$GITHUB_OUTPUT"
+          echo "Candidate deployment: ${deployment_url}"
+
+      - name: Confirm source commit before production promotion
+        if: steps.latest_before_candidate.outputs.is_latest == 'true'
+        id: latest_before_promotion
+        shell: bash
+        run: |
+          latest_sha="$(git ls-remote origin "refs/heads/${GITHUB_REF_NAME}" | cut -f1)"
+          if [[ "$latest_sha" == "$GITHUB_SHA" ]]; then
+            echo 'is_latest=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'is_latest=false' >> "$GITHUB_OUTPUT"
+            echo "::warning::Skipping production promotion because ${GITHUB_SHA} is no longer current (${latest_sha})."
+          fi
+
+      - name: Promote Vercel candidate
+        id: promote_vercel
+        if: steps.latest_before_promotion.outputs.is_latest == 'true'
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: >-
+          pnpm dlx "vercel@${VERCEL_CLI_VERSION}" promote
+          "${{ steps.candidate.outputs.deployment_url }}"
+          --yes
+          --timeout=5m
+          --token="$VERCEL_TOKEN"
+
+      - name: Promote CDN metadata
+        if: steps.latest_before_promotion.outputs.is_latest == 'true'
+        env:
+          RELEASE_ID: ${{ steps.release.outputs.release_id }}
+        shell: bash
+        run: |
+          pnpm run cdn-assets -- promote \
+            --repo "$GITHUB_WORKSPACE/_vacucdn" \
+            --release "$RELEASE_ID"
+          git -C _vacucdn add .vacucdn-releases.json
+          git -C _vacucdn commit -m "chore(cdn): promote ${RELEASE_ID}"
+          git -C _vacucdn push origin HEAD:main
+
+      - name: Abandon candidate when production promotion never started
+        if: >-
+          always()
+          && steps.stage_candidate.outcome == 'success'
+          && steps.promote_vercel.outcome == 'skipped'
+        env:
+          RELEASE_ID: ${{ steps.release.outputs.release_id }}
+        shell: bash
+        run: |
+          pnpm run cdn-assets -- abort \
+            --repo "$GITHUB_WORKSPACE/_vacucdn" \
+            --release "$RELEASE_ID"
+
+          git -C _vacucdn add -A -- public .vacucdn-releases.json
+          if git -C _vacucdn diff --cached --quiet; then
+            echo "Candidate ${RELEASE_ID} was already absent."
+          else
+            git -C _vacucdn commit -m "chore(cdn): abort ${RELEASE_ID}"
+            git -C _vacucdn push origin HEAD:main
+          fi
+
+      - name: Write deployment summary
+        if: steps.latest_before_promotion.outputs.is_latest == 'true'
+        env:
+          ASSET_PREFIX: ${{ steps.release.outputs.asset_prefix }}
+          DEPLOYMENT_URL: ${{ steps.candidate.outputs.deployment_url }}
+          RELEASE_ID: ${{ steps.release.outputs.release_id }}
+        shell: bash
+        run: |
+          {
+            echo '## Production deployment'
+            echo
+            echo "- Release: \`${RELEASE_ID}\`"
+            echo "- Commit: \`${GITHUB_SHA}\`"
+            echo "- CDN: ${ASSET_PREFIX}"
+            echo "- Vercel: ${DEPLOYMENT_URL}"
+          } >> "$GITHUB_STEP_SUMMARY"

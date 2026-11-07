@@ -1,3 +1,5 @@
+import process from 'node:process'
+
 import { unified } from '@astrojs/markdown-remark'
 import react from '@astrojs/react'
 import sitemap from '@astrojs/sitemap'
@@ -11,13 +13,18 @@ import { remarkImageWidth } from './src/markdown/remark-image-width'
 import { transformerCodeMeta } from './src/utils/code'
 import { siteOrigin } from './src/utils/site'
 
+const assetCdnPrefix =
+	process.env.ASSET_CDN_PREFIX?.trim().replace(/\/+$/, '') ||
+	blogConfig.cdn?.assetsPrefix ||
+	undefined
+
 export default defineConfig({
 	site: siteOrigin,
 	output: 'static',
 	trailingSlash: 'always',
 	build: {
-		// Astro-native CDN prefix for generated JS/CSS/_astro assets; blank disables
-		assetsPrefix: blogConfig.cdn?.assetsPrefix || undefined,
+		// The release workflow overrides the configured CDN origin per build.
+		assetsPrefix: assetCdnPrefix,
 	},
 	vite: {
 		build: {
