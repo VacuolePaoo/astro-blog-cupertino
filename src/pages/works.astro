@@ -10,10 +10,7 @@ const works = await getWorks()
 
 <Layout title="作品" description="开发的项目与作品。">
 	<section class="page-shell works-page page-bottom">
-		<PageHeading
-			title="作品"
-			subtitle="做过的项目与作品，点击卡片查看详情。"
-		/>
+		<PageHeading title="作品" />
 		{
 			works.length > 0 ? (
 				<div class="works-grid card-grid card-grid--2">

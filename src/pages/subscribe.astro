@@ -22,10 +22,7 @@ const feeds = [
 
 <Layout title="订阅" description="通过 Atom 或 RSS 获取最近更新。">
 	<section class="page-shell subscribe-page page-bottom">
-		<PageHeading
-			title="订阅"
-			subtitle="选择你习惯的格式，将地址添加到 RSS 阅读器即可。"
-		/>
+		<PageHeading title="订阅" />
 		<div class="feed-grid card-grid card-grid--3">
 			{
 				feeds.map(({ title, description, url, Icon }) => (
