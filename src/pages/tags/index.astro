@@ -9,7 +9,7 @@ const tags = getTaxonomySummaries(await getArticles(), 'tags')
 ---
 
 <Layout title="标签" description="浏览全部文章标签。">
-	<div class="page-shell">
+	<div class="page-shell page-bottom">
 		<PageHeading title="标签" containedOnMobile />
 		<TaxonomyIndex kind="tags" items={tags} />
 	</div>

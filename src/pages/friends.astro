@@ -16,7 +16,7 @@ for (const group of friendGroups)
 ---
 
 <Layout title="友链" description="一些持续创作、互相启发的朋友与站点。">
-	<section class="page-shell friends-page">
+	<section class="page-shell friends-page page-bottom">
 		<PageHeading
 			title="友链"
 			subtitle="一些持续创作、互相启发的朋友与站点。"
@@ -25,7 +25,7 @@ for (const group of friendGroups)
 			friendGroups.map(group => (
 				<section class="friend-group">
 					<h2>{group.title}</h2>
-					<div class="friend-grid">
+					<div class="friend-grid card-grid card-grid--3">
 						{group.items.map(friend => (
 							<article class="friend-card surface-card interactive-card">
 								<a
@@ -90,9 +90,6 @@ for (const group of friendGroups)
 </script>
 
 <style>
-	.friends-page {
-		padding-bottom: 128px;
-	}
 	.friend-group {
 		margin-top: 64px;
 	}
@@ -101,22 +98,10 @@ for (const group of friendGroups)
 		font-weight: 700;
 		line-height: 1.4211;
 	}
-	.friend-grid {
-		display: grid;
-		grid-template-columns: repeat(3, minmax(0, 1fr));
-		gap: 20px 16px;
-		max-width: 1000px;
-		margin-inline: auto;
-	}
 	.friend-card {
 		position: relative;
 		min-width: 0;
 		overflow: hidden;
-		border-radius: var(--radius-large);
-		background: var(--color-background-secondary);
-	}
-	.friend-card:hover {
-		background: var(--color-background-secondary-hover);
 	}
 	.friend-main {
 		display: grid;
@@ -188,20 +173,5 @@ for (const group of friendGroups)
 	.friend-feed:hover {
 		background: var(--color-background-secondary-hover);
 		color: var(--color-text-accent);
-	}
-	@media (max-width: 1000px) {
-		.friend-grid {
-			max-width: 800px;
-		}
-	}
-	@media (max-width: 800px) {
-		.friend-grid {
-			grid-template-columns: repeat(2, minmax(0, 1fr));
-		}
-	}
-	@media (max-width: 600px) {
-		.friend-grid {
-			grid-template-columns: 1fr;
-		}
 	}
 </style>

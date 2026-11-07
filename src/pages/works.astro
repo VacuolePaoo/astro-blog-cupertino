@@ -9,14 +9,14 @@ const works = await getWorks()
 ---
 
 <Layout title="作品" description="开发的项目与作品。">
-	<section class="page-shell works-page">
+	<section class="page-shell works-page page-bottom">
 		<PageHeading
 			title="作品"
 			subtitle="做过的项目与作品，点击卡片查看详情。"
 		/>
 		{
 			works.length > 0 ? (
-				<div class="works-grid">
+				<div class="works-grid card-grid card-grid--2">
 					{works.map(work => (
 						<WorkCard work={work} />
 					))}
@@ -33,27 +33,14 @@ const works = await getWorks()
 	:global(html.works-open) {
 		overflow: hidden;
 	}
-	.works-page {
-		padding-bottom: 128px;
-	}
 	.works-grid {
-		display: grid;
-		grid-template-columns: repeat(2, minmax(0, 1fr));
 		/* Every card shares one row height, so all cards end up identical. */
 		grid-auto-rows: 1fr;
-		gap: 20px 16px;
 		margin-top: 64px;
 	}
 	.works-empty {
 		margin-top: 64px;
 		color: var(--color-text-secondary);
-	}
-	@media (max-width: 600px) {
-		.works-grid {
-			grid-template-columns: 1fr;
-			max-width: 366px;
-			margin-inline: auto;
-		}
 	}
 </style>
 

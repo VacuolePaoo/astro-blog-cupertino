@@ -22,7 +22,7 @@ const licenseUrl = copyright?.licenseUrl ?? blogConfig.license.url
 <footer class="article-footer">
 	{
 		article.data.about !== false && (
-			<section class="copyright-card">
+			<section class="copyright-card surface-card">
 				<h2>关于本文</h2>
 				<div class="copyright-details">
 					<span>由 {author} 撰写，采用 </span>
@@ -84,8 +84,8 @@ const licenseUrl = copyright?.licenseUrl ?? blogConfig.license.url
 	.copyright-card {
 		max-width: var(--article-max);
 		margin: 0 auto 64px;
+		/* Tighter radius than surface-card's default: this card is small. */
 		border-radius: var(--radius-medium);
-		background: var(--color-background-secondary);
 		padding: 16px;
 	}
 	.copyright-card h2 {

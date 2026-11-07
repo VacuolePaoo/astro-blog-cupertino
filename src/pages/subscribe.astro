@@ -21,12 +21,12 @@ const feeds = [
 ---
 
 <Layout title="订阅" description="通过 Atom 或 RSS 获取最近更新。">
-	<section class="page-shell subscribe-page">
+	<section class="page-shell subscribe-page page-bottom">
 		<PageHeading
 			title="订阅"
 			subtitle="选择你习惯的格式，将地址添加到 RSS 阅读器即可。"
 		/>
-		<div class="feed-grid">
+		<div class="feed-grid card-grid card-grid--3">
 			{
 				feeds.map(({ title, description, url, Icon }) => (
 					<article class="feed-card surface-card">
@@ -106,13 +106,7 @@ const feeds = [
 </script>
 
 <style>
-	.subscribe-page {
-		padding-bottom: 128px;
-	}
 	.feed-grid {
-		display: grid;
-		grid-template-columns: repeat(3, minmax(0, 1fr));
-		gap: 20px 16px;
 		margin-top: 64px;
 	}
 	.feed-card {
@@ -122,8 +116,6 @@ const feeds = [
 		align-items: flex-start;
 		gap: 8px;
 		overflow: hidden;
-		border-radius: var(--radius-large);
-		background: var(--color-background-secondary);
 		padding: 18px;
 	}
 	.feed-card h2 {
@@ -196,21 +188,5 @@ const feeds = [
 	.feed-card button:disabled {
 		cursor: default;
 		opacity: 0.6;
-	}
-	@media (max-width: 1000px) {
-		.feed-grid {
-			max-width: 800px;
-			margin-inline: auto;
-		}
-	}
-	@media (max-width: 800px) {
-		.feed-grid {
-			grid-template-columns: repeat(2, minmax(0, 1fr));
-		}
-	}
-	@media (max-width: 600px) {
-		.feed-grid {
-			grid-template-columns: 1fr;
-		}
 	}
 </style>

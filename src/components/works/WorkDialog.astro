@@ -43,9 +43,9 @@ const rendered = await Promise.all(works.map(work => render(work)))
 							<X size={18} strokeWidth={2.4} />
 						</button>
 					</div>
-					<div class="works-dialog">
-						{work.data.cover && (
-							<div class="works-banner" data-works-banner>
+						<div class="works-dialog surface-card">
+							{work.data.cover && (
+								<div class="works-banner media-fill" data-works-banner>
 								<ArticleCover
 									src={work.data.cover}
 									alt={`${work.data.title} 封面`}
@@ -179,8 +179,8 @@ const rendered = await Promise.all(works.map(work => render(work)))
 		min-height: calc(100dvh - 48px);
 		margin: 24px auto;
 		overflow: hidden;
+		/* Works cards keep the larger xlarge radius by design. */
 		border-radius: var(--radius-xlarge);
-		background: var(--color-background-secondary);
 	}
 	/* Top banner: the cover at its natural aspect ratio, spanning the full
 	   dialog width. */
@@ -190,10 +190,7 @@ const rendered = await Promise.all(works.map(work => render(work)))
 	}
 	.works-banner :global(picture),
 	.works-banner :global(img) {
-		display: block;
-		width: 100%;
 		height: auto;
-		object-fit: cover;
 	}
 	.works-panel-header {
 		padding: 36px 40px 0;

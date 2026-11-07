@@ -1,26 +1,20 @@
 ---
 import type { GetStaticPaths } from 'astro'
-import type { ArticleEntry } from '../../../types/article'
 import ArchiveList from '../../../components/ArchiveList.astro'
 import PageHeading from '../../../components/PageHeading.astro'
 import Pagination from '../../../components/Pagination.astro'
 import { ARCHIVE_PAGE_SIZE } from '../../../consts'
 import Layout from '../../../layouts/Layout.astro'
 import { getArticles } from '../../../utils/article'
-import { paginate } from '../../../utils/pagination'
 
-export const getStaticPaths = (async () => {
+export const getStaticPaths = (async ({ paginate }) => {
 	const articles = await getArticles()
-	const totalPages = Math.ceil(articles.length / ARCHIVE_PAGE_SIZE)
-	return Array.from({ length: Math.max(0, totalPages - 1) }, (_, index) => {
-		const page = paginate(articles, index + 2, ARCHIVE_PAGE_SIZE)
-		return { params: { page: String(page.currentPage) }, props: { page } }
-	})
+	return paginate(articles, { pageSize: ARCHIVE_PAGE_SIZE }).filter(
+		item => Number(item.params.page) > 1,
+	)
 }) satisfies GetStaticPaths
 
-const { page } = Astro.props as {
-	page: { items: ArticleEntry[]; currentPage: number; totalPages: number }
-}
+const { page } = Astro.props
 ---
 
 <Layout
@@ -29,10 +23,10 @@ const { page } = Astro.props as {
 >
 	<div class="page-shell">
 		<PageHeading title="归档" />
-		<ArchiveList articles={page.items} />
+		<ArchiveList articles={page.data} />
 		<Pagination
 			current={page.currentPage}
-			total={page.totalPages}
+			total={page.lastPage}
 			basePath="/archives/"
 		/>
 	</div>
