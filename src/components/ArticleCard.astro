@@ -91,7 +91,7 @@ const excerpt = blogConfig.theme.content.cards.showExcerpt
 		display: inline-block;
 		margin-bottom: 6px;
 		color: var(--color-text-accent);
-		font-size: 11px;
+		font-size: var(--font-size-label);
 		font-weight: 600;
 		line-height: normal;
 	}
@@ -114,14 +114,14 @@ const excerpt = blogConfig.theme.content.cards.showExcerpt
 	.article-card-date {
 		margin-top: 12px;
 		color: var(--color-text-secondary);
-		font-size: 14px;
+		font-size: var(--font-size-small);
 		font-weight: 600;
 		line-height: 1.28577;
 	}
 	.article-card-excerpt {
 		margin-top: 12px;
 		color: var(--color-text-tertiary);
-		font-size: 15px;
+		font-size: var(--text-card-description);
 		font-weight: 400;
 	}
 	.article-card-excerpt p {
@@ -157,7 +157,7 @@ const excerpt = blogConfig.theme.content.cards.showExcerpt
 	}
 	@media (max-width: 600px) {
 		.article-card--grid .article-card-copy {
-			font-size: 12px;
+			font-size: var(--font-size-label);
 		}
 		.article-card--archive .article-card-media {
 			min-width: 180px;

@@ -201,7 +201,7 @@ const rendered = await Promise.all(works.map(work => render(work)))
 	}
 	.works-panel-category {
 		color: var(--color-text-accent);
-		font-size: 12px;
+		font-size: var(--font-size-label);
 		font-weight: 600;
 		line-height: 20px;
 		text-transform: uppercase;
@@ -212,7 +212,7 @@ const rendered = await Promise.all(works.map(work => render(work)))
 		background: var(--color-background-accent-lite);
 		padding: 2px 10px;
 		color: var(--color-text-accent);
-		font-size: 12px;
+		font-size: var(--font-size-label);
 		font-weight: 600;
 		line-height: normal;
 	}
@@ -237,7 +237,7 @@ const rendered = await Promise.all(works.map(work => render(work)))
 		background: var(--color-background-accent);
 		padding: 8px 16px;
 		color: var(--color-background-accent-contrast);
-		font-size: 14px;
+		font-size: var(--font-size-small);
 		font-weight: 600;
 		text-decoration: none;
 		transition: background-color 200ms ease;

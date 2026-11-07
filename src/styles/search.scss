@@ -47,7 +47,7 @@ body[data-page-type='search'] #main-content {
 	outline: 0;
 	background: transparent;
 	color: var(--color-text-primary);
-	font-size: 21px;
+	font-size: var(--font-size-large);
 }
 .search-field input::placeholder {
 	color: var(--color-muted);
@@ -80,7 +80,7 @@ body[data-page-type='search'] #main-content {
 .search-count {
 	margin: 0;
 	color: var(--color-text-secondary);
-	font-size: 14px;
+	font-size: var(--font-size-small);
 }
 .search-results {
 	min-height: 0;
@@ -115,7 +115,7 @@ body[data-page-type='search'] #main-content {
 .search-empty {
 	margin: 0;
 	color: var(--color-text-primary);
-	font-size: 16px;
+	font-size: var(--font-size-base);
 	font-weight: 700;
 }
 .search-retry {
@@ -124,7 +124,7 @@ body[data-page-type='search'] #main-content {
 	background: transparent;
 	padding: 6px 10px;
 	color: var(--color-text-accent);
-	font-size: 14px;
+	font-size: var(--font-size-small);
 	font-weight: 600;
 	cursor: pointer;
 }
@@ -161,7 +161,7 @@ body[data-page-type='search'] #main-content {
 	margin-top: 10px;
 }
 .search-result-copy strong {
-	font-size: 21px;
+	font-size: var(--font-size-large);
 	font-weight: 700;
 }
 .search-result-title {
@@ -170,7 +170,7 @@ body[data-page-type='search'] #main-content {
 }
 .search-result-copy time {
 	color: var(--color-text-secondary);
-	font-size: 14px;
+	font-size: var(--font-size-small);
 	font-weight: 400;
 }
 .search-result-heading {
@@ -178,7 +178,7 @@ body[data-page-type='search'] #main-content {
 	align-items: center;
 	gap: 0.35rem;
 	color: var(--color-text-secondary);
-	font-size: 16px;
+	font-size: var(--font-size-base);
 	font-weight: 600;
 	text-decoration: none;
 }
@@ -189,7 +189,7 @@ body[data-page-type='search'] #main-content {
 	display: block;
 	margin-top: 4px;
 	color: var(--color-text-secondary);
-	font-size: 16px;
+	font-size: var(--font-size-base);
 	font-weight: 400;
 }
 .search-result mark {
@@ -206,7 +206,7 @@ body[data-page-type='search'] #main-content {
 .search-more-error {
 	margin: 0;
 	color: var(--color-text-secondary);
-	font-size: 14px;
+	font-size: var(--font-size-small);
 }
 .search-more button {
 	border: 1px solid var(--color-border-primary);
@@ -214,7 +214,7 @@ body[data-page-type='search'] #main-content {
 	background: var(--color-background-secondary);
 	padding: 10px 18px;
 	color: var(--color-text-primary);
-	font-size: 14px;
+	font-size: var(--font-size-small);
 	font-weight: 600;
 	cursor: pointer;
 }
@@ -225,7 +225,7 @@ body[data-page-type='search'] #main-content {
 	cursor: progress;
 	opacity: 0.65;
 }
-@media (max-width: 560px) {
+@media (max-width: 600px) {
 	.search-page {
 		padding-top: clamp(72px, 15dvh, 128px);
 		padding-bottom: 0;

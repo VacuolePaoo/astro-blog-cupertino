@@ -90,14 +90,14 @@ const licenseUrl = copyright?.licenseUrl ?? blogConfig.license.url
 	}
 	.copyright-card h2 {
 		margin: 0 0 16px;
-		font-size: 24px;
+		font-size: var(--text-card-title);
 		font-weight: 700;
 		line-height: normal;
 	}
 	.copyright-details {
 		margin: 0 0 16px;
 		color: var(--color-text-primary);
-		font-size: 16px;
+		font-size: var(--font-size-base);
 		font-weight: 400;
 		line-height: normal;
 	}
@@ -107,7 +107,7 @@ const licenseUrl = copyright?.licenseUrl ?? blogConfig.license.url
 	.extra-info {
 		margin-top: 12px;
 		color: var(--color-text-secondary);
-		font-size: 14px;
+		font-size: var(--font-size-small);
 		line-height: normal;
 	}
 	.article-tags {
@@ -117,7 +117,7 @@ const licenseUrl = copyright?.licenseUrl ?? blogConfig.license.url
 		gap: 4px 6px;
 		margin-top: 0;
 		color: var(--color-text-primary);
-		font-size: 14px;
+		font-size: var(--font-size-small);
 		line-height: 20px;
 		margin-bottom: 0;
 	}
@@ -164,12 +164,12 @@ const licenseUrl = copyright?.licenseUrl ?? blogConfig.license.url
 	}
 	.article-surround span {
 		color: var(--color-text-secondary);
-		font-size: 16px;
+		font-size: var(--font-size-base);
 		font-weight: 400;
 		margin-bottom: 4px;
 	}
 	.article-surround strong {
-		font-size: 18.72px;
+		font-size: var(--text-h4);
 		font-weight: 700;
 		line-height: normal;
 	}

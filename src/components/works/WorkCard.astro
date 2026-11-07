@@ -93,7 +93,7 @@ const domId = getWorkDomId(work)
 	.work-card-category {
 		display: inline-block;
 		color: var(--color-text-accent);
-		font-size: 12px;
+		font-size: var(--font-size-label);
 		font-weight: 600;
 		line-height: normal;
 		text-transform: uppercase;
@@ -104,7 +104,7 @@ const domId = getWorkDomId(work)
 		background: var(--color-background-accent-lite);
 		padding: 2px 10px;
 		color: var(--color-text-accent);
-		font-size: 12px;
+		font-size: var(--font-size-label);
 		font-weight: 600;
 		line-height: normal;
 	}
@@ -124,13 +124,13 @@ const domId = getWorkDomId(work)
 		-webkit-box-orient: vertical;
 		-webkit-line-clamp: 3;
 		color: var(--color-text-tertiary);
-		font-size: 15px;
+		font-size: var(--text-card-description);
 		font-weight: 400;
 	}
 	@media (max-width: 600px) {
 		.work-card-copy {
 			padding: 24px;
-			font-size: 12px;
+			font-size: var(--font-size-label);
 		}
 	}
 </style>
