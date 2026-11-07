@@ -14,6 +14,13 @@
 		--radius-xlarge: 24px;
 		--radius-full: 999px;
 	}
+	/* Derived aliases must live in this mixin, not on :root: custom
+	   properties resolve var() at the declaring element, so the squircle
+	   branch has to redeclare them there for var(--radius-card) etc. to
+	   pick up the squircle values. */
+	--radius-card: var(--radius-large);
+	--radius-media: var(--radius-medium);
+	--radius-dialog: var(--radius-medium);
 }
 
 @mixin global {
@@ -54,9 +61,6 @@
 	--color-accent-contrast: var(--color-background-accent-contrast);
 	--color-warning: var(--color-text-warning);
 	--color-success: var(--color-text-success);
-	--radius-card: var(--radius-large);
-	--radius-media: var(--radius-medium);
-	--radius-dialog: var(--radius-medium);
 }
 
 @mixin light-colors {
