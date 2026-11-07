@@ -4,14 +4,12 @@
 		--radius-small: 20px;
 		--radius-medium: 30px;
 		--radius-large: 40px;
-		--radius-xlarge: 48px;
 		--radius-full: 999px;
 	} @else {
 		--radius-tiny: 4px;
 		--radius-small: 8px;
 		--radius-medium: 12px;
 		--radius-large: 16px;
-		--radius-xlarge: 24px;
 		--radius-full: 999px;
 	}
 	/* Derived aliases must live in this mixin, not on :root: custom
@@ -19,8 +17,6 @@
 	   branch has to redeclare them there for var(--radius-card) etc. to
 	   pick up the squircle values. */
 	--radius-card: var(--radius-large);
-	--radius-media: var(--radius-medium);
-	--radius-dialog: var(--radius-medium);
 }
 
 @mixin global {
@@ -51,16 +47,9 @@
 	--font-sans: var(--font-sans-serif);
 	--color-background: var(--color-background-primary);
 	--color-foreground: var(--color-text-primary);
-	--color-surface: var(--color-background-secondary);
-	--color-surface-strong: var(--color-background-secondary-hover);
 	--color-muted: var(--color-text-secondary);
 	--color-border: var(--color-border-primary);
-	--color-card: var(--color-background-secondary);
 	--color-accent: var(--color-text-accent);
-	--color-accent-background: var(--color-background-accent);
-	--color-accent-contrast: var(--color-background-accent-contrast);
-	--color-warning: var(--color-text-warning);
-	--color-success: var(--color-text-success);
 }
 
 @mixin light-colors {
