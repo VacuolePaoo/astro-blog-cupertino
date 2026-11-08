@@ -1,0 +1,242 @@
+/* 故事版式（frontmatter type: story）：衬线排版、居中杂志式头部、
+   全幅静态封面。仅由 StoryArticleLayout 引入，覆盖规则统一使用
+   .prose.prose-story 提升优先级，压过 global.scss 中的默认 .prose。 */
+
+.story-article {
+	/* 英文使用 Source Serif 4（与思源宋体同源的拉丁设计），中文回退
+	   思源宋体/系统宋体。 */
+	--font-serif:
+		'Source Serif 4 Variable', 'Source Serif 4', 'Noto Serif SC',
+		'Source Han Serif SC', 'Noto Serif CJK SC', 'Songti SC', 'SimSun', serif;
+	/* 收紧正文栏宽，得到杂志式的舒适阅读栏。 */
+	--article-max: 720px;
+
+	position: relative;
+	container-type: inline-size;
+}
+
+.story-header {
+	/* 标题块压进封面渐隐尾部（模糊 + 淡出的区域）。 */
+	margin-top: clamp(-150px, -13vh, -90px);
+	text-align: center;
+}
+
+.story-header--bare {
+	/* 无封面的文章保持头部呼吸感。 */
+	margin-top: 0;
+	padding-top: clamp(88px, 13vh, 136px);
+}
+
+.story-header-inner {
+	padding-inline: var(--page-gutter);
+}
+
+.story-collection {
+	display: inline-block;
+	color: var(--color-text-accent);
+	font-size: var(--font-size-small);
+	font-weight: 600;
+	letter-spacing: 0.18em;
+	text-decoration: none;
+}
+
+.story-collection.uppercase {
+	text-transform: uppercase;
+}
+
+.story-collection:hover,
+.story-collection:focus-visible {
+	text-decoration: underline;
+	text-underline-offset: 0.2em;
+}
+
+.story-title {
+	max-width: 24em;
+	margin: 20px auto 0;
+	font-family: var(--font-serif);
+	font-size: clamp(32px, 5vw, 44px);
+	font-weight: 600;
+	line-height: 1.35;
+	letter-spacing: 0.01em;
+	text-wrap: balance;
+}
+
+.story-meta {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 12px;
+	margin-top: 20px;
+	color: var(--color-text-secondary);
+	font-family: var(--font-serif);
+	font-size: var(--font-size-small);
+	letter-spacing: 0.04em;
+}
+
+.draft-badge {
+	border: 1px solid var(--color-text-warning);
+	border-radius: 999px;
+	padding: 0.12rem 0.42rem;
+	background: var(--color-background-warning);
+	color: var(--color-text-warning);
+	font-family: var(--font-sans);
+	letter-spacing: normal;
+}
+
+/* 封面：全幅置于页面最上、置于磨砂导航之下，底部「模糊 + 渐隐」双重
+   羽化融入页面背景；静态呈现，不参与滚动动效。 */
+.story-cover {
+	position: relative;
+	width: 100%;
+	height: clamp(380px, 56vh, 600px);
+	mask-image: linear-gradient(
+		to bottom,
+		#000 0%,
+		#000 42%,
+		rgb(0 0 0 / 0.85) 56%,
+		rgb(0 0 0 / 0.55) 70%,
+		rgb(0 0 0 / 0.28) 84%,
+		rgb(0 0 0 / 0.08) 94%,
+		transparent 100%
+	);
+}
+
+/* 渐进式模糊覆层：越靠底边越糊，与渐隐叠合成显影般的羽化边缘。 */
+.story-cover::after {
+	content: '';
+	position: absolute;
+	inset: auto 0 0;
+	height: 48%;
+	backdrop-filter: blur(20px);
+	-webkit-backdrop-filter: blur(20px);
+	mask-image: linear-gradient(
+		to bottom,
+		transparent 0%,
+		rgb(0 0 0 / 0.6) 55%,
+		#000 100%
+	);
+	-webkit-mask-image: linear-gradient(
+		to bottom,
+		transparent 0%,
+		rgb(0 0 0 / 0.6) 55%,
+		#000 100%
+	);
+}
+
+.story-content-shell {
+	margin-top: 72px;
+}
+
+.prose.prose-story {
+	font-family: var(--font-serif);
+	line-height: 1.9;
+}
+
+.prose.prose-story p {
+	margin: 0 0 1.4em;
+}
+
+.prose.prose-story :is(h1, h2, h3, h4, h5, h6) {
+	margin: 2.4em 0 1.2em;
+	font-family: var(--font-serif);
+	font-weight: 600;
+	line-height: 1.4;
+}
+
+.prose.prose-story h1,
+.prose.prose-story h2 {
+	text-align: center;
+	letter-spacing: 0.02em;
+}
+
+.prose.prose-story a:not(.heading-anchor) {
+	color: var(--color-text-accent);
+	text-decoration: underline;
+	text-decoration-color: color-mix(
+		in srgb,
+		var(--color-text-accent) 32%,
+		transparent
+	);
+	text-decoration-thickness: 1px;
+	text-underline-offset: 0.24em;
+	transition: text-decoration-color 200ms ease;
+}
+
+.prose.prose-story a:not(.heading-anchor):hover,
+.prose.prose-story a:not(.heading-anchor):focus-visible {
+	text-decoration-color: currentColor;
+}
+
+.prose.prose-story blockquote {
+	max-width: calc(var(--article-max) - 96px);
+	border-left: 0;
+	color: var(--color-text-secondary);
+}
+
+/* 分隔线只留一段静默的留白，作为叙事的场景切换。 */
+.prose.prose-story hr {
+	margin: 64px auto;
+	border: 0;
+}
+
+.prose.prose-story > ul,
+.prose.prose-story > ol {
+	margin: 0 0 1.4em;
+}
+
+.prose.prose-story li {
+	margin: 0.3em 0;
+}
+
+.prose.prose-story img {
+	border-radius: 0;
+}
+
+.prose.prose-story figure figcaption {
+	color: var(--color-text-secondary);
+	font-size: var(--font-size-small);
+}
+
+.prose.prose-story .astro-code {
+	border-radius: 0;
+}
+
+.prose.prose-story table {
+	border-radius: 0;
+}
+
+.prose.prose-story table tr {
+	background: transparent;
+}
+
+.prose.prose-story th,
+.prose.prose-story td {
+	padding: 10px 12px;
+}
+
+.prose.prose-story td {
+	border-bottom: 1px solid var(--color-border-secondary);
+}
+
+.prose.prose-story tbody tr:last-child td {
+	border-bottom: 0;
+}
+
+@media (max-width: 832px) {
+	.story-header {
+		margin-top: clamp(-110px, -12vh, -70px);
+	}
+
+	.story-header--bare {
+		margin-top: 0;
+		padding-top: 72px;
+	}
+
+	.story-cover {
+		height: clamp(300px, 50vh, 440px);
+	}
+
+	.story-content-shell {
+		margin-top: 56px;
+	}
+}

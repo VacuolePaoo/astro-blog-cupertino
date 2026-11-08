@@ -27,6 +27,7 @@ const articles = defineCollection({
 			excerpt: z.string().optional(),
 			date: articleDate,
 			collection: z.string().min(1).optional(),
+			type: z.enum(['default', 'story']).default('default'),
 			slug: z
 				.string()
 				.regex(

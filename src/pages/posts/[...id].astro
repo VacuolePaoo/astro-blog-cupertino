@@ -2,6 +2,7 @@
 import type { GetStaticPaths } from 'astro'
 import { render } from 'astro:content'
 import ArticleLayout from '../../layouts/ArticleLayout.astro'
+import StoryArticleLayout from '../../layouts/StoryArticleLayout.astro'
 import {
 	getArticles,
 	getArticleSlug,
@@ -21,11 +22,24 @@ const { Content, headings } = await render(article)
 const { newer, older } = getArticleSurround(articles, article)
 ---
 
-<ArticleLayout
-	article={article}
-	headings={headings}
-	newer={newer}
-	older={older}
->
-	<Content />
-</ArticleLayout>
+{
+	article.data.type === 'story' ? (
+		<StoryArticleLayout
+			article={article}
+			headings={headings}
+			newer={newer}
+			older={older}
+		>
+			<Content />
+		</StoryArticleLayout>
+	) : (
+		<ArticleLayout
+			article={article}
+			headings={headings}
+			newer={newer}
+			older={older}
+		>
+			<Content />
+		</ArticleLayout>
+	)
+}
