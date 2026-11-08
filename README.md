@@ -20,10 +20,10 @@
 
 ## 快速开始
 
-确保已安装 [Node.js](https://nodejs.org/) ≥ 22 与 [pnpm](https://pnpm.io/)
+点击页面右上角 "Use this template" 使用模板创建仓库，复制仓库git地址
 
 ```sh
-$ git clone https://github.com/VacuolePaoo/dino-blog-v1.git blog
+$ git clone https://github.com/your-repository blog
 $ cd blog
 $ pnpm install
 # 启动开发服务器
