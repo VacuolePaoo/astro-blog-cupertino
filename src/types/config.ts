@@ -84,4 +84,17 @@ export interface BlogConfig {
 	comments: TwikooConfig
 	theme: ThemeConfig
 	headScripts: HeadScript[]
+	/** 访问统计；缺省不注入任何统计脚本 */
+	analytics?: {
+		/** Vercel Analytics：需部署于 Vercel 才生效 */
+		vercel?: { enabled?: boolean }
+		/** Umami：自托管统计脚本 */
+		umami?: {
+			enabled?: boolean
+			/** 统计脚本地址，如 https://umami.example.com/script.js */
+			src?: string
+			/** Umami 后台分配的网站 ID */
+			websiteId?: string
+		}
+	}
 }
