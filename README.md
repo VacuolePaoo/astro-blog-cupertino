@@ -1,40 +1,51 @@
-# Astro Blog Cupertino
+<h1 align="center">Astro Blog Cupertino</h1>
 
-基于 Astro 7、Content Collections 与组件群岛构建的 Cupertino 风格静态博客模板。普通页面默认零客户端框架运行时；React 仅用于独立搜索页。
+<p align="center">A reimplementation of <a href="https://github.com/MrWillCom/hexo-theme-cupertino"><strong>Hexo Theme Cupertino</strong></a> rewrite with Astro.</p>
 
-内置文章、归档、分类、标签、全文搜索、友链、作品集、订阅与评论（Twikoo）等完整页面，克隆后替换占位配置即可开始写作。
+<p align="center"><a href="https://blog.vacu.top/"><strong>Preview</strong></a> / <a href="https://docs.vacu.top/">Docs</a></p>
+
+<p align="center">
+  <a href="https://github.com/VacuolePaoo/dino-blog-v1/stargazers">
+    <img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/VacuolePaoo/dino-blog-v1?style=for-the-badge&logo=github&logoColor=181717&labelColor=EEEEEE&color=F7D76E">
+  </a>
+  <img alt="Astro" src="https://img.shields.io/badge/Astro-7-BC52EE?style=for-the-badge&logo=astro&logoColor=FFFFFF&labelColor=EEEEEE">
+  <img alt="Node" src="https://img.shields.io/badge/Node-%E2%89%A522-339933?style=for-the-badge&logo=nodedotjs&logoColor=FFFFFF&labelColor=EEEEEE">
+</p>
+
+<p align="center">✨ <em>Give a star if you like this!</em> ✨</p>
+
+使用Astro框架重构的Cupertino风格博客，看起来像 [Apple Newsroom](https://www.apple.com/newsroom/)
+
+拥有飞快的构建速度、轻量低JS架构、灵活的扩展性、满分SEO、静态资源优化等特点
 
 ## 快速开始
 
-```bash
-pnpm install
-pnpm astro dev --background
-```
+确保已安装 [Node.js](https://nodejs.org/) ≥ 22 与 [pnpm](https://pnpm.io/)
 
-开发服务器使用 Astro 后台模式：
-
-```bash
-pnpm astro dev status
-pnpm astro dev logs
-pnpm astro dev stop
+```sh
+$ git clone https://github.com/VacuolePaoo/dino-blog-v1.git blog
+$ cd blog
+$ pnpm install
+# 启动开发服务器
+$ pnpm dev
 ```
 
 质量检查：
 
-```bash
-pnpm run format:check
-pnpm run lint
-pnpm run check
-pnpm run build
+```sh
+$ pnpm run format:check
+$ pnpm run lint
+$ pnpm run check
+$ pnpm run build
 ```
 
-## 模板自定义清单
+## 配置
 
-开始写自己的博客前，替换以下占位内容：
+替换以下占位内容：
 
 - `blog.config.ts`：站点名、品牌名、描述、标语、生产域名、作者名、版权与许可
 - `blog.config.ts` 的 `comments`：部署自己的 Twikoo 实例后填入 `envId` 并开启
-- `src/consts.ts`：顶部导航、页脚分组中的站外链接（如「主页」）
+- `src/consts.ts`：顶部导航、页脚分组中的站外链接
 - `src/friends-links.ts`：替换示例友链为自己的友链数据
 - `content/about.md`：关于页正文
 - `content/works/`：替换示例作品条目
@@ -45,10 +56,10 @@ pnpm run build
 - `blog.config.ts`：站点元信息、作者、版权、强调色、订阅源、远程图片域名与 Cupertino 主题选项。
 - `src/consts.ts`：顶部导航、页脚分组和首页文章数量。
 - `src/friends-links.ts`：友链分组与友链数据。
-- `src/styles/`：外部 SCSS 设计 token、复用样式与搜索页样式；Astro 组件在局部 `<style>` 中维护自身样式。
+- `src/styles/`：外部 SCSS 设计 token、复用样式与搜索页样式。
 - `content/posts/*.md`：文章。
 - `content/works/*.md`：作品集条目。
-- `content/*.md`：独立页面（如关于页），底部带评论区，不含版权与上下篇导航。
+- `content/*.md`：独立页面
 - `content/assets/`：由 Astro 优化的本地文章资源。
 
 文章必填 Frontmatter：
@@ -62,29 +73,16 @@ collection: 前端
 
 可选字段：`tags`、`cover`、`coverAlt`、`draft`、`slug`、`excerpt`、`no_comments`、`about`、`extra_info`、`copyright`。
 
-封面可省略，也可将 `cover:` 留空或填写 `cover: ""`。没有封面时，文章页直接显示分类、日期和标题，列表卡片显示文字内容，不保留封面占位。
-
-需要封面时，使用 `cover` 指定图片，并通过 `coverAlt` 填写图片的替代文本：
-
-```yaml
-cover: ../assets/example.jpg
-coverAlt: 清晨阳光照在山间的松林上
-```
-
-`cover` 支持本地文章资源、`public/` 下的绝对路径和已加入 `imageDomains` 的远程图片。`coverAlt` 用于文章页、列表与搜索结果中的封面图片；省略或留空时，使用根据文章标题生成的默认描述。它是图片的 `alt` 文本，不会作为可见图注显示。
-
-正文图片可通过 URL fragment 调整宽度：
-
-```md
-![说明](../assets/image.png#width=75%)
-![说明](../assets/image.png#width=125%)
-![说明](../assets/image.png#width=wide)
-```
-
-百分比相对 800px 正文宽度；`wide` 表示全视口宽度。
-
-公开文章会在构建期自动生成 `/archives/`、`/categories/` 和 `/tags/` 及其详情页；`/search/` 使用 Orama 中文分词搜索静态索引，`/archives/` 是文章归档入口。
-
 ## 部署
 
 生产构建命令为 `pnpm run build`，输出目录为 `dist/`。产物为纯静态文件，可部署到 Vercel 或 Cloudflare Pages。正式部署前必须替换 `blog.config.ts` 中的占位域名、站点名、作者和站外链接。
+
+## 贡献
+
+欢迎一切友好的贡献！可以从现有 issue 或小修复开始。
+
+不熟悉代码也没关系，随时可以报告 bug 或提出建议。
+
+## 致谢
+
+本模板的设计与功能参考了 [MrWillCom](https://github.com/MrWillCom) 的 [Hexo Theme Cupertino](https://github.com/MrWillCom/hexo-theme-cupertino)，在此致以诚挚的感谢。
