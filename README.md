@@ -28,6 +28,8 @@ $ cd blog
 $ pnpm install
 # 启动开发服务器
 $ pnpm dev
+# 交互式创建新文章（依次输入标题、分类、版式，最后选择是否生成随机永久链接）
+$ pnpm new
 ```
 
 质量检查：
@@ -70,6 +72,8 @@ date: 2026-10-18
 ```
 
 可选字段：`description`（缺省时自动取正文前 100 字作为摘要）、`collection`（缺省时不显示分类）、`tags`、`cover`、`coverAlt`、`draft`、`slug`、`excerpt`、`no_comments`、`about`、`extra_info`、`copyright`。
+
+`type` 字段选择文章版式预设，缺省为 `default`（默认版式）。设为 `story` 时使用故事版式：正文与标题采用衬线字体排版，封面全幅置于文首、底部渐隐融入背景（静态呈现，不参与滚动动效），分类、标题、日期居中接在封面之后，适合记录生活故事与经历。
 
 ## 部署
 

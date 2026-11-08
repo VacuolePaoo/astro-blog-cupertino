@@ -1,0 +1,102 @@
+---
+import type { MarkdownHeading } from 'astro'
+import type { ArticleEntry } from '../types/article'
+import blogConfig from '../../blog.config'
+import ArticleCover from '../components/ArticleCover.astro'
+import ArticleFooter from '../components/ArticleFooter.astro'
+import ArticleComments from '../components/comments/ArticleComments.astro'
+import DateDisplay from '../components/DateDisplay.astro'
+import {
+	getArticleDescription,
+	getArticleSlug,
+	getArticleUrl,
+	getCoverAlt,
+} from '../utils/article'
+import { getRemoteImageOrigin } from '../utils/image'
+import { getTaxonomyUrl } from '../utils/taxonomy'
+import Layout from './Layout.astro'
+import '@fontsource-variable/source-serif-4'
+import '@fontsource-variable/source-serif-4/wght-italic.css'
+import '@fontsource/noto-serif-sc/400.css'
+import '@fontsource/noto-serif-sc/600.css'
+import '@fontsource/noto-serif-sc/700.css'
+import '../styles/story-article.scss'
+
+interface Props {
+	article: ArticleEntry
+	headings: MarkdownHeading[]
+	newer?: ArticleEntry | undefined
+	older?: ArticleEntry | undefined
+	preview?: boolean
+}
+
+const { article, newer, older, preview = false } = Astro.props
+const hasCover = Boolean(article.data.cover)
+const ogImage = `/og/${preview ? 'previews' : 'posts'}/${getArticleSlug(article)}.png`
+const coverOrigin =
+	typeof article.data.cover === 'string'
+		? getRemoteImageOrigin(article.data.cover)
+		: undefined
+---
+
+<Layout
+	title={article.data.title}
+	description={getArticleDescription(article)}
+	image={ogImage}
+	noindex={preview}
+	type="article"
+	pubDate={article.data.date}
+	preconnectOrigins={coverOrigin ? [coverOrigin] : undefined}
+>
+	<article class="story-article">
+		{
+			article.data.cover && (
+				<div class="story-cover media-fill">
+					<ArticleCover
+						src={article.data.cover}
+						alt={getCoverAlt(article)}
+						eager
+					/>
+				</div>
+			)
+		}
+		<header class:list={['story-header', { 'story-header--bare': !hasCover }]}>
+			<div class="story-header-inner article-shell">
+				{
+					article.data.collection && (
+						<a
+							class:list={{
+								'story-collection': true,
+								uppercase: blogConfig.theme.content.categories.uppercase,
+							}}
+							href={getTaxonomyUrl('categories', article.data.collection)}
+						>
+							{article.data.collection}
+						</a>
+					)
+				}
+				<h1 class="story-title">{article.data.title}</h1>
+				<div class="story-meta">
+					<DateDisplay date={article.data.date} mode="full" />
+					{preview && <span class="draft-badge">非正式版</span>}
+				</div>
+			</div>
+		</header>
+		<div class="story-content-shell article-shell">
+			<div class="prose prose-story">
+				<slot />
+			</div>
+			<ArticleFooter
+				article={article}
+				newer={newer}
+				older={older}
+				preview={preview}
+			/>
+			{
+				!preview && !article.data.no_comments && (
+					<ArticleComments path={getArticleUrl(article)} />
+				)
+			}
+		</div>
+	</article>
+</Layout>
