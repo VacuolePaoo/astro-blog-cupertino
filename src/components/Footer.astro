@@ -1,7 +1,7 @@
 ---
 import blogConfig from '../../blog.config'
 import { footerNav } from '../consts'
-import { getFlaggedExternalLinkProps } from '../utils/link'
+import { getExternalLinkProps, getFlaggedExternalLinkProps } from '../utils/link'
 import { getVisibleFooterNav } from '../utils/nav'
 
 const visibleFooterNav = getVisibleFooterNav(
@@ -37,12 +37,30 @@ const visibleFooterNav = getVisibleFooterNav(
 			<p>
 				© {new Date().getFullYear()}{' '}
 				{
-					blogConfig.copyright.url ? (
-						<a href={blogConfig.copyright.url}>{blogConfig.copyright.name}</a>
+					blogConfig.author.website ? (
+						<a
+							href={blogConfig.author.website}
+							{...getExternalLinkProps(blogConfig.author.website)}
+						>
+							{blogConfig.author.name}
+						</a>
 					) : (
-						blogConfig.copyright.name
+						blogConfig.author.name
 					)
 				}
+			</p>
+			<p class="footer-powered">
+				Powered by{' '}
+				<a href="https://astro.build/" {...getFlaggedExternalLinkProps(true)}>
+					Astro
+				</a>{' '}
+				| Designed by{' '}
+				<a
+					href="https://github.com/VacuolePaoo/astro-blog-cupertino"
+					{...getFlaggedExternalLinkProps(true)}
+				>
+					Cupertino
+				</a>
 			</p>
 			{
 				blogConfig.theme.footer.extraDescription && (
@@ -118,6 +136,9 @@ const visibleFooterNav = getVisibleFooterNav(
 	}
 	.footer-bottom p {
 		margin: 0;
+	}
+	.footer-powered {
+		margin-top: 8px;
 	}
 	.footer-extra-description {
 		display: block;

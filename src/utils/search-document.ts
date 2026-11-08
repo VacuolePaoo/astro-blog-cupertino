@@ -5,7 +5,11 @@ import { toString } from 'mdast-util-to-string'
 import remarkParse from 'remark-parse'
 import { unified } from 'unified'
 import { visit } from 'unist-util-visit'
-import { getArticleUrl, getCoverSource } from './article'
+import {
+	getArticleDescription,
+	getArticleUrl,
+	getCoverSource,
+} from './article'
 
 /** Build searchable title, heading, and paragraph entries with exact rendered heading anchors. */
 export function toSearchDocuments(
@@ -17,7 +21,7 @@ export function toSearchDocuments(
 	const shared = {
 		articleId: article.id,
 		articleTitle: article.data.title,
-		pubDate: article.data.pubDate,
+		pubDate: article.data.date,
 		...(cover ? { cover } : {}),
 		coverAlt: article.data.coverAlt ?? '',
 	}
@@ -26,11 +30,11 @@ export function toSearchDocuments(
 			...shared,
 			id: `${article.id}:summary`,
 			heading: '',
-			excerpt: article.data.description,
+			excerpt: getArticleDescription(article),
 			url: articleUrl,
 			titleSearch: article.data.title,
 			headingSearch: '',
-			bodySearch: article.data.description,
+			bodySearch: getArticleDescription(article),
 		},
 	]
 	const tree = unified().use(remarkParse).parse(article.body)

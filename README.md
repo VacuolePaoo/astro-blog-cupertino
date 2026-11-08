@@ -66,12 +66,10 @@ $ pnpm run build
 
 ```yaml
 title: 文章标题
-description: SEO、搜索、OG 与订阅摘要
-pubDate: 2026-10-18
-collection: 前端
+date: 2026-10-18
 ```
 
-可选字段：`tags`、`cover`、`coverAlt`、`draft`、`slug`、`excerpt`、`no_comments`、`about`、`extra_info`、`copyright`。
+可选字段：`description`（缺省时自动取正文前 100 字作为摘要）、`collection`（缺省时不显示分类）、`tags`、`cover`、`coverAlt`、`draft`、`slug`、`excerpt`、`no_comments`、`about`、`extra_info`、`copyright`。
 
 ## 部署
 

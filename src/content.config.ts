@@ -23,10 +23,10 @@ const articles = defineCollection({
 	schema: ({ image }) =>
 		z.object({
 			title: z.string().min(1),
-			description: z.string().min(1),
+			description: z.string().min(1).optional(),
 			excerpt: z.string().optional(),
-			pubDate: articleDate,
-			collection: z.string().min(1),
+			date: articleDate,
+			collection: z.string().min(1).optional(),
 			slug: z
 				.string()
 				.regex(

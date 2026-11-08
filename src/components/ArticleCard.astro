@@ -43,12 +43,16 @@ const excerpt = blogConfig.theme.content.cards.showExcerpt
 			)
 		}
 		<div class="article-card-copy">
-			<span
-				class:list={[
-					'article-collection',
-					{ uppercase: blogConfig.theme.content.categories.uppercase },
-				]}>{article.data.collection}</span
-			>
+			{
+				article.data.collection && (
+					<span
+						class:list={[
+							'article-collection',
+							{ uppercase: blogConfig.theme.content.categories.uppercase },
+						]}>{article.data.collection}</span
+					>
+				)
+			}
 			<h2 class="article-card-title">{article.data.title}</h2>
 			{
 				excerpt && (
@@ -58,7 +62,7 @@ const excerpt = blogConfig.theme.content.cards.showExcerpt
 				)
 			}
 			<div class="article-card-date">
-				<DateDisplay date={article.data.pubDate} />
+				<DateDisplay date={article.data.date} />
 			</div>
 		</div>
 	</a>

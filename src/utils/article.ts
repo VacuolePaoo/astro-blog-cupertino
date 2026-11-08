@@ -8,9 +8,7 @@ export async function getArticles(options: { drafts?: boolean } = {}) {
 		'articles',
 		({ data }) => data.draft === drafts,
 	)
-	return entries.toSorted((a, b) =>
-		b.data.pubDate.localeCompare(a.data.pubDate),
-	)
+	return entries.toSorted((a, b) => b.data.date.localeCompare(a.data.date))
 }
 
 /** URL segment for an article: frontmatter `slug` overrides the file-derived id. */
@@ -38,6 +36,12 @@ export function getArticleExcerpt(article: ArticleEntry) {
 	const body = article.body ?? ''
 	const marker = body.search(/<!--\s*more\s*-->/i)
 	return marker < 0 ? undefined : stripMarkdown(body.slice(0, marker))
+}
+
+/** Frontmatter description, falling back to the first 100 chars of the body. */
+export function getArticleDescription(article: ArticleEntry) {
+	if (article.data.description) return article.data.description
+	return stripMarkdown(article.body ?? '').slice(0, 100)
 }
 
 export function getArticleSurround(

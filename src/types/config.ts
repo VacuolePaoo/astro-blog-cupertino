@@ -76,9 +76,8 @@ export interface BlogConfig {
 	accentColor: `#${string}`
 	logo?: string
 	favicon: string
-	author: { name: string; avatar: string }
-	copyright: { name: string; url?: string }
-	license: { name: string; url: string }
+	author: { name: string; avatar: string; website?: string }
+	copyright: { license: string; url: string }
 	imageDomains: string[]
 	cdn?: { assetsPrefix: CdnAssetsPrefix }
 	feed: { limit: number; xslt: boolean }

@@ -40,15 +40,17 @@ export default {
 	// 文章署名、JSON-LD 作者、页脚版权与文章页许可声明。
 	// ============================================================
 
-	author: { name: 'Your Name', avatar: '/favicon.png' },
-	// 页脚版权行与文章页版权；name 可被文章 frontmatter 同名字段覆盖
-	copyright: {
-		name: 'Blog',
-		url: 'https://creativecommons.org/licenses/by-nc/4.0/',
+	// 作者名（页脚版权行、JSON-LD 作者、OG 分享图署名，可被文章 frontmatter
+	// copyright.author 覆盖）、头像与主页链接；website 为页脚版权名的超链接
+	// 目标，留空则版权名显示为纯文本
+	author: {
+		name: 'Your Name',
+		avatar: '/favicon.png',
+		website: '',
 	},
 	// 文章页许可声明（src/components/ArticleFooter.astro）
-	license: {
-		name: 'CC BY-NC 4.0',
+	copyright: {
+		license: 'CC BY-NC 4.0',
 		url: 'https://creativecommons.org/licenses/by-nc/4.0/',
 	},
 

@@ -1,6 +1,10 @@
 import type { APIRoute } from 'astro'
 import blogConfig from '../../blog.config'
-import { getArticles, getArticleUrl } from '../utils/article'
+import {
+	getArticleDescription,
+	getArticles,
+	getArticleUrl,
+} from '../utils/article'
 import { toFeedInstant } from '../utils/date'
 import { escapeXml } from '../utils/feed'
 import { absoluteUrl } from '../utils/link'
@@ -8,7 +12,7 @@ import { siteOrigin } from '../utils/site'
 
 export const GET: APIRoute = async () => {
 	const articles = (await getArticles()).slice(0, blogConfig.feed.limit)
-	const updated = articles[0]?.data.pubDate ?? '1970-01-01'
+	const updated = articles[0]?.data.date ?? '1970-01-01'
 	const entries = articles
 		.map(article => {
 			const url = absoluteUrl(getArticleUrl(article), siteOrigin)
@@ -16,9 +20,9 @@ export const GET: APIRoute = async () => {
 <title>${escapeXml(article.data.title)}</title>
 <id>${escapeXml(url)}</id>
 <link href="${escapeXml(url)}" />
-<published>${toFeedInstant(article.data.pubDate)}</published>
-	<updated>${toFeedInstant(article.data.pubDate)}</updated>
-<summary type="html">${escapeXml(article.data.description)}</summary>
+<published>${toFeedInstant(article.data.date)}</published>
+	<updated>${toFeedInstant(article.data.date)}</updated>
+<summary type="html">${escapeXml(getArticleDescription(article))}</summary>
 </entry>`
 		})
 		.join('\n')

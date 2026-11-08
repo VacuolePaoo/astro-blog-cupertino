@@ -1,7 +1,11 @@
 import type { APIRoute } from 'astro'
 import rss from '@astrojs/rss'
 import blogConfig from '../../blog.config'
-import { getArticles, getArticleUrl } from '../utils/article'
+import {
+	getArticleDescription,
+	getArticles,
+	getArticleUrl,
+} from '../utils/article'
 import { toFeedInstant } from '../utils/date'
 import { siteOrigin } from '../utils/site'
 
@@ -16,8 +20,8 @@ export const GET: APIRoute = async context => {
 		customData: `<language>${blogConfig.language}</language>`,
 		items: articles.map(article => ({
 			title: article.data.title,
-			description: article.data.description,
-			pubDate: new Date(toFeedInstant(article.data.pubDate)),
+			description: getArticleDescription(article),
+			pubDate: new Date(toFeedInstant(article.data.date)),
 			link: getArticleUrl(article),
 		})),
 	})
