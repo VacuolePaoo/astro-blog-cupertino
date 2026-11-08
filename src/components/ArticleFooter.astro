@@ -15,8 +15,8 @@ interface Props {
 const { article, newer, older, preview = false } = Astro.props
 const copyright = article.data.copyright
 const author = copyright?.author ?? blogConfig.author.name
-const licenseName = copyright?.license ?? blogConfig.license.name
-const licenseUrl = copyright?.licenseUrl ?? blogConfig.license.url
+const licenseName = copyright?.license ?? blogConfig.copyright.license
+const licenseUrl = copyright?.licenseUrl ?? blogConfig.copyright.url
 ---
 
 <footer class="article-footer">

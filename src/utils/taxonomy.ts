@@ -3,7 +3,7 @@ import type { TaxonomyKind, TaxonomySummary } from '../types/taxonomy'
 
 function getArticleTerms(article: ArticleEntry, kind: TaxonomyKind) {
 	return kind === 'categories'
-		? [article.data.collection]
+		? (article.data.collection ? [article.data.collection] : [])
 		: (article.data.tags ?? [])
 }
 
@@ -23,7 +23,7 @@ export function getTaxonomySummaries(
 		.map(([name, termArticles]) => ({
 			name,
 			count: termArticles.length,
-			latest: termArticles[0]?.data.pubDate ?? '',
+			latest: termArticles[0]?.data.date ?? '',
 			articles: termArticles,
 		}))
 		.toSorted((a, b) => a.name.localeCompare(b.name, 'zh-CN'))

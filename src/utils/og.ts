@@ -136,7 +136,7 @@ ${cover ? '<img src="article-cover" style="position:absolute;top:0;left:0;width:
 <div style="position:absolute;top:0;left:0;width:1200px;height:630px;background-image:linear-gradient(to top,rgba(0,0,0,0.92) 0%,rgba(0,0,0,0.6) 42%,rgba(0,0,0,0.28) 100%)"></div>
 <div style="position:relative;display:flex;flex-direction:column;width:100%;height:100%;padding:60px;justify-content:space-between;color:#ffffff">
 <div style="display:flex;align-items:flex-start;gap:16px">
-<div style="display:flex;background-color:#3b82f6;color:#ffffff;padding:8px 24px;border-radius:9999px;font-size:24px;font-weight:600">${escapeHtml(article.data.collection)}</div>
+${article.data.collection ? `<div style="display:flex;background-color:#3b82f6;color:#ffffff;padding:8px 24px;border-radius:9999px;font-size:24px;font-weight:600">${escapeHtml(article.data.collection)}</div>` : ''}
 ${preview ? '<div style="display:flex;border:2px solid #ff9f0a;color:#ffb340;padding:8px 24px;border-radius:9999px;font-size:24px;font-weight:600">非正式版</div>' : ''}
 </div>
 <h1 style="margin:0;font-size:80px;font-weight:800;line-height:1.1;text-shadow:0 4px 12px rgba(0,0,0,0.5)">${escapeHtml(article.data.title)}</h1>
@@ -144,7 +144,7 @@ ${preview ? '<div style="display:flex;border:2px solid #ff9f0a;color:#ffb340;pad
 <img src="site-avatar" style="display:flex;width:80px;height:80px;border-radius:9999px;border:4px solid rgba(255,255,255,0.1)" />
 <div style="display:flex;flex-direction:column">
 <span style="font-size:32px;font-weight:600">${escapeHtml(blogConfig.author.name)}</span>
-<span style="font-size:24px;color:#a1a1aa">${escapeHtml(article.data.pubDate)}</span>
+<span style="font-size:24px;color:#a1a1aa">${escapeHtml(article.data.date)}</span>
 </div></div></div></div>`
 	const sources = [{ src: 'site-avatar', data: await getSiteAvatar() }]
 	if (cover?.data) sources.push({ src: cover.src, data: cover.data })
