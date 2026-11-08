@@ -1,5 +1,6 @@
 ---
 import interLatinWoff2 from '@fontsource-variable/inter/files/inter-latin-wght-normal.woff2?url'
+import Analytics from '@vercel/analytics/astro'
 import blogConfig from '../../blog.config'
 import Footer from '../components/Footer.astro'
 import Header from '../components/Header.astro'
@@ -118,6 +119,19 @@ window.__vite_plugin_react_preamble_installed__ = true
 					<script is:inline type={script.type} set:html={script.content} />
 				),
 			)
+		}
+		{blogConfig.analytics?.vercel?.enabled && <Analytics />}
+		{
+			blogConfig.analytics?.umami?.enabled &&
+				blogConfig.analytics.umami.src &&
+				blogConfig.analytics.umami.websiteId && (
+					<script
+						is:inline
+						defer
+						src={blogConfig.analytics.umami.src}
+						data-website-id={blogConfig.analytics.umami.websiteId}
+					/>
+				)
 		}
 	</head>
 	<body

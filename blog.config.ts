@@ -167,4 +167,16 @@ export default {
 	// Extra head scripts / 额外页头脚本
 	// ============================================================
 	headScripts: [] as BlogConfig['headScripts'],
+
+	// ============================================================
+	// Analytics / 访问统计
+	// ============================================================
+	analytics: {
+		vercel: { enabled: false }, // Vercel Analytics / 部署于 Vercel 后开启
+		umami: {
+			enabled: false, // Umami statistics / Umami 统计
+			src: 'https://your-umami-instance.example.com/script.js', // Script URL / 统计脚本地址
+			websiteId: '', // Website ID from Umami dashboard / Umami 后台网站 ID
+		},
+	},
 } satisfies BlogConfig
