@@ -49,8 +49,10 @@ const excerpt = blogConfig.theme.content.cards.showExcerpt
 						class:list={[
 							'article-collection',
 							{ uppercase: blogConfig.theme.content.categories.uppercase },
-						]}>{article.data.collection}</span
+						]}
 					>
+						{article.data.collection}
+					</span>
 				)
 			}
 			<h2 class="article-card-title">{article.data.title}</h2>
