@@ -5,11 +5,7 @@ import { toString } from 'mdast-util-to-string'
 import remarkParse from 'remark-parse'
 import { unified } from 'unified'
 import { visit } from 'unist-util-visit'
-import {
-	getArticleDescription,
-	getArticleUrl,
-	getCoverSource,
-} from './article'
+import { getArticleDescription, getArticleUrl, getCoverSource } from './article'
 
 /** Build searchable title, heading, and paragraph entries with exact rendered heading anchors. */
 export function toSearchDocuments(

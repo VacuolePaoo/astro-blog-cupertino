@@ -3,7 +3,9 @@ import type { TaxonomyKind, TaxonomySummary } from '../types/taxonomy'
 
 function getArticleTerms(article: ArticleEntry, kind: TaxonomyKind) {
 	return kind === 'categories'
-		? (article.data.collection ? [article.data.collection] : [])
+		? article.data.collection
+			? [article.data.collection]
+			: []
 		: (article.data.tags ?? [])
 }
 
