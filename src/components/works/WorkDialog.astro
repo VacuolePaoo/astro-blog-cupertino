@@ -43,9 +43,9 @@ const rendered = await Promise.all(works.map(work => render(work)))
 							<X size={18} strokeWidth={2.4} />
 						</button>
 					</div>
-						<div class="works-dialog surface-card">
-							{work.data.cover && (
-								<div class="works-banner media-fill" data-works-banner>
+					<div class="works-dialog surface-card">
+						{work.data.cover && (
+							<div class="works-banner media-fill" data-works-banner>
 								<ArticleCover
 									src={work.data.cover}
 									alt={`${work.data.title} 封面`}

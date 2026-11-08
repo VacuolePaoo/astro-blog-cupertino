@@ -41,17 +41,17 @@ const coverOrigin =
 		{
 			article.data.cover && (
 				<div class="article-cover" data-article-cover>
-						<div
-							class:list={[
-								'article-cover-media media-fill',
-								{
-									'animate-cover':
-										blogConfig.theme.motion.heroExitWhileScrolling.enabled,
-									'with-blur':
-										blogConfig.theme.motion.heroExitWhileScrolling.blurFilter,
-								},
-							]}
-						>
+					<div
+						class:list={[
+							'article-cover-media media-fill',
+							{
+								'animate-cover':
+									blogConfig.theme.motion.heroExitWhileScrolling.enabled,
+								'with-blur':
+									blogConfig.theme.motion.heroExitWhileScrolling.blurFilter,
+							},
+						]}
+					>
 						<ArticleCover
 							src={article.data.cover}
 							alt={getCoverAlt(article)}

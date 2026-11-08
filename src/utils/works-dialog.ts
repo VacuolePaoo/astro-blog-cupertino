@@ -225,10 +225,11 @@ export function initializeWorksDialog(root: ParentNode = document): void {
 			.querySelectorAll<HTMLElement>(PANEL_CONTENT_SELECTOR)
 			.forEach(element =>
 				animations.push(
-					element.animate(
-						[{ opacity: 1 }, { opacity: 0 }],
-						{ duration: 140, easing: 'ease-in', fill: 'forwards' },
-					),
+					element.animate([{ opacity: 1 }, { opacity: 0 }], {
+						duration: 140,
+						easing: 'ease-in',
+						fill: 'forwards',
+					}),
 				),
 			)
 		animations.push(
@@ -237,10 +238,11 @@ export function initializeWorksDialog(root: ParentNode = document): void {
 				easing: 'ease-in',
 				fill: 'forwards',
 			}),
-			backdrop.animate(
-				[{ opacity: 1 }, { opacity: 0 }],
-				{ duration: 260, easing: 'ease-in', fill: 'forwards' },
-			),
+			backdrop.animate([{ opacity: 1 }, { opacity: 0 }], {
+				duration: 260,
+				easing: 'ease-in',
+				fill: 'forwards',
+			}),
 		)
 		const dialogBox = dialogBoxOf(panel)
 		if (dialogBox) {

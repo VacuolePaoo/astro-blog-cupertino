@@ -42,11 +42,11 @@ export const footerNav = [
 			{ text: '关于', url: '/about/' },
 		],
 	},
-		{
-			title: '更多',
-			items: [
-				{ text: '作品', url: '/works/' },
-				{ text: '订阅', url: '/subscribe/' },
-			],
-		},
+	{
+		title: '更多',
+		items: [
+			{ text: '作品', url: '/works/' },
+			{ text: '订阅', url: '/subscribe/' },
+		],
+	},
 ] satisfies FooterNav
