@@ -89,7 +89,7 @@ const feeds = [
 		if (previousTimer) clearTimeout(previousTimer)
 		copyResetTimers.set(
 			button,
-			setTimeout(() => setCopyState(button, 'idle'), COPY_RESET_DELAY),
+			setTimeout(setCopyState, COPY_RESET_DELAY, button, 'idle'),
 		)
 	}
 
