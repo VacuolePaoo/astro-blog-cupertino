@@ -1,21 +1,23 @@
 import type { FooterNav } from './types/footer'
-import type { NavItem } from './types/nav'
+import type { NavEntry } from './types/nav'
 
 export const HOME_PAGE_SIZE = 8
 export const ARCHIVE_PAGE_SIZE = 10
 export const SEARCH_PAGE_SIZE = 30
 
-export const primaryNav = [
+export const nav: NavEntry[] = [
 	{ text: '分类', url: '/categories/' },
 	{ text: '友链', url: '/friends/' },
 	{ text: '关于', url: '/about/' },
-] satisfies NavItem[]
-
-export const moreNav = [
-	{ text: '主页', url: 'https://example.com', external: true },
-	{ text: '作品', url: '/works/' },
-	{ text: '订阅', url: '/subscribe/' },
-] satisfies NavItem[]
+	{
+		title: '更多',
+		items: [
+			{ text: '主页', url: 'https://example.com', external: true },
+			{ text: '作品', url: '/works/' },
+			{ text: '订阅', url: '/subscribe/' },
+		],
+	},
+]
 
 export const footerNav = [
 	{

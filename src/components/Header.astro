@@ -1,7 +1,8 @@
 ---
+import type { NavEntry, NavGroup } from '../types/nav'
 import { ExternalLink, Search } from 'lucide-astro'
 import blogConfig from '../../blog.config'
-import { moreNav, primaryNav } from '../consts'
+import { nav } from '../consts'
 import { getFlaggedExternalLinkProps } from '../utils/link'
 import SearchLauncher from './SearchLauncher.astro'
 
@@ -11,6 +12,7 @@ const siteLogo =
 	'logo' in blogConfig && typeof blogConfig.logo === 'string'
 		? blogConfig.logo
 		: undefined
+const isNavGroup = (entry: NavEntry): entry is NavGroup => 'items' in entry
 ---
 
 {
@@ -37,33 +39,45 @@ const siteLogo =
 
 		<nav class="desktop-nav" aria-label="主导航">
 			{
-				primaryNav.map((item, index) => (
-					<a href={item.url} style={`--index:${index + 1}`}>
-						{item.text}
-					</a>
-				))
-			}
-			<div class="more-menu" data-desktop-more>
-				<button
-					type="button"
-					aria-controls="desktop-more-panel"
-					data-desktop-more-toggle>更多</button
-				>
-				<div class="more-panel" id="desktop-more-panel" data-desktop-more-panel>
-					{
-						moreNav.map((item, index) => (
-							<a
-								href={item.url}
-								style={`--index:${index}`}
-								{...getFlaggedExternalLinkProps(item.external)}
+				nav.map((entry, index) =>
+					isNavGroup(entry) ? (
+						<div class="nav-dropdown" data-nav-dropdown>
+							<button
+								type="button"
+								aria-controls={`desktop-dropdown-panel-${index}`}
+								data-nav-dropdown-toggle
 							>
-								<span>{item.text}</span>
-								{item.external && <ExternalLink size={13} aria-hidden="true" />}
-							</a>
-						))
-					}
-				</div>
-			</div>
+								{entry.title}
+							</button>
+							<div
+								class="nav-dropdown-panel"
+								id={`desktop-dropdown-panel-${index}`}
+								data-nav-dropdown-panel
+							>
+								{entry.items.map((item, itemIndex) => (
+									<a
+										href={item.url}
+										style={`--index:${itemIndex}`}
+										{...getFlaggedExternalLinkProps(item.external)}
+									>
+										<span>{item.text}</span>
+										{item.external && (
+											<ExternalLink size={13} aria-hidden="true" />
+										)}
+									</a>
+								))}
+							</div>
+						</div>
+					) : (
+						<a
+							href={entry.url}
+							{...getFlaggedExternalLinkProps(entry.external)}
+						>
+							{entry.text}
+						</a>
+					),
+				)
+			}
 			{blogConfig.theme.search.enabled && <SearchLauncher />}
 		</nav>
 
@@ -92,50 +106,57 @@ const siteLogo =
 		<nav class="page-shell mobile-menu-inner" aria-label="移动端导航">
 			<a href="/" style="--index:0">首页</a>
 			{
-				primaryNav.map((item, index) => (
-					<a href={item.url} style={`--index:${index + 1}`}>
-						{item.text}
-					</a>
-				))
-			}
-			<div class="mobile-more" data-mobile-more data-open="false">
-				<button
-					type="button"
-					class="mobile-more-toggle"
-					aria-expanded="false"
-					aria-controls="mobile-more-panel"
-					data-mobile-more-toggle
-					style={`--index:${primaryNav.length + 1}`}
-				>
-					<span>更多</span>
-				</button>
-				<div
-					class="mobile-more-panel"
-					id="mobile-more-panel"
-					inert
-					data-mobile-more-panel
-				>
-					{
-						moreNav.map((item, index) => (
-							<a
-								href={item.url}
-								style={`--index:${index}`}
-								{...getFlaggedExternalLinkProps(item.external)}
+				nav.map((entry, index) =>
+					isNavGroup(entry) ? (
+						<div class="mobile-group" data-mobile-group data-open="false">
+							<button
+								type="button"
+								class="mobile-group-toggle"
+								aria-expanded="false"
+								aria-controls={`mobile-group-panel-${index}`}
+								data-mobile-group-toggle
+								style={`--index:${index + 1}`}
 							>
-								<span>{item.text}</span>
-								{item.external && <ExternalLink size={14} aria-hidden="true" />}
-							</a>
-						))
-					}
-				</div>
-			</div>
+								<span>{entry.title}</span>
+							</button>
+							<div
+								class="mobile-group-panel"
+								id={`mobile-group-panel-${index}`}
+								inert
+								data-mobile-group-panel
+							>
+								{entry.items.map((item, itemIndex) => (
+									<a
+										href={item.url}
+										style={`--index:${itemIndex}`}
+										{...getFlaggedExternalLinkProps(item.external)}
+									>
+										<span>{item.text}</span>
+										{item.external && (
+											<ExternalLink size={14} aria-hidden="true" />
+										)}
+									</a>
+								))}
+							</div>
+						</div>
+					) : (
+						<a
+							href={entry.url}
+							style={`--index:${index + 1}`}
+							{...getFlaggedExternalLinkProps(entry.external)}
+						>
+							{entry.text}
+						</a>
+					),
+				)
+			}
 			{
 				blogConfig.theme.search.enabled && (
 					<a
 						class="mobile-search-button"
 						href="/search/"
 						aria-label="搜索文章"
-						style={`--index:${primaryNav.length + 2}`}
+						style={`--index:${nav.length + 1}`}
 					>
 						<Search size={24} strokeWidth={1.8} aria-hidden="true" />
 					</a>
@@ -146,38 +167,56 @@ const siteLogo =
 </header>
 
 <script>
-	const desktopMore = document.querySelector<HTMLElement>('[data-desktop-more]')
-	let desktopMorePinned = false
+	let pinnedDropdown: HTMLElement | null = null
 
-	function setDesktopMoreOpen(open: boolean) {
-		const toggle = desktopMore?.querySelector<HTMLButtonElement>(
-			'[data-desktop-more-toggle]',
+	function setDropdownOpen(dropdown: HTMLElement, open: boolean) {
+		const toggle = dropdown.querySelector<HTMLButtonElement>(
+			'[data-nav-dropdown-toggle]',
 		)
-		const panel = desktopMore?.querySelector<HTMLElement>(
-			'[data-desktop-more-panel]',
+		const panel = dropdown.querySelector<HTMLElement>(
+			'[data-nav-dropdown-panel]',
 		)
-		if (!desktopMore || !toggle || !panel) return
-		desktopMore.dataset.open = String(open)
+		if (!toggle || !panel) return
+		dropdown.dataset.open = String(open)
 		toggle.setAttribute('aria-expanded', String(open))
 		panel.inert = !open
-		if (!open) desktopMorePinned = false
+		if (!open && pinnedDropdown === dropdown) pinnedDropdown = null
 	}
 
-	if (desktopMore) {
-		desktopMore.dataset.managed = ''
-		setDesktopMoreOpen(false)
-		desktopMore.addEventListener('pointerenter', event => {
-			if (event.pointerType !== 'touch') setDesktopMoreOpen(true)
-		})
-		desktopMore.addEventListener('pointerleave', () => {
-			if (!desktopMorePinned) setDesktopMoreOpen(false)
-		})
-		desktopMore.addEventListener('focusin', () => setDesktopMoreOpen(true))
-		desktopMore.addEventListener('focusout', event => {
-			if (!desktopMore.contains(event.relatedTarget as Node | null))
-				setDesktopMoreOpen(false)
-		})
+	function getDropdowns() {
+		return [...document.querySelectorAll<HTMLElement>('[data-nav-dropdown]')]
 	}
+
+	function closeAllDropdowns() {
+		for (const dropdown of getDropdowns())
+			if (dropdown.dataset.open === 'true') setDropdownOpen(dropdown, false)
+		pinnedDropdown = null
+	}
+
+	// Re-runs on every astro:page-load; the data-managed guard keeps the
+	// per-element listeners from being attached twice to the same node.
+	function initializeDropdowns() {
+		for (const dropdown of getDropdowns()) {
+			if (dropdown.dataset.managed) continue
+			dropdown.dataset.managed = ''
+			setDropdownOpen(dropdown, false)
+			dropdown.addEventListener('pointerenter', event => {
+				if (event.pointerType !== 'touch') setDropdownOpen(dropdown, true)
+			})
+			dropdown.addEventListener('pointerleave', () => {
+				if (pinnedDropdown !== dropdown) setDropdownOpen(dropdown, false)
+			})
+			dropdown.addEventListener('focusin', () =>
+				setDropdownOpen(dropdown, true),
+			)
+			dropdown.addEventListener('focusout', event => {
+				if (!dropdown.contains(event.relatedTarget as Node | null))
+					setDropdownOpen(dropdown, false)
+			})
+		}
+	}
+	initializeDropdowns()
+	document.addEventListener('astro:page-load', initializeDropdowns)
 
 	const MOBILE_NAV_MAX_WIDTH = 600
 
@@ -198,22 +237,26 @@ const siteLogo =
 		)
 	}
 
-	function setMoreOpen(open: boolean) {
-		const wrap = document.querySelector<HTMLElement>('[data-mobile-more]')
-		const toggle = document.querySelector<HTMLButtonElement>(
-			'[data-mobile-more-toggle]',
+	function setMobileGroupOpen(group: HTMLElement, open: boolean) {
+		const toggle = group.querySelector<HTMLButtonElement>(
+			'[data-mobile-group-toggle]',
 		)
-		const panel = document.querySelector<HTMLElement>(
-			'[data-mobile-more-panel]',
-		)
-		if (!wrap || !toggle || !panel) return
-		wrap.dataset.open = String(open)
+		const panel = group.querySelector<HTMLElement>('[data-mobile-group-panel]')
+		if (!toggle || !panel) return
+		group.dataset.open = String(open)
 		toggle.setAttribute('aria-expanded', String(open))
 		panel.inert = !open
 	}
 
+	function closeAllMobileGroups() {
+		for (const group of document.querySelectorAll<HTMLElement>(
+			'[data-mobile-group]',
+		))
+			setMobileGroupOpen(group, false)
+	}
+
 	function setOpen(open: boolean) {
-		if (open) setDesktopMoreOpen(false)
+		if (open) closeAllDropdowns()
 		const toggle = document.querySelector<HTMLButtonElement>(
 			'[data-mobile-toggle]',
 		)
@@ -224,7 +267,7 @@ const siteLogo =
 		toggle?.setAttribute('aria-label', open ? '收起导航' : '展开导航')
 		menu?.setAttribute('aria-hidden', String(!open))
 		if (menu) menu.inert = !open
-		if (!open) setMoreOpen(false)
+		if (!open) closeAllMobileGroups()
 	}
 	function updateBrandLabel() {
 		const brand = document.querySelector<HTMLAnchorElement>('[data-brand-home]')
@@ -241,49 +284,68 @@ const siteLogo =
 			if (isMobileLayout()) measureOpenHeight()
 			else setOpen(false)
 		}
-		if (!isMobileLayout()) setDesktopMoreOpen(false)
+		if (!isMobileLayout()) closeAllDropdowns()
 	})
 	document.addEventListener('click', event => {
 		if (event.defaultPrevented) return
 		const target = event.target as Element
-		const desktopToggle = target.closest<HTMLButtonElement>(
-			'[data-desktop-more-toggle]',
+		const dropdownToggle = target.closest<HTMLButtonElement>(
+			'[data-nav-dropdown-toggle]',
 		)
-		if (desktopToggle) {
+		if (dropdownToggle) {
+			const dropdown = dropdownToggle.closest<HTMLElement>(
+				'[data-nav-dropdown]',
+			)
+			if (!dropdown) return
 			event.preventDefault()
-			if (desktopMorePinned) setDesktopMoreOpen(false)
-			else {
-				desktopMorePinned = true
-				setDesktopMoreOpen(true)
+			if (pinnedDropdown === dropdown) {
+				pinnedDropdown = null
+				setDropdownOpen(dropdown, false)
+			} else {
+				closeAllDropdowns()
+				pinnedDropdown = dropdown
+				setDropdownOpen(dropdown, true)
 			}
 			return
 		}
-		if (target.closest('[data-desktop-more-panel] a')) setDesktopMoreOpen(false)
-		else if (!target.closest('[data-desktop-more]')) setDesktopMoreOpen(false)
+		if (
+			target.closest('[data-nav-dropdown-panel] a') ||
+			!target.closest('[data-nav-dropdown]')
+		)
+			closeAllDropdowns()
 		if (!isMobileLayout()) return
 
-		const moreToggle = target.closest<HTMLButtonElement>(
-			'[data-mobile-more-toggle]',
+		const groupToggle = target.closest<HTMLButtonElement>(
+			'[data-mobile-group-toggle]',
 		)
-		if (moreToggle) {
+		if (groupToggle) {
 			event.preventDefault()
-			setMoreOpen(moreToggle.getAttribute('aria-expanded') !== 'true')
+			const group = groupToggle.closest<HTMLElement>('[data-mobile-group]')
+			if (!group) return
+			setMobileGroupOpen(
+				group,
+				groupToggle.getAttribute('aria-expanded') !== 'true',
+			)
 			return
 		}
 		if (target.closest('[data-mobile-menu] a')) {
 			setOpen(false)
 			return
 		}
-		if (target.closest('[data-mobile-more]')) return
+		if (target.closest('[data-mobile-group]')) return
 		if (target.closest('[data-site-header]')) setOpen(!isMenuOpen())
 	})
 	document.addEventListener('keydown', event => {
-		if (event.key === 'Escape' && desktopMore?.dataset.open === 'true') {
+		const openDropdowns = getDropdowns().filter(
+			dropdown => dropdown.dataset.open === 'true',
+		)
+		if (event.key === 'Escape' && openDropdowns.length) {
 			event.preventDefault()
-			desktopMore
-				.querySelector<HTMLButtonElement>('[data-desktop-more-toggle]')
+			for (const dropdown of openDropdowns) setDropdownOpen(dropdown, false)
+			pinnedDropdown = null
+			openDropdowns[0]
+				?.querySelector<HTMLButtonElement>('[data-nav-dropdown-toggle]')
 				?.focus()
-			setDesktopMoreOpen(false)
 			return
 		}
 		if (
@@ -295,7 +357,7 @@ const siteLogo =
 		document.querySelector<HTMLButtonElement>('[data-mobile-toggle]')?.focus()
 	})
 	document.addEventListener('astro:before-preparation', () => {
-		setDesktopMoreOpen(false)
+		closeAllDropdowns()
 		setOpen(false)
 	})
 </script>
@@ -373,7 +435,7 @@ const siteLogo =
 		gap: 0;
 	}
 	.desktop-nav > a,
-	.more-menu > button {
+	.nav-dropdown > button {
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -388,19 +450,19 @@ const siteLogo =
 		text-decoration: none;
 	}
 	.desktop-nav > a:hover,
-	.more-menu > button:hover,
-	.more-menu:focus-within > button {
+	.nav-dropdown > button:hover,
+	.nav-dropdown:focus-within > button {
 		color: var(--color-text-secondary-hover);
 		text-decoration: none;
 	}
 	.desktop-nav > a:focus-visible {
 		text-decoration: none;
 	}
-	.more-menu {
+	.nav-dropdown {
 		position: relative;
 		padding: 0;
 	}
-	.more-panel {
+	.nav-dropdown-panel {
 		--panel-radius: var(--radius-medium);
 		--panel-padding: 0.45rem;
 		position: absolute;
@@ -424,9 +486,9 @@ const siteLogo =
 			opacity 120ms cubic-bezier(0.4, 0, 1, 1),
 			visibility 0s linear 180ms;
 	}
-	.more-menu:not([data-managed]):hover .more-panel,
-	.more-menu:not([data-managed]):focus-within .more-panel,
-	.more-menu[data-open='true'] .more-panel {
+	.nav-dropdown:not([data-managed]):hover .nav-dropdown-panel,
+	.nav-dropdown:not([data-managed]):focus-within .nav-dropdown-panel,
+	.nav-dropdown[data-open='true'] .nav-dropdown-panel {
 		visibility: visible;
 		pointer-events: auto;
 		opacity: 1;
@@ -434,7 +496,7 @@ const siteLogo =
 			opacity 160ms cubic-bezier(0.22, 1, 0.36, 1),
 			visibility 0s;
 	}
-	.more-panel a {
+	.nav-dropdown-panel a {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
@@ -451,9 +513,9 @@ const siteLogo =
 			opacity 150ms cubic-bezier(0.4, 0, 1, 1),
 			transform 150ms cubic-bezier(0.4, 0, 1, 1);
 	}
-	.more-menu:not([data-managed]):hover .more-panel a,
-	.more-menu:not([data-managed]):focus-within .more-panel a,
-	.more-menu[data-open='true'] .more-panel a {
+	.nav-dropdown:not([data-managed]):hover .nav-dropdown-panel a,
+	.nav-dropdown:not([data-managed]):focus-within .nav-dropdown-panel a,
+	.nav-dropdown[data-open='true'] .nav-dropdown-panel a {
 		opacity: 1;
 		transform: translateY(0);
 		/* Item reveal mirrors the mobile menu: settle downward while fading
@@ -463,15 +525,15 @@ const siteLogo =
 			transform 400ms ease;
 		transition-delay: calc(var(--index, 0) * 50ms + 100ms);
 	}
-	.more-menu:has(:focus-visible) .more-panel,
-	.more-menu:has(:focus-visible) .more-panel a {
+	.nav-dropdown:has(:focus-visible) .nav-dropdown-panel,
+	.nav-dropdown:has(:focus-visible) .nav-dropdown-panel a {
 		transition: none;
 	}
-	.more-panel a:hover {
+	.nav-dropdown-panel a:hover {
 		background: var(--color-background-secondary-hover);
 		text-decoration: none;
 	}
-	.more-panel a:focus-visible {
+	.nav-dropdown-panel a:focus-visible {
 		text-decoration: none;
 	}
 	.mobile-toggle,
@@ -480,13 +542,13 @@ const siteLogo =
 	}
 
 	@media (prefers-reduced-motion: reduce) {
-		.more-menu .more-panel,
-		.more-menu .more-panel a,
+		.nav-dropdown .nav-dropdown-panel,
+		.nav-dropdown .nav-dropdown-panel a,
 		.site-header,
 		.nav-mask > div,
 		.brand,
 		.mobile-menu a,
-		.mobile-more-toggle {
+		.mobile-group-toggle {
 			transition: none !important;
 		}
 	}
@@ -568,7 +630,7 @@ const siteLogo =
 			flex-wrap: wrap;
 		}
 		.mobile-menu a,
-		.mobile-more-toggle {
+		.mobile-group-toggle {
 			display: flex;
 			align-items: center;
 			gap: 0.45rem;
@@ -586,21 +648,21 @@ const siteLogo =
 				color 500ms ease;
 		}
 		.mobile-menu-inner > a:not(.mobile-search-button),
-		.mobile-more {
+		.mobile-group {
 			width: 100%;
 		}
-		.mobile-more {
+		.mobile-group {
 			display: flex;
 			align-items: center;
 		}
-		.mobile-more-toggle {
+		.mobile-group-toggle {
 			flex: none;
 			border: 0;
 			background: transparent;
 			text-align: left;
 			cursor: pointer;
 		}
-		.mobile-more-panel {
+		.mobile-group-panel {
 			display: flex;
 			min-width: 0;
 			flex: 1;
@@ -610,28 +672,28 @@ const siteLogo =
 			pointer-events: none;
 			scrollbar-width: none;
 		}
-		.mobile-more-panel::-webkit-scrollbar {
+		.mobile-group-panel::-webkit-scrollbar {
 			display: none;
 		}
-		.mobile-more-panel a {
+		.mobile-group-panel a {
 			flex: none;
 			transform: translateY(50%);
 		}
 		.mobile-menu[aria-hidden='false'] .mobile-menu-inner > a,
-		.mobile-menu[aria-hidden='false'] .mobile-more-toggle {
+		.mobile-menu[aria-hidden='false'] .mobile-group-toggle {
 			transform: translateY(0);
 			opacity: 1;
 			pointer-events: auto;
 			transition-delay: calc(var(--index, 0) * 50ms + 100ms);
 		}
 		.mobile-menu[aria-hidden='false']
-			.mobile-more[data-open='true']
-			.mobile-more-panel {
+			.mobile-group[data-open='true']
+			.mobile-group-panel {
 			pointer-events: auto;
 		}
 		.mobile-menu[aria-hidden='false']
-			.mobile-more[data-open='true']
-			.mobile-more-panel
+			.mobile-group[data-open='true']
+			.mobile-group-panel
 			a {
 			transform: translateY(0);
 			opacity: 1;

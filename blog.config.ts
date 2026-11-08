@@ -172,7 +172,7 @@ export default {
 	// Analytics / 访问统计
 	// ============================================================
 	analytics: {
-		vercel: { enabled: false }, // Vercel Analytics / 部署于 Vercel 后开启
+		vercel: { enabled: true }, // Vercel Analytics / 部署于 Vercel 后开启
 		umami: {
 			enabled: false, // Umami statistics / Umami 统计
 			src: 'https://your-umami-instance.example.com/script.js', // Script URL / 统计脚本地址
