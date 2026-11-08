@@ -44,7 +44,9 @@ for (const group of friendGroups)
 									</span>
 									<span class="friend-copy">
 										<strong>{friend.title}</strong>
-										{friend.author && <small class="muted">{friend.author}</small>}
+										{friend.author && (
+											<small class="muted">{friend.author}</small>
+										)}
 										{friend.description && (
 											<span class="muted">{friend.description}</span>
 										)}

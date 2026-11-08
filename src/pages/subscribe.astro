@@ -30,7 +30,12 @@ const feeds = [
 						<Icon size={24} strokeWidth={1.7} />
 						<h2>{title}</h2>
 						<p class="muted">{description}</p>
-						<button type="button" data-copy-feed={url} data-copy-state="idle" disabled>
+						<button
+							type="button"
+							data-copy-feed={url}
+							data-copy-state="idle"
+							disabled
+						>
 							<span class="copy-icons" aria-hidden="true">
 								<Copy class="idle-icon" size={16} />
 								<Check class="copied-icon" size={16} />
@@ -74,9 +79,8 @@ const feeds = [
 
 	function setCopyState(button: HTMLButtonElement, state: CopyState) {
 		button.dataset.copyState = state
-		const status = button.parentElement?.querySelector<HTMLElement>(
-			'[data-copy-status]',
-		)
+		const status =
+			button.parentElement?.querySelector<HTMLElement>('[data-copy-status]')
 		if (status) status.textContent = COPY_STATUS_TEXT[state]
 	}
 

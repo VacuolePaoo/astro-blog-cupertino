@@ -27,8 +27,9 @@ const pageTitle = title ? `${title} - ${blogConfig.title}` : blogConfig.title
 const canonicalUrl = absoluteUrl(canonical, siteOrigin)
 const imageUrl = absoluteUrl(image, siteOrigin)
 // 生成的 OG 图固定 1200x630；仅在确为 OG 图时输出尺寸声明
-const ogImageSize =
-	image.startsWith('/og/') ? { width: 1200, height: 630 } : undefined
+const ogImageSize = image.startsWith('/og/')
+	? { width: 1200, height: 630 }
+	: undefined
 const imageAlt = title ?? blogConfig.title
 const ogLocale = blogConfig.language.replace('-', '_')
 const structuredData =

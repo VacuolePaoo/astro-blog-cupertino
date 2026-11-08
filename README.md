@@ -2,7 +2,7 @@
 
 <p align="center">A reimplementation of <a href="https://github.com/MrWillCom/hexo-theme-cupertino"><strong>Hexo Theme Cupertino</strong></a> rewrite with Astro.</p>
 
-<p align="center"><a href="https://blog.vacu.top/"><strong>Preview</strong></a> / <a href="https://docs.vacu.top/">Docs</a></p>
+<p align="center"><a href="https://blog.400029.xyz/"><strong>Preview</strong></a> / <a href="https://docs.vacu.top/">Docs</a></p>
 
 <p align="center">
   <a href="https://github.com/VacuolePaoo/dino-blog-v1/stargazers">
