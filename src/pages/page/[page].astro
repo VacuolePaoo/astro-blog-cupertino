@@ -3,10 +3,10 @@ import type { GetStaticPaths } from 'astro'
 import HomeArticles from '../../components/HomeArticles.astro'
 import { HOME_PAGE_SIZE } from '../../consts'
 import Layout from '../../layouts/Layout.astro'
-import { getArticles } from '../../utils/article'
+import { filterHomeArticles, getArticles } from '../../utils/article'
 
 export const getStaticPaths = (async ({ paginate }) => {
-	const articles = await getArticles()
+	const articles = filterHomeArticles(await getArticles())
 	return paginate(articles, { pageSize: HOME_PAGE_SIZE }).filter(
 		item => Number(item.params.page) > 1,
 	)

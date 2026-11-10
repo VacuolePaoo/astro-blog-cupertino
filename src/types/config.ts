@@ -32,6 +32,8 @@ export interface ThemeConfig {
 	}
 	content: {
 		hero: { title: string; description: string }
+		/** 首页文章列表（含分页）排除的分类；被排除的文章仍出现在归档、分类与标签页 */
+		home: { excludedCategories: string[] }
 		cards: { showExcerpt: boolean }
 		categories: { uppercase: boolean; showPostCount: boolean }
 		tags: {

@@ -118,6 +118,12 @@ export default {
 				title: 'Astro Blog Cupertino', // Home hero title / 首页首屏标题
 				description: 'A Cupertino-inspired blog template built with Astro.', // Home hero summary / 首页首屏副标题
 			},
+			// 首页文章卡片排除的分类：数组中的分类不出现在首页列表（含分页），
+			// 但归档、分类与标签页仍正常展示这些文章
+			home: {
+				// Category names / 分类名，如 ['日志']；`as string[]` 防止空数组被推断为 never[]
+				excludedCategories: [] as string[],
+			},
 			cards: {
 				showExcerpt: true, // Card summaries / 卡片摘要
 			},
