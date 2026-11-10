@@ -1,5 +1,6 @@
 import type { ArticleEntry } from '../types/article'
 import { getCollection } from 'astro:content'
+import blogConfig from '../../blog.config'
 import { fallbackCoverAlt } from './image'
 
 export async function getArticles(options: { drafts?: boolean } = {}) {
@@ -9,6 +10,20 @@ export async function getArticles(options: { drafts?: boolean } = {}) {
 		({ data }) => data.draft === drafts,
 	)
 	return entries.toSorted((a, b) => b.data.date.localeCompare(a.data.date))
+}
+
+/**
+ * Posts in the categories listed in `theme.content.home.excludedCategories`
+ * stay off the homepage cards (including pagination); archives, taxonomy
+ * pages and feeds are unaffected. Uncategorised posts are never excluded.
+ */
+export function filterHomeArticles(articles: ArticleEntry[]) {
+	const excluded = blogConfig.theme.content.home.excludedCategories
+	if (excluded.length === 0) return articles
+	return articles.filter(
+		article =>
+			!article.data.collection || !excluded.includes(article.data.collection),
+	)
 }
 
 /** URL segment for an article: frontmatter `slug` overrides the file-derived id. */

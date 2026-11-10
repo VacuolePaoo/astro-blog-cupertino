@@ -2,11 +2,11 @@
 import HomeArticles from '../components/HomeArticles.astro'
 import { HOME_PAGE_SIZE } from '../consts'
 import Layout from '../layouts/Layout.astro'
-import { getArticles } from '../utils/article'
+import { filterHomeArticles, getArticles } from '../utils/article'
 import { paginate } from '../utils/pagination'
 
-const allArticles = await getArticles()
-const page = paginate(allArticles, 1, HOME_PAGE_SIZE)
+const homeArticles = filterHomeArticles(await getArticles())
+const page = paginate(homeArticles, 1, HOME_PAGE_SIZE)
 ---
 
 <Layout>
