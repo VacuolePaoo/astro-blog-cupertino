@@ -19,6 +19,15 @@ export type HeadScript = ExternalHeadScript | InlineHeadScript
 export type ColorScheme = 'light' | 'dark' | 'auto'
 export type RainbowBannerDisplay = 'auto' | 'always'
 
+/**
+ * robots.txt 中对 AI 爬虫的策略：
+ * - `allow`：不设专门分组，由 `User-agent: *` 全部放行（默认）
+ * - `no-training`：屏蔽训练/数据收集类爬虫，保留用户主动触发的智能体
+ *   实时访问（ChatGPT-User、Claude-User 等）与 AI 搜索索引爬虫
+ * - `block`：屏蔽下方两份清单中的全部 AI 爬虫
+ */
+export type AiCrawlerPolicy = 'allow' | 'no-training' | 'block'
+
 export interface ThemeConfig {
 	appearance: {
 		colorScheme: ColorScheme
@@ -98,5 +107,14 @@ export interface BlogConfig {
 			/** Umami 后台分配的网站 ID */
 			websiteId?: string
 		}
+	}
+	/** 对 AI/智能体友好的机器可读输出；缺省全部开启、AI 爬虫全放行 */
+	ai?: {
+		/** /llms.txt 站点索引与 /llms-full.txt 全文 Markdown 合集（llmstxt.org 约定） */
+		llmsTxt?: boolean
+		/** 每篇文章的原始 Markdown 端点 /posts/<slug>.md，并在文章页 <head> 声明 */
+		markdownEndpoints?: boolean
+		/** robots.txt 对 AI 爬虫的策略，见 {@link AiCrawlerPolicy} */
+		crawlerPolicy?: AiCrawlerPolicy
 	}
 }
