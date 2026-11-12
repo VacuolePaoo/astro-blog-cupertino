@@ -75,6 +75,16 @@ date: 2026-10-18
 
 `type` 字段选择文章版式预设，缺省为 `default`（默认版式）。设为 `story` 时使用故事版式：正文与标题采用衬线字体排版，封面全幅置于文首、底部渐隐融入背景（静态呈现，不参与滚动动效），分类、标题、日期居中接在封面之后，适合记录生活故事与经历。
 
+## AI 与智能体友好
+
+`blog.config.ts` 的 `ai` 节控制面向 LLM 与智能体的机器可读输出，默认全部开启：
+
+- `/llms.txt`：站点索引（站点信息、页面导航与文章清单），`/llms-full.txt`：全部文章的原始 Markdown 合集，遵循 [llmstxt.org](https://llmstxt.org/) 约定；`llmsTxt` 可关闭
+- `/posts/<slug>.md`：每篇文章的原始 Markdown（还原 Frontmatter 元信息），文章页 `<head>` 自动声明 `<link rel="alternate" type="text/markdown">`；`markdownEndpoints` 可关闭
+- robots.txt 的 AI 爬虫策略 `crawlerPolicy`：`allow`（默认，随 `User-agent: *` 全放行）、`no-training`（屏蔽 GPTBot、CCBot、ClaudeBot 等训练类爬虫，保留用户主动触发的智能体访问）、`block`（全部屏蔽）
+
+关闭任一开关后，对应文件不会出现在构建产物中。
+
 ## 部署
 
 生产构建命令为 `pnpm run build`，输出目录为 `dist/`。产物为纯静态文件，可部署到 Vercel 或 Cloudflare Pages。正式部署前必须替换 `blog.config.ts` 中的占位域名、站点名、作者和站外链接。

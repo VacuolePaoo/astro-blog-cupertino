@@ -76,6 +76,27 @@ export default {
 	feed: { limit: 20, xslt: true },
 
 	// ============================================================
+	// AI and agents / AI 与智能体友好
+	// 供 LLM 与智能体消费的机器可读输出。端点均为构建期静态生成，
+	// 关闭后对应文件不会出现在构建产物中。
+	// ============================================================
+
+	ai: {
+		// /llms.txt（站点 Markdown 索引）与 /llms-full.txt（全部文章原始
+		// Markdown 合集），遵循 llmstxt.org 约定
+		llmsTxt: true,
+		// 每篇文章的原始 Markdown 端点 /posts/<slug>.md；开启后文章页
+		// <head> 会自动声明 <link rel="alternate" type="text/markdown">
+		markdownEndpoints: true,
+		// robots.txt 对 AI 爬虫的策略：
+		// - 'allow'       不设专门分组，AI 爬虫随 User-agent: * 全部放行
+		// - 'no-training' 屏蔽训练/数据收集类爬虫（GPTBot、CCBot、ClaudeBot、
+		//                 Bytespider 等），保留用户主动触发的智能体访问与 AI 搜索
+		// - 'block'       屏蔽全部已收录的 AI 爬虫
+		crawlerPolicy: 'allow',
+	},
+
+	// ============================================================
 	// Comments / 评论（Twikoo 2.0.17）
 	// ============================================================
 

@@ -1,5 +1,6 @@
 ---
 import blogConfig from '../../../blog.config'
+import { aiConfig } from '../../utils/ai'
 import { absoluteUrl } from '../../utils/link'
 import { siteOrigin } from '../../utils/site'
 
@@ -32,6 +33,12 @@ const ogImageSize = image.startsWith('/og/')
 	: undefined
 const imageAlt = title ?? blogConfig.title
 const ogLocale = blogConfig.language.replace('-', '_')
+// 文章页在 Markdown 端点开启时声明原始版本；预览页（noindex）排除。
+// canonical 形如 /posts/<slug>/，去尾斜杠后拼 .md 即端点路径
+const markdownUrl =
+	type === 'article' && !noindex && aiConfig.markdownEndpoints
+		? canonical.replace(/\/$/, '')
+		: undefined
 const structuredData =
 	type === 'article'
 		? {
@@ -123,6 +130,16 @@ const structuredData =
 	href="/rss.xml"
 />
 <link rel="sitemap" href="/sitemap-index.xml" />
+{
+	markdownUrl && (
+		<link
+			rel="alternate"
+			type="text/markdown"
+			title={`${pageTitle} (Markdown)`}
+			href={`${markdownUrl}.md`}
+		/>
+	)
+}
 <script
 	type="application/ld+json"
 	set:html={JSON.stringify(structuredData).replace(/</g, '\\u003c')}
